@@ -1,0 +1,115 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-visual" aria-hidden="true">
+      <span class="blob blob-one"></span>
+      <span class="blob blob-two"></span>
+      <span class="blob blob-three"></span>
+    </div>
+
+    <div class="auth-form">
+      <div class="auth-card-header">
+        <h1>Create your Free Account</h1>
+        <p>Join Vendo in a few steps.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-field">
+          <label for="fullName">Full name</label>
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            placeholder="John"
+          />
+          <div class="field-error" *ngIf="hasError('fullName')">
+            <span *ngIf="hasError('fullName', 'required')">Full name is required.</span>
+            <span *ngIf="hasError('fullName', 'minlength')">
+              Full name must be at least 2 characters.
+            </span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+          />
+          <div class="field-error" *ngIf="hasError('email')">
+            <span *ngIf="hasError('email', 'required')">Email is required.</span>
+            <span *ngIf="hasError('email', 'email')">Please enter a valid email address.</span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Phone (optional)</label>
+          <input
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            placeholder="+261 34 12 345 67"
+          />
+        </div>
+
+        <div class="grid two-columns">
+          <div class="form-field">
+            <label for="role">Account type</label>
+            <select id="role" formControlName="role">
+              <option *ngFor="let option of roleOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Enter your password"
+            />
+            <div class="field-error" *ngIf="hasError('password')">
+              <span *ngIf="hasError('password', 'required')">Password is required.</span>
+              <span *ngIf="hasError('password', 'minlength')">
+                Password must be at least 8 characters.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="primary-button"
+          type="submit"
+          [disabled]="loading()"
+        >
+          <span *ngIf="!loading()">Create account</span>
+          <span *ngIf="loading()">Creating account...</span>
+        </button>
+
+        <div class="divider-row">
+          <span></span>
+          <p>or</p>
+          <span></span>
+        </div>
+
+        <div class="social-row">
+          <button type="button" class="social-button">
+            <span class="social-label">Log in</span>
+          </button>
+        </div>
+
+        <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+          <div class="server-error" *ngIf="serverErrors().length">
+            <p *ngFor="let error of serverErrors()">{{ error }}</p>
+          </div>
+          <div class="server-success" *ngIf="successMessage()">
+            <p>{{ successMessage() }}</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
