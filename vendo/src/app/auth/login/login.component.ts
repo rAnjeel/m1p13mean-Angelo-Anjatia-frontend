@@ -2,17 +2,19 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   form: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -34,22 +36,22 @@ export class LoginComponent {
     this.successMessage.set(null);
 
     this.authService.login(this.form.value).subscribe({
-      next: () => {
-        this.successMessage.set('Logged in successfully.');
-        this.loading.set(false);
-      },
-      error: (error) => {
-        const apiErrors: string[] = [];
-
-        if (error?.error?.errors && Array.isArray(error.error.errors)) {
-          apiErrors.push(...error.error.errors);
-        } else if (error?.error?.message) {
-          apiErrors.push(error.error.message);
-        } else {
-          apiErrors.push('An unexpected error occurred. Please try again.');
+      next: (response) => {
+        const token = response?.token ?? response?.accessToken;
+        if (token) {
+          localStorage.setItem('auth_token', token);
         }
 
-        this.serverErrors.set(apiErrors);
+        if (response?.user) {
+          localStorage.setItem('auth_user', JSON.stringify(response.user));
+        }
+
+        this.successMessage.set(response?.message || 'Logged in successfully.');
+        this.loading.set(false);
+        void this.router.navigateByUrl('/home');
+      },
+      error: (error) => {
+        this.serverErrors.set(this.parseApiErrors(error));
         this.loading.set(false);
       },
     });
@@ -60,5 +62,42 @@ export class LoginComponent {
     if (!control) return false;
     if (!control.touched && !control.dirty) return false;
     return errorKey ? !!control.errors?.[errorKey] : !!control.errors;
+  }
+
+  private parseApiErrors(error: any): string[] {
+    const apiErrors: string[] = [];
+
+    if (error?.error?.errors && Array.isArray(error.error.errors)) {
+      apiErrors.push(...error.error.errors);
+      return apiErrors;
+    }
+
+    if (error?.error?.message) {
+      apiErrors.push(error.error.message);
+      return apiErrors;
+    }
+
+    switch (error?.status) {
+      case 400:
+        apiErrors.push('Please provide both email and password.');
+        break;
+      case 401:
+        apiErrors.push('Invalid email or password.');
+        break;
+      case 403:
+        apiErrors.push('This account is disabled.');
+        break;
+      case 404:
+        apiErrors.push('No account found with this email. Please register first.');
+        break;
+      case 0:
+        apiErrors.push('Unable to reach the server. Please check your connection.');
+        break;
+      default:
+        apiErrors.push('An unexpected error occurred. Please try again.');
+        break;
+    }
+
+    return apiErrors;
   }
 }

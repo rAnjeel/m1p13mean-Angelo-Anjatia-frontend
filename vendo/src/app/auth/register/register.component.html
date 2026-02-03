@@ -96,9 +96,14 @@
         </div>
 
         <div class="social-row">
-          <button type="button" class="social-button">
+          <button type="button" class="social-button" routerLink="/login">
             <span class="social-label">Log in</span>
           </button>
+        </div>
+
+        <div class="link-row">
+          <span>Already have an account?</span>
+          <a class="link" routerLink="/login">Log in</a>
         </div>
 
         <div class="server-messages" *ngIf="serverErrors().length || successMessage()">

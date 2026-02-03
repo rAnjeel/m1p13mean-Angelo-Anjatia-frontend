@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -44,23 +45,13 @@ export class RegisterComponent {
     this.successMessage.set(null);
 
     this.authService.register(this.form.value).subscribe({
-      next: () => {
-        this.successMessage.set('Account created successfully.');
+      next: (response: any) => {
+        this.successMessage.set(response?.message || 'Account created successfully.');
         this.form.reset({ role: 'client' });
         this.loading.set(false);
       },
       error: (error) => {
-        const apiErrors: string[] = [];
-
-        if (error?.error?.errors && Array.isArray(error.error.errors)) {
-          apiErrors.push(...error.error.errors);
-        } else if (error?.error?.message) {
-          apiErrors.push(error.error.message);
-        } else {
-          apiErrors.push('An unexpected error occurred. Please try again.');
-        }
-
-        this.serverErrors.set(apiErrors);
+        this.serverErrors.set(this.parseApiErrors(error));
         this.loading.set(false);
       },
     });
@@ -71,6 +62,37 @@ export class RegisterComponent {
     if (!control) return false;
     if (!control.touched && !control.dirty) return false;
     return errorKey ? !!control.errors?.[errorKey] : !!control.errors;
+  }
+
+  private parseApiErrors(error: any): string[] {
+    const apiErrors: string[] = [];
+
+    if (error?.error?.errors && Array.isArray(error.error.errors)) {
+      apiErrors.push(...error.error.errors);
+      return apiErrors;
+    }
+
+    if (error?.error?.message) {
+      apiErrors.push(error.error.message);
+      return apiErrors;
+    }
+
+    switch (error?.status) {
+      case 400:
+        apiErrors.push('Please check the form fields and try again.');
+        break;
+      case 409:
+        apiErrors.push('A user with this email already exists.');
+        break;
+      case 0:
+        apiErrors.push('Unable to reach the server. Please check your connection.');
+        break;
+      default:
+        apiErrors.push('An unexpected error occurred. Please try again.');
+        break;
+    }
+
+    return apiErrors;
   }
 }
 

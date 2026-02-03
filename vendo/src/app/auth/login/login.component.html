@@ -52,6 +52,11 @@
           <span *ngIf="loading()">Logging in...</span>
         </button>
 
+        <div class="link-row">
+          <span>Don&apos;t have an account?</span>
+          <a class="link" routerLink="/register">Create account</a>
+        </div>
+
         <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
           <div class="server-error" *ngIf="serverErrors().length">
             <p *ngFor="let error of serverErrors()">{{ error }}</p>

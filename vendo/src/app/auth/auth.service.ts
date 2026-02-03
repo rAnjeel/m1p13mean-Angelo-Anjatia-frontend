@@ -16,6 +16,13 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface LoginResponse {
+  message?: string;
+  user?: unknown;
+  token?: string;
+  accessToken?: string;
+}
+
 export interface ApiErrorResponse {
   message?: string;
   errors?: string[];
@@ -32,8 +39,8 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/register`, payload);
   }
 
-  login(payload: LoginPayload): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/login`, payload);
+  login(payload: LoginPayload): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, payload);
   }
 }
 

@@ -252,6 +252,25 @@ select.ng-invalid.ng-touched {
   white-space: nowrap;
 }
 
+.link-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.link {
+  color: #c58b07;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
 .server-messages {
   display: flex;
   flex-direction: column;
