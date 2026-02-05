@@ -1,6 +1,93 @@
-<div class="home-shell">
-  <div class="home-card">
-    <h1>App Page</h1>
-    <p>This is a temporary placeholder after login.</p>
+<section class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <h1>Dashboard Admin</h1>
+      <p>Centre commercial · Vue d'ensemble</p>
+    </div>
+    <div class="dashboard-actions">
+      <button class="ghost-btn" type="button">Dernière mise à jour</button>
+      <button class="primary-btn" type="button">Exporter</button>
+    </div>
+  </header>
+
+  <div class="kpi-grid">
+    <article class="kpi-card accent-1">
+      <div class="kpi-label">Total boutiques</div>
+      <div class="kpi-value">248</div>
+      <div class="kpi-meta">+4 nouvelles ce mois</div>
+    </article>
+    <article class="kpi-card accent-2">
+      <div class="kpi-label">Utilisateurs actifs</div>
+      <div class="kpi-value">3 482</div>
+      <div class="kpi-meta">+8.2% vs mois dernier</div>
+    </article>
+    <article class="kpi-card accent-3">
+      <div class="kpi-label">Chiffre d'affaires</div>
+      <div class="kpi-value">€ 4,8 M</div>
+      <div class="kpi-meta">+12% YTD</div>
+    </article>
   </div>
-</div>
+
+  <div class="dashboard-grid">
+    <section class="panel panel-wide">
+      <header class="panel-header">
+        <div>
+          <h2>Performance mensuelle</h2>
+          <p>CA consolidé par mois</p>
+        </div>
+        <span class="badge">2026</span>
+      </header>
+      <div class="bar-chart">
+        <div class="bar" style="--h: 52%;">
+          <span>Jan</span>
+        </div>
+        <div class="bar" style="--h: 64%;">
+          <span>Fév</span>
+        </div>
+        <div class="bar" style="--h: 58%;">
+          <span>Mar</span>
+        </div>
+        <div class="bar" style="--h: 72%;">
+          <span>Avr</span>
+        </div>
+        <div class="bar" style="--h: 68%;">
+          <span>Mai</span>
+        </div>
+        <div class="bar" style="--h: 80%;">
+          <span>Juin</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-header">
+        <div>
+          <h2>Activité boutiques</h2>
+          <p>Top segments</p>
+        </div>
+      </header>
+      <ul class="activity-list">
+        <li>
+          <span>Mode & accessoires</span>
+          <strong>32%</strong>
+        </li>
+        <li>
+          <span>Restauration</span>
+          <strong>24%</strong>
+        </li>
+        <li>
+          <span>Tech & services</span>
+          <strong>18%</strong>
+        </li>
+        <li>
+          <span>Beauté & bien-être</span>
+          <strong>15%</strong>
+        </li>
+        <li>
+          <span>Maison</span>
+          <strong>11%</strong>
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>
