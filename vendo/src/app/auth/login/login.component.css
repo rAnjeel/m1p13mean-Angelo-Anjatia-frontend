@@ -167,7 +167,7 @@ select.ng-invalid.ng-touched {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  width: 100%;
+  width: 107%;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
 }
 

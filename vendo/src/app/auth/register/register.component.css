@@ -167,7 +167,7 @@ select.ng-invalid.ng-touched {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  width: 100%;
+  width: 107%;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
 }
 
@@ -192,12 +192,13 @@ select.ng-invalid.ng-touched {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin: 0.8rem 0 0.3rem;
+  margin: 1.1rem 0 0.6rem;
+  width: 107%;
 }
 
 .divider-row span {
   flex: 1;
-  height: 1px;
+  height: 3px;
   background: #e5e7eb;
 }
 
@@ -227,6 +228,7 @@ select.ng-invalid.ng-touched {
   font-size: 0.78rem;
   color: #374151;
   cursor: pointer;
+  width: 107%;
   transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
 }
 
