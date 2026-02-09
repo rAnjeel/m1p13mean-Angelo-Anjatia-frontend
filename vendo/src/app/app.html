@@ -1,10 +1,11 @@
-<div *ngIf="showLayout(); else authOnly" class="page">
+﻿<div *ngIf="showLayout(); else authOnly" class="page">
   <header class="site-header">
     <div class="container header-inner">
       <div class="brand">VENDEO</div>
       <nav class="site-nav">
-        <a class="nav-link" href="#">Manage</a>
-        <a class="nav-link nav-emphasis icon-link" href="#" aria-label="Account">
+        <a class="nav-link" routerLink="/home">Dashboard</a>
+        <a class="nav-link" routerLink="/admin/shops">Manage</a>
+        <a class="nav-link nav-emphasis icon-link" routerLink="/home" aria-label="Account">
           <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
             <path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c3.3 0 6 2 6 4.5V20H6v-1.5C6 16 8.7 14 12 14z" />
           </svg>
@@ -22,7 +23,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-title">Namedly</div>
+        <div class="footer-title">VENDEO</div>
         <div class="footer-text">Rabearison Nantenaina Angelo</div>
         <div class="footer-text">Ranaivo Rasoanarivelo Fy Anjatia</div>
         <div class="footer-socials">
@@ -54,7 +55,6 @@
         <a class="footer-link" href="#">Blog</a>
         <a class="footer-link" href="#">Case studies</a>
         <a class="footer-link" href="#">Customer stories</a>
-        <a class="footer-link" href="#">Best practices</a>
       </div>
       <div class="footer-col">
         <div class="footer-heading">Support</div>
