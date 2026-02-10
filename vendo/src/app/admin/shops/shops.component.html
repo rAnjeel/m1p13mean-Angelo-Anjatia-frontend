@@ -1,35 +1,35 @@
-﻿<section class="admin-shops">
+<section class="admin-shops">
   <header class="admin-header">
     <div>
-      <h1>Gestion des boutiques</h1>
-      <p>CRUD boutiques · administration centrale</p>
+      <h1>Shop management</h1>
+      <p>Shop CRUD - central administration</p>
     </div>
     <div class="admin-actions">
-      <button class="ghost-btn" type="button">Derniere synchro: 09:45</button>
-      <button class="primary-btn" type="button">Ajouter une boutique</button>
+      <button class="ghost-btn" type="button">Last sync: 09:45</button>
+      <button class="primary-btn" type="button">Add shop</button>
     </div>
   </header>
 
   <div class="stat-grid">
     <article class="stat-card accent-1">
-      <div class="stat-label">Total boutiques</div>
+      <div class="stat-label">Total shops</div>
       <div class="stat-value">248</div>
-      <div class="stat-meta">+4 nouvelles ce mois</div>
+      <div class="stat-meta">+4 new this month</div>
     </article>
     <article class="stat-card accent-2">
-      <div class="stat-label">Boutiques actives</div>
+      <div class="stat-label">Active shops</div>
       <div class="stat-value">212</div>
-      <div class="stat-meta">96% taux d'ouverture</div>
+      <div class="stat-meta">96% open rate</div>
     </article>
     <article class="stat-card accent-3">
-      <div class="stat-label">En attente</div>
+      <div class="stat-label">Pending</div>
       <div class="stat-value">16</div>
-      <div class="stat-meta">7 dossiers a valider</div>
+      <div class="stat-meta">7 cases to approve</div>
     </article>
     <article class="stat-card accent-4">
-      <div class="stat-label">Fermeture prevue</div>
+      <div class="stat-label">Scheduled closure</div>
       <div class="stat-value">5</div>
-      <div class="stat-meta">Prochaines 4 semaines</div>
+      <div class="stat-meta">Next 4 weeks</div>
     </article>
   </div>
 
@@ -37,12 +37,12 @@
     <section class="panel list-panel">
       <div class="panel-header">
         <div>
-          <h2>Liste des boutiques</h2>
-          <p>Filtrer, rechercher et gerer les boutiques</p>
+          <h2>Shop list</h2>
+          <p>Filter, search, and manage shops</p>
         </div>
         <div class="panel-actions">
-          <button class="ghost-btn" type="button">Exporter CSV</button>
-          <button class="outline-btn" type="button">Importer</button>
+          <button class="ghost-btn" type="button">Export CSV</button>
+          <button class="outline-btn" type="button">Import</button>
         </div>
       </div>
 
@@ -51,23 +51,23 @@
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm8.4 11.6 3.3 3.3-1.4 1.4-3.3-3.3 1.4-1.4z" />
           </svg>
-          <input type="text" placeholder="Rechercher une boutique" />
+          <input type="text" placeholder="Search a shop" />
         </label>
         <div class="filter-pills">
-          <button class="pill is-active" type="button">Toutes</button>
-          <button class="pill" type="button">Actives</button>
-          <button class="pill" type="button">En attente</button>
-          <button class="pill" type="button">Suspendues</button>
+          <button class="pill is-active" type="button">All</button>
+          <button class="pill" type="button">Active</button>
+          <button class="pill" type="button">Pending</button>
+          <button class="pill" type="button">Suspended</button>
         </div>
       </div>
 
       <div class="table">
         <div class="table-row table-head">
-          <div class="cell">Boutique</div>
-          <div class="cell">Categorie</div>
-          <div class="cell">Responsable</div>
-          <div class="cell">Statut</div>
-          <div class="cell">Loyer</div>
+          <div class="cell">Shop</div>
+          <div class="cell">Category</div>
+          <div class="cell">Manager</div>
+          <div class="cell">Status</div>
+          <div class="cell">Rent</div>
           <div class="cell">Actions</div>
         </div>
 
@@ -76,17 +76,17 @@
             <div class="avatar">MS</div>
             <div>
               <strong>Maison Sable</strong>
-              <span>Etage 2 · A-14</span>
+              <span>Floor 2 - A-14</span>
             </div>
           </div>
-          <div class="cell">Maison</div>
+          <div class="cell">Home</div>
           <div class="cell">L. Randria</div>
           <div class="cell"><span class="status status-live">Active</span></div>
           <div class="cell">2 450 000 Ar</div>
           <div class="cell actions">
-            <button class="action-btn" type="button">Voir</button>
-            <button class="action-btn" type="button">Editer</button>
-            <button class="action-btn danger" type="button">Supprimer</button>
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Delete</button>
           </div>
         </div>
 
@@ -95,17 +95,17 @@
             <div class="avatar">BR</div>
             <div>
               <strong>Brume Cafes</strong>
-              <span>Hall central · B-02</span>
+              <span>Central hall - B-02</span>
             </div>
           </div>
-          <div class="cell">Restauration</div>
+          <div class="cell">Food service</div>
           <div class="cell">T. Rakoto</div>
-          <div class="cell"><span class="status status-pending">En attente</span></div>
+          <div class="cell"><span class="status status-pending">Pending</span></div>
           <div class="cell">3 100 000 Ar</div>
           <div class="cell actions">
-            <button class="action-btn" type="button">Voir</button>
-            <button class="action-btn" type="button">Editer</button>
-            <button class="action-btn danger" type="button">Supprimer</button>
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Delete</button>
           </div>
         </div>
 
@@ -114,7 +114,7 @@
             <div class="avatar">NX</div>
             <div>
               <strong>Noxx Mobile</strong>
-              <span>Etage 1 · C-18</span>
+              <span>Floor 1 - C-18</span>
             </div>
           </div>
           <div class="cell">Tech</div>
@@ -122,9 +122,9 @@
           <div class="cell"><span class="status status-live">Active</span></div>
           <div class="cell">4 400 000 Ar</div>
           <div class="cell actions">
-            <button class="action-btn" type="button">Voir</button>
-            <button class="action-btn" type="button">Editer</button>
-            <button class="action-btn danger" type="button">Supprimer</button>
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Delete</button>
           </div>
         </div>
 
@@ -133,17 +133,17 @@
             <div class="avatar">VL</div>
             <div>
               <strong>Velo Line</strong>
-              <span>Exterieur · D-05</span>
+              <span>Outdoor - D-05</span>
             </div>
           </div>
-          <div class="cell">Loisir</div>
+          <div class="cell">Leisure</div>
           <div class="cell">M. Rabarijaona</div>
-          <div class="cell"><span class="status status-off">Suspendue</span></div>
+          <div class="cell"><span class="status status-off">Suspended</span></div>
           <div class="cell">1 850 000 Ar</div>
           <div class="cell actions">
-            <button class="action-btn" type="button">Voir</button>
-            <button class="action-btn" type="button">Editer</button>
-            <button class="action-btn danger" type="button">Supprimer</button>
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Delete</button>
           </div>
         </div>
       </div>
@@ -152,68 +152,68 @@
     <section class="panel form-panel">
       <div class="panel-header">
         <div>
-          <h2>Creer / modifier</h2>
-          <p>Informations boutique</p>
+          <h2>Create / edit</h2>
+          <p>Shop information</p>
         </div>
         <span class="badge">Draft</span>
       </div>
 
       <form class="shop-form">
         <label class="field">
-          <span>Nom boutique</span>
-          <input type="text" placeholder="Nom commercial" />
+          <span>Shop name</span>
+          <input type="text" placeholder="Trade name" />
         </label>
         <label class="field">
-          <span>Categorie</span>
+          <span>Category</span>
           <select>
-            <option>Mode</option>
-            <option>Restauration</option>
+            <option>Fashion</option>
+            <option>Food service</option>
             <option>Tech</option>
-            <option>Maison</option>
+            <option>Home</option>
           </select>
         </label>
         <label class="field">
-          <span>Responsable</span>
-          <input type="text" placeholder="Nom du responsable" />
+          <span>Manager</span>
+          <input type="text" placeholder="Manager name" />
         </label>
         <label class="field">
           <span>Email</span>
-          <input type="email" placeholder="contact@boutique.com" />
+          <input type="email" placeholder="contact@shop.com" />
         </label>
         <label class="field">
-          <span>Telephone</span>
+          <span>Phone</span>
           <input type="text" placeholder="+261 34 00 000 00" />
         </label>
         <label class="field">
-          <span>Statut</span>
+          <span>Status</span>
           <select>
             <option>Active</option>
-            <option>En attente</option>
-            <option>Suspendue</option>
+            <option>Pending</option>
+            <option>Suspended</option>
           </select>
         </label>
         <label class="field">
-          <span>Loyer mensuel (Ar)</span>
+          <span>Monthly rent (Ar)</span>
           <input type="text" placeholder="Ex: 2 500 000" />
         </label>
         <label class="field">
-          <span>Localisation</span>
-          <input type="text" placeholder="Etage 2, A-14" />
+          <span>Location</span>
+          <input type="text" placeholder="Floor 2, A-14" />
         </label>
         <label class="field field-wide">
-          <span>Notes internes</span>
-          <textarea rows="3" placeholder="Informations importantes"></textarea>
+          <span>Internal notes</span>
+          <textarea rows="3" placeholder="Important information"></textarea>
         </label>
         <div class="form-actions">
-          <button class="ghost-btn" type="button">Reinitialiser</button>
-          <button class="primary-btn" type="button">Enregistrer</button>
+          <button class="ghost-btn" type="button">Reset</button>
+          <button class="primary-btn" type="button">Save</button>
         </div>
       </form>
 
       <div class="danger-zone">
-        <h3>Zone critique</h3>
-        <p>Supprimer la boutique selectionnee. Action irreversible.</p>
-        <button class="danger-btn" type="button">Supprimer</button>
+        <h3>Danger zone</h3>
+        <p>Delete the selected shop. Irreversible action.</p>
+        <button class="danger-btn" type="button">Delete</button>
       </div>
     </section>
   </div>

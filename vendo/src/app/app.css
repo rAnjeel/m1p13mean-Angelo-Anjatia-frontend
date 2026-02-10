@@ -76,6 +76,7 @@
 .site-main {
   flex: 1;
   padding: 48px 56px 96px;
+  background-color: white;
 }
 
 .main-inner {
