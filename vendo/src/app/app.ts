@@ -13,8 +13,8 @@ export class App {
   protected readonly title = signal('vendo');
   protected readonly showLayout = signal(true);
 
-  constructor(router: Router) {
-    router.events
+  constructor(private readonly router: Router) {
+    this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
         const path = (event as NavigationEnd).urlAfterRedirects ?? '';
@@ -22,4 +22,5 @@ export class App {
         this.showLayout.set(!isAuthRoute);
       });
   }
+
 }

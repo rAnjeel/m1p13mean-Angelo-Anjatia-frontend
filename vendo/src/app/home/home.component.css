@@ -8,36 +8,6 @@
   box-sizing: border-box;
 }
 
-.dashboard::before,
-.dashboard::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  border-radius: 999px;
-  filter: blur(0px);
-  opacity: 0.45;
-}
-
-.dashboard::before {
-  width: 280px;
-  height: 280px;
-  background: #f4eaf1;
-  top: -120px;
-  right: 40px;
-}
-
-.dashboard::after {
-  width: 220px;
-  height: 220px;
-  background: #c9c3de;
-  bottom: -120px;
-  left: 60px;
-}
-
-.dashboard > * {
-  position: relative;
-  z-index: 1;
-}
 
 .dashboard-header {
   display: flex;

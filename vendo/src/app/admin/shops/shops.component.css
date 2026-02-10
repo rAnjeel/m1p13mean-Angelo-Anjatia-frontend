@@ -9,35 +9,6 @@
   box-sizing: border-box;
 }
 
-.admin-shops::before,
-.admin-shops::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  border-radius: 999px;
-  opacity: 0.35;
-}
-
-.admin-shops::before {
-  width: 320px;
-  height: 320px;
-  background: #ebe4f7;
-  top: -140px;
-  right: 40px;
-}
-
-.admin-shops::after {
-  width: 260px;
-  height: 260px;
-  background: #d6deef;
-  bottom: -140px;
-  left: 40px;
-}
-
-.admin-shops > * {
-  position: relative;
-  z-index: 1;
-}
 
 .admin-header {
   display: flex;
