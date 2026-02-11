@@ -49,6 +49,13 @@
   background: none;
 }
 
+.ghost-btn:disabled,
+.primary-btn:disabled,
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ghost-btn {
   background: #f7f5fb;
   color: #4a4b5b;
@@ -343,9 +350,51 @@
   grid-column: 1 / -1;
 }
 
+.field-error {
+  margin: 0;
+  color: #b53d3d;
+  font-size: 12px;
+}
+
 .form-actions {
   display: flex;
   gap: 10px;
+}
+
+.loading-state,
+.empty-state {
+  border: 1px dashed #ddd7ea;
+  border-radius: 12px;
+  color: #6d6f7d;
+  text-align: center;
+  padding: 18px;
+  margin-top: 10px;
+}
+
+.server-messages {
+  margin-bottom: 14px;
+}
+
+.server-error,
+.server-success {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.server-error {
+  background: #fbe8e8;
+  color: #8f3a3a;
+}
+
+.server-success {
+  background: #e6f4ef;
+  color: #2c6b52;
+}
+
+.server-error p,
+.server-success p {
+  margin: 0;
 }
 
 .danger-zone {
