@@ -1,0 +1,167 @@
+<section class="admin-users">
+  <div class="admin-header">
+    <div>
+      <h1>User management</h1>
+      <p>User CRUD - central administration</p>
+    </div>
+    <div class="admin-actions">
+      <button class="ghost-btn" type="button">Last sync: 09:45</button>
+      <button class="primary-btn" type="button">Add user</button>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card accent-1">
+      <div class="stat-label">Total users</div>
+      <div class="stat-value">3482</div>
+      <div class="stat-meta">+120 this month</div>
+    </div>
+    <div class="stat-card accent-2">
+      <div class="stat-label">Active</div>
+      <div class="stat-value">3120</div>
+      <div class="stat-meta">+4.8% vs last month</div>
+    </div>
+    <div class="stat-card accent-3">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value">86</div>
+      <div class="stat-meta">Invitations to approve</div>
+    </div>
+    <div class="stat-card accent-4">
+      <div class="stat-label">Suspended</div>
+      <div class="stat-value">12</div>
+      <div class="stat-meta">Recent actions</div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>User list</h2>
+          <p>Filter, search, and manage users</p>
+        </div>
+        <div class="panel-actions">
+          <button class="outline-btn" type="button">Export CSV</button>
+          <button class="outline-btn" type="button">Import</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm8.7 12.3-2.6-2.6a8 8 0 1 0-1.4 1.4l2.6 2.6a1 1 0 0 0 1.4-1.4z" />
+          </svg>
+          <input type="text" placeholder="Search a user" />
+        </label>
+        <div class="filter-pills">
+          <button class="pill is-active" type="button">All</button>
+          <button class="pill" type="button">Active</button>
+          <button class="pill" type="button">Pending</button>
+          <button class="pill" type="button">Suspended</button>
+        </div>
+      </div>
+
+      <div class="table">
+        <div class="table-row table-head">
+          <div>User</div>
+          <div>Role</div>
+          <div>Team</div>
+          <div>Status</div>
+          <div>Last login</div>
+          <div>Actions</div>
+        </div>
+        <div class="table-row">
+          <div class="cell">
+            <div class="title">
+              <div class="avatar">AR</div>
+              <div>
+                <strong>Ando Randria</strong>
+                <span>ando@vendeo.com</span>
+              </div>
+            </div>
+          </div>
+          <div class="cell">Admin</div>
+          <div class="cell">HQ</div>
+          <div class="cell"><span class="status status-live">Active</span></div>
+          <div class="cell">09:12</div>
+          <div class="cell actions">
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Suspend</button>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="cell">
+            <div class="title">
+              <div class="avatar">ML</div>
+              <div>
+                <strong>Mirana Lova</strong>
+                <span>mirana@vendeo.com</span>
+              </div>
+            </div>
+          </div>
+          <div class="cell">Manager</div>
+          <div class="cell">North</div>
+          <div class="cell"><span class="status status-pending">Pending</span></div>
+          <div class="cell">Yesterday</div>
+          <div class="cell actions">
+            <button class="action-btn" type="button">View</button>
+            <button class="action-btn" type="button">Edit</button>
+            <button class="action-btn danger" type="button">Delete</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Create / edit</h2>
+          <p>User information</p>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+
+      <form class="user-form">
+        <label class="field">
+          <span>Full name</span>
+          <input type="text" placeholder="Full name" />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" placeholder="name@vendeo.com" />
+        </label>
+        <label class="field">
+          <span>Role</span>
+          <select>
+            <option>Admin</option>
+            <option>Manager</option>
+            <option>Support</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <select>
+            <option>Active</option>
+            <option>Pending</option>
+            <option>Suspended</option>
+          </select>
+        </label>
+        <label class="field field-wide">
+          <span>Internal notes</span>
+          <textarea rows="3" placeholder="Internal notes..."></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="primary-btn" type="button">Save</button>
+          <button class="outline-btn" type="button">Reset</button>
+        </div>
+      </form>
+
+      <div class="danger-zone">
+        <h3>Sensitive zone</h3>
+        <p>Disable the selected user. Irreversible action.</p>
+        <button class="danger-btn" type="button">Disable</button>
+      </div>
+    </section>
+  </div>
+</section>
