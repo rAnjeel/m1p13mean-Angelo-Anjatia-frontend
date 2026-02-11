@@ -2,34 +2,38 @@
   <div class="admin-header">
     <div>
       <h1>User management</h1>
-      <p>User CRUD - central administration</p>
+      <p>User CRUD with backend API integration</p>
     </div>
     <div class="admin-actions">
-      <button class="ghost-btn" type="button">Last sync: 09:45</button>
-      <button class="primary-btn" type="button">Add user</button>
+      <button class="ghost-btn" type="button" (click)="loadUsers()" [disabled]="loading()">
+        {{ loading() ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="primary-btn" type="button" (click)="resetForm()">
+        {{ isEditMode ? 'New user' : 'Add user' }}
+      </button>
     </div>
   </div>
 
   <div class="stat-grid">
     <div class="stat-card accent-1">
       <div class="stat-label">Total users</div>
-      <div class="stat-value">3482</div>
-      <div class="stat-meta">+120 this month</div>
+      <div class="stat-value">{{ totalUsers }}</div>
+      <div class="stat-meta">All records</div>
     </div>
     <div class="stat-card accent-2">
       <div class="stat-label">Active</div>
-      <div class="stat-value">3120</div>
-      <div class="stat-meta">+4.8% vs last month</div>
+      <div class="stat-value">{{ activeUsers }}</div>
+      <div class="stat-meta">isActive = true</div>
     </div>
     <div class="stat-card accent-3">
-      <div class="stat-label">Pending</div>
-      <div class="stat-value">86</div>
-      <div class="stat-meta">Invitations to approve</div>
+      <div class="stat-label">Inactive</div>
+      <div class="stat-value">{{ inactiveUsers }}</div>
+      <div class="stat-meta">isActive = false</div>
     </div>
     <div class="stat-card accent-4">
-      <div class="stat-label">Suspended</div>
-      <div class="stat-value">12</div>
-      <div class="stat-meta">Recent actions</div>
+      <div class="stat-label">Roles</div>
+      <div class="stat-value">2</div>
+      <div class="stat-meta">client / shopkeeper</div>
     </div>
   </div>
 
@@ -38,11 +42,7 @@
       <div class="panel-header">
         <div>
           <h2>User list</h2>
-          <p>Filter, search, and manage users</p>
-        </div>
-        <div class="panel-actions">
-          <button class="outline-btn" type="button">Export CSV</button>
-          <button class="outline-btn" type="button">Import</button>
+          <p>{{ filteredUsers.length }} result(s)</p>
         </div>
       </div>
 
@@ -51,117 +51,167 @@
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm8.7 12.3-2.6-2.6a8 8 0 1 0-1.4 1.4l2.6 2.6a1 1 0 0 0 1.4-1.4z" />
           </svg>
-          <input type="text" placeholder="Search a user" />
+          <input
+            type="text"
+            placeholder="Search by name, email, role or phone"
+            [value]="searchTerm()"
+            (input)="updateSearch(($any($event.target)).value)"
+          />
         </label>
         <div class="filter-pills">
-          <button class="pill is-active" type="button">All</button>
-          <button class="pill" type="button">Active</button>
-          <button class="pill" type="button">Pending</button>
-          <button class="pill" type="button">Suspended</button>
+          <button class="pill" type="button" [class.is-active]="statusFilter() === 'all'" (click)="setStatusFilter('all')">
+            All
+          </button>
+          <button
+            class="pill"
+            type="button"
+            [class.is-active]="statusFilter() === 'active'"
+            (click)="setStatusFilter('active')"
+          >
+            Active
+          </button>
+          <button
+            class="pill"
+            type="button"
+            [class.is-active]="statusFilter() === 'inactive'"
+            (click)="setStatusFilter('inactive')"
+          >
+            Inactive
+          </button>
         </div>
       </div>
 
-      <div class="table">
+      <div class="table" *ngIf="!loading(); else loadingTemplate">
         <div class="table-row table-head">
           <div>User</div>
           <div>Role</div>
-          <div>Team</div>
+          <div>Phone</div>
           <div>Status</div>
-          <div>Last login</div>
           <div>Actions</div>
         </div>
-        <div class="table-row">
+
+        <div class="table-row" *ngFor="let user of filteredUsers; trackBy: trackByUserId">
           <div class="cell">
             <div class="title">
-              <div class="avatar">AR</div>
+              <div class="avatar">{{ (user.fullName || '?').slice(0, 2).toUpperCase() }}</div>
               <div>
-                <strong>Ando Randria</strong>
-                <span>ando@vendeo.com</span>
+                <strong>{{ user.fullName }}</strong>
+                <span>{{ user.email }}</span>
               </div>
             </div>
           </div>
-          <div class="cell">Admin</div>
-          <div class="cell">HQ</div>
-          <div class="cell"><span class="status status-live">Active</span></div>
-          <div class="cell">09:12</div>
-          <div class="cell actions">
-            <button class="action-btn" type="button">View</button>
-            <button class="action-btn" type="button">Edit</button>
-            <button class="action-btn danger" type="button">Suspend</button>
-          </div>
-        </div>
-        <div class="table-row">
+          <div class="cell">{{ user.role }}</div>
+          <div class="cell">{{ user.phone || '-' }}</div>
           <div class="cell">
-            <div class="title">
-              <div class="avatar">ML</div>
-              <div>
-                <strong>Mirana Lova</strong>
-                <span>mirana@vendeo.com</span>
-              </div>
-            </div>
+            <span class="status" [class.status-live]="user.isActive !== false" [class.status-off]="user.isActive === false">
+              {{ userStatusLabel(user) }}
+            </span>
           </div>
-          <div class="cell">Manager</div>
-          <div class="cell">North</div>
-          <div class="cell"><span class="status status-pending">Pending</span></div>
-          <div class="cell">Yesterday</div>
           <div class="cell actions">
-            <button class="action-btn" type="button">View</button>
-            <button class="action-btn" type="button">Edit</button>
-            <button class="action-btn danger" type="button">Delete</button>
+            <button class="action-btn" type="button" (click)="editUser(user)">Edit</button>
+            <button
+              class="action-btn danger"
+              type="button"
+              [disabled]="deletingId() === user._id"
+              (click)="deleteUser(user._id)"
+            >
+              {{ deletingId() === user._id ? 'Deleting...' : 'Delete' }}
+            </button>
           </div>
         </div>
+
+        <div class="empty-state" *ngIf="filteredUsers.length === 0">No users found for this filter.</div>
       </div>
     </section>
 
     <section class="panel">
       <div class="panel-header">
         <div>
-          <h2>Create / edit</h2>
+          <h2>{{ isEditMode ? 'Edit user' : 'Create user' }}</h2>
           <p>User information</p>
         </div>
-        <span class="badge">Draft</span>
+        <span class="badge">{{ isEditMode ? 'Editing' : 'New' }}</span>
       </div>
 
-      <form class="user-form">
+      <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+        <div class="server-error" *ngIf="serverErrors().length">
+          <p *ngFor="let error of serverErrors()">{{ error }}</p>
+        </div>
+        <div class="server-success" *ngIf="successMessage()">
+          <p>{{ successMessage() }}</p>
+        </div>
+      </div>
+
+      <form class="user-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <label class="field">
-          <span>Full name</span>
-          <input type="text" placeholder="Full name" />
+          <span>Full name *</span>
+          <input type="text" placeholder="Full name" formControlName="fullName" />
+          <small class="field-error" *ngIf="hasError('fullName', 'required')">Full name is required.</small>
+          <small class="field-error" *ngIf="hasError('fullName', 'minlength')">
+            Full name must be at least 2 characters.
+          </small>
         </label>
+
         <label class="field">
-          <span>Email</span>
-          <input type="email" placeholder="name@vendeo.com" />
+          <span>Email *</span>
+          <input type="email" placeholder="name@vendeo.com" formControlName="email" />
+          <small class="field-error" *ngIf="hasError('email', 'required')">Email is required.</small>
+          <small class="field-error" *ngIf="hasError('email', 'email')">Invalid email format.</small>
         </label>
+
         <label class="field">
-          <span>Role</span>
-          <select>
-            <option>Admin</option>
-            <option>Manager</option>
-            <option>Support</option>
+          <span>Role *</span>
+          <select formControlName="role">
+            <option value="client">client</option>
+            <option value="shopkeeper">shopkeeper</option>
           </select>
         </label>
+
         <label class="field">
-          <span>Status</span>
-          <select>
-            <option>Active</option>
-            <option>Pending</option>
-            <option>Suspended</option>
+          <span>Phone</span>
+          <input type="tel" placeholder="+261 34 00 000 00" formControlName="phone" />
+          <small class="field-error" *ngIf="hasError('phone', 'pattern')">Invalid phone format.</small>
+        </label>
+
+        <label class="field">
+          <span>Password {{ isEditMode ? '(optional)' : '*' }}</span>
+          <div class="password-input">
+            <input
+              [type]="passwordVisible() ? 'text' : 'password'"
+              placeholder="Enter password"
+              formControlName="password"
+            />
+            <button class="eye-btn" type="button" (click)="togglePasswordVisibility()">
+              {{ passwordVisible() ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <small class="field-error" *ngIf="hasError('password', 'required')">
+            Password is required for creation.
+          </small>
+          <small class="field-error" *ngIf="hasError('password', 'minlength')">
+            Password must be at least 8 characters.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Status *</span>
+          <select formControlName="isActive">
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
           </select>
         </label>
-        <label class="field field-wide">
-          <span>Internal notes</span>
-          <textarea rows="3" placeholder="Internal notes..."></textarea>
-        </label>
+
         <div class="form-actions">
-          <button class="primary-btn" type="button">Save</button>
-          <button class="outline-btn" type="button">Reset</button>
+          <button class="outline-btn" type="button" (click)="resetForm()">Reset</button>
+          <button class="primary-btn" type="submit" [disabled]="saving()">
+            {{ saving() ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update user' : 'Save user') }}
+          </button>
         </div>
       </form>
-
-      <div class="danger-zone">
-        <h3>Sensitive zone</h3>
-        <p>Disable the selected user. Irreversible action.</p>
-        <button class="danger-btn" type="button">Disable</button>
-      </div>
     </section>
   </div>
 </section>
+
+<ng-template #loadingTemplate>
+  <div class="loading-state">Loading users...</div>
+</ng-template>

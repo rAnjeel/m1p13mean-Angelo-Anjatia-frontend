@@ -49,6 +49,14 @@
   background: none;
 }
 
+.ghost-btn:disabled,
+.primary-btn:disabled,
+.outline-btn:disabled,
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ghost-btn {
   background: #f7f5fb;
   color: #4a4b5b;
@@ -227,7 +235,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2.2fr 1.2fr 1.2fr 0.9fr 0.9fr 1.3fr;
+  grid-template-columns: 2.2fr 1fr 1.1fr 0.9fr 1.3fr;
   gap: 12px;
   padding: 14px 0;
   border-bottom: 1px solid #eeeaf5;
@@ -339,13 +347,72 @@
   background: #f9f7fd;
 }
 
+.password-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.eye-btn {
+  border: 1px solid #e2deef;
+  border-radius: 10px;
+  background: #f4f3f9;
+  color: #4a4b5b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+
 .field-wide {
   grid-column: 1 / -1;
+}
+
+.field-error {
+  margin: 0;
+  color: #b53d3d;
+  font-size: 12px;
 }
 
 .form-actions {
   display: flex;
   gap: 10px;
+}
+
+.server-messages {
+  margin-bottom: 14px;
+}
+
+.server-error,
+.server-success {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.server-error {
+  background: #fbe8e8;
+  color: #8f3a3a;
+}
+
+.server-success {
+  background: #e6f4ef;
+  color: #2c6b52;
+}
+
+.server-error p,
+.server-success p {
+  margin: 0;
+}
+
+.loading-state,
+.empty-state {
+  border: 1px dashed #ddd7ea;
+  border-radius: 12px;
+  color: #6d6f7d;
+  text-align: center;
+  padding: 18px;
+  margin-top: 10px;
 }
 
 .danger-zone {
