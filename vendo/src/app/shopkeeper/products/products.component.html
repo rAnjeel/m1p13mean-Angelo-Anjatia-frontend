@@ -1,0 +1,225 @@
+<section class="shopkeeper-products">
+  <header class="page-header">
+    <div>
+      <h1>Shopkeeper Product Catalog</h1>
+      <p>Manage your product catalog with search, filters and pagination.</p>
+    </div>
+    <div class="header-actions">
+      <button class="ghost-btn" type="button" (click)="loadData()" [disabled]="loadingData()">
+        {{ loadingData() ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="primary-btn" type="button" (click)="resetForm()">
+        {{ isEditMode ? 'New product' : 'Add product' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="stat-grid">
+    <article class="stat-card accent-1">
+      <div class="stat-label">Total products</div>
+      <div class="stat-value">{{ totalProducts() }}</div>
+      <div class="stat-meta">Products in your catalog</div>
+    </article>
+    <article class="stat-card accent-2">
+      <div class="stat-label">In stock</div>
+      <div class="stat-value">{{ inStockProducts() }}</div>
+      <div class="stat-meta">Available now</div>
+    </article>
+    <article class="stat-card accent-3">
+      <div class="stat-label">Out of stock</div>
+      <div class="stat-value">{{ outOfStockProducts() }}</div>
+      <div class="stat-meta">Need restock</div>
+    </article>
+    <article class="stat-card accent-4">
+      <div class="stat-label">Filtered</div>
+      <div class="stat-value">{{ visibleProducts().length }}</div>
+      <div class="stat-meta">Matching current filters</div>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel list-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Catalog view</h2>
+          <p>{{ visibleProducts().length }} result(s)</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm8.4 11.6 3.3 3.3-1.4 1.4-3.3-3.3 1.4-1.4z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by name, description, category or shop"
+            [value]="searchTerm()"
+            (input)="updateSearch(($any($event.target)).value)"
+          />
+        </label>
+        <div class="filter-row">
+          <select [value]="categoryFilter()" (change)="setCategoryFilter(($any($event.target)).value)">
+            <option value="all">All categories</option>
+            <option *ngFor="let category of categoryOptions()" [value]="category._id">
+              {{ category.name }}
+            </option>
+          </select>
+          <select [value]="availabilityFilter()" (change)="setAvailabilityFilter(($any($event.target)).value)">
+            <option value="all">All stock</option>
+            <option value="inStock">In stock</option>
+            <option value="outOfStock">Out of stock</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="loading-state" *ngIf="loadingData()">Loading products...</div>
+
+      <div class="catalog-grid" *ngIf="!loadingData()">
+        <article class="product-card" *ngFor="let product of paginatedProducts(); trackBy: trackByProductId">
+          <div class="product-media">
+            <img *ngIf="getProductImage(product); else placeholderMedia" [src]="getProductImage(product)" [alt]="product.name" />
+            <ng-template #placeholderMedia>
+              <div class="placeholder-media">
+                <span>{{ (product.name || '?').slice(0, 1).toUpperCase() }}</span>
+              </div>
+            </ng-template>
+            <span class="stock" [class.stock-off]="product.stock <= 0">
+              {{ product.stock > 0 ? 'In stock' : 'Out of stock' }}
+            </span>
+          </div>
+          <div class="product-body">
+            <p class="category">{{ getCategoryName(product) }}</p>
+            <h3>{{ product.name }}</h3>
+            <p class="description">{{ product.description || 'No description provided.' }}</p>
+          </div>
+          <div class="product-footer">
+            <div>
+              <strong>{{ formatPrice(product.price) }}</strong>
+              <span>{{ getShopName(product) }}</span>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn" type="button" (click)="editProduct(product)">Edit</button>
+              <button
+                class="action-btn danger"
+                type="button"
+                [disabled]="deletingId() === product._id"
+                (click)="deleteProduct(product._id)"
+              >
+                {{ deletingId() === product._id ? 'Deleting...' : 'Delete' }}
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty-state" *ngIf="!loadingData() && paginatedProducts().length === 0">
+        No products found for current filters.
+      </div>
+
+      <div class="pagination" *ngIf="!loadingData() && visibleProducts().length > 0">
+        <button class="ghost-btn" type="button" (click)="previousPage()" [disabled]="currentPage() === 1">
+          Previous
+        </button>
+        <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+        <button
+          class="ghost-btn"
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()"
+        >
+          Next
+        </button>
+      </div>
+    </section>
+
+    <section class="panel form-panel">
+      <div class="panel-header">
+        <div>
+          <h2>{{ isEditMode ? 'Edit product' : 'Create product' }}</h2>
+          <p>CRUD form for shopkeeper products</p>
+        </div>
+      </div>
+
+      <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+        <div class="server-error" *ngIf="serverErrors().length">
+          <p *ngFor="let error of serverErrors()">{{ error }}</p>
+        </div>
+        <div class="server-success" *ngIf="successMessage()">
+          <p>{{ successMessage() }}</p>
+        </div>
+      </div>
+
+      <form class="product-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <label class="field">
+          <span>Product name *</span>
+          <input type="text" formControlName="name" placeholder="Product name" />
+          <small class="field-error" *ngIf="hasError('name', 'required')">Product name is required.</small>
+          <small class="field-error" *ngIf="hasError('name', 'minlength')">Minimum 2 characters.</small>
+        </label>
+
+        <label class="field">
+          <span>Price *</span>
+          <input type="number" min="0" step="0.01" formControlName="price" />
+          <small class="field-error" *ngIf="hasError('price', 'required')">Price is required.</small>
+          <small class="field-error" *ngIf="hasError('price', 'min')">Price must be >= 0.</small>
+        </label>
+
+        <label class="field">
+          <span>Stock *</span>
+          <input type="number" min="0" step="1" formControlName="stock" />
+          <small class="field-error" *ngIf="hasError('stock', 'required')">Stock is required.</small>
+          <small class="field-error" *ngIf="hasError('stock', 'min')">Stock must be >= 0.</small>
+        </label>
+
+        <label class="field">
+          <span>Shop *</span>
+          <select formControlName="shopId">
+            <option value="">Select a shop</option>
+            <option *ngFor="let shop of shopOptions()" [value]="shop._id">{{ shop.name }}</option>
+          </select>
+          <small class="field-error" *ngIf="hasError('shopId', 'required')">Shop is required.</small>
+        </label>
+
+        <label class="field">
+          <span>Category *</span>
+          <select formControlName="categoryId">
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categoryOptions()" [value]="category._id">
+              {{ category.name }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="hasError('categoryId', 'required')">Category is required.</small>
+        </label>
+
+        <label class="field">
+          <span>Images (comma separated URLs)</span>
+          <input type="text" formControlName="images" placeholder="https://... , https://..." />
+        </label>
+
+        <label class="field">
+          <span>Status *</span>
+          <select formControlName="isActive">
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </label>
+
+        <label class="field field-wide">
+          <span>Description</span>
+          <textarea rows="4" formControlName="description" placeholder="Product description"></textarea>
+          <small class="field-error" *ngIf="hasError('description', 'maxlength')">
+            Description cannot exceed 500 characters.
+          </small>
+        </label>
+
+        <div class="form-actions">
+          <button class="ghost-btn" type="button" (click)="resetForm()">Reset</button>
+          <button class="primary-btn" type="submit" [disabled]="saving()">
+            {{ saving() ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update product' : 'Save product') }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

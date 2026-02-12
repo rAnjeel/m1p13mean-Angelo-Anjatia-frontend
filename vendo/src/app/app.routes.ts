@@ -5,6 +5,7 @@ import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { ShopsComponent } from './admin/shops/shops.component';
 import { UsersComponent } from './admin/users/users.component';
 import { CategoriesComponent } from './admin/categories/categories.component';
+import { ShopkeeperProductsComponent } from './shopkeeper/products/products.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,4 +16,5 @@ export const routes: Routes = [
   { path: 'admin/shops', component: ShopsComponent },
   { path: 'admin/categories', component: CategoriesComponent },
   { path: 'admin/users', component: UsersComponent },
+  { path: 'shopkeeper/products', component: ShopkeeperProductsComponent },
 ];

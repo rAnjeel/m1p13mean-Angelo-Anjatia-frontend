@@ -48,7 +48,9 @@ export class LoginComponent {
 
         this.successMessage.set(response?.message || 'Logged in successfully.');
         this.loading.set(false);
-        void this.router.navigateByUrl('/admin/dashboard');
+        const role = String((response as any)?.user?.role || '').toLowerCase();
+        const targetRoute = role === 'shopkeeper' ? '/shopkeeper/products' : '/admin/dashboard';
+        void this.router.navigateByUrl(targetRoute);
       },
       error: (error) => {
         this.serverErrors.set(this.parseApiErrors(error));
