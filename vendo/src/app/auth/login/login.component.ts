@@ -48,7 +48,7 @@ export class LoginComponent {
 
         this.successMessage.set(response?.message || 'Logged in successfully.');
         this.loading.set(false);
-        void this.router.navigateByUrl('/home');
+        void this.router.navigateByUrl('/admin/dashboard');
       },
       error: (error) => {
         this.serverErrors.set(this.parseApiErrors(error));
