@@ -192,9 +192,13 @@
           <small class="field-error" *ngIf="hasError('categoryId', 'required')">Category is required.</small>
         </label>
 
-        <label class="field">
-          <span>Images (comma separated URLs)</span>
-          <input type="text" formControlName="images" placeholder="https://... , https://..." />
+        <label class="field field-wide">
+          <span>Product image</span>
+          <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+          <small>Select one image file (max 5MB).</small>
+          <div class="image-preview" *ngIf="currentFormImagePreview() as imageSrc">
+            <img [src]="imageSrc" alt="Selected product image preview" />
+          </div>
         </label>
 
         <label class="field">

@@ -359,6 +359,19 @@
   font-size: 12px;
 }
 
+.image-preview {
+  margin-top: 6px;
+}
+
+.image-preview img {
+  width: 100%;
+  max-width: 220px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e2deef;
+}
+
 .form-actions {
   display: flex;
   gap: 10px;

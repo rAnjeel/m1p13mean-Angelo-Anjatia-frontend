@@ -30,7 +30,6 @@ export class ShopkeeperProductsComponent implements OnInit {
     stock: [0, [Validators.required, Validators.min(0)]],
     shopId: ['', [Validators.required]],
     categoryId: ['', [Validators.required]],
-    images: [''],
     isActive: [true, [Validators.required]],
   });
 
@@ -45,6 +44,8 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   serverErrors = signal<string[]>([]);
   successMessage = signal<string | null>(null);
+  selectedImageDataUrl = signal<string | null>(null);
+  existingImages = signal<string[]>([]);
 
   searchTerm = signal('');
   categoryFilter = signal('all');
@@ -167,6 +168,9 @@ export class ShopkeeperProductsComponent implements OnInit {
     this.successMessage.set(null);
     this.serverErrors.set([]);
 
+    this.existingImages.set((product.images || []).filter((img) => !!img && img.trim().length > 0));
+    this.selectedImageDataUrl.set(null);
+
     this.form.patchValue({
       name: product.name || '',
       description: product.description || '',
@@ -174,7 +178,6 @@ export class ShopkeeperProductsComponent implements OnInit {
       stock: Number(product.stock || 0),
       shopId: this.extractShopId(product),
       categoryId: this.extractCategoryId(product),
-      images: (product.images || []).join(', '),
       isActive: !!product.isActive,
     });
     this.form.markAsPristine();
@@ -207,6 +210,8 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   resetForm(): void {
     this.selectedProductId.set(null);
+    this.selectedImageDataUrl.set(null);
+    this.existingImages.set([]);
     this.form.reset({
       name: '',
       description: '',
@@ -214,10 +219,43 @@ export class ShopkeeperProductsComponent implements OnInit {
       stock: 0,
       shopId: this.shopOptions()[0]?._id || '',
       categoryId: '',
-      images: '',
       isActive: true,
     });
     this.form.markAsPristine();
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) {
+      this.selectedImageDataUrl.set(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.serverErrors.set(['Please select a valid image file.']);
+      this.selectedImageDataUrl.set(null);
+      return;
+    }
+
+    const maxSizeBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      this.serverErrors.set(['Image must be smaller than 5MB.']);
+      this.selectedImageDataUrl.set(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : null;
+      this.selectedImageDataUrl.set(result);
+      this.serverErrors.set([]);
+    };
+    reader.onerror = () => {
+      this.serverErrors.set(['Unable to read the selected file.']);
+      this.selectedImageDataUrl.set(null);
+    };
+    reader.readAsDataURL(file);
   }
 
   updateSearch(value: string): void {
@@ -277,6 +315,10 @@ export class ShopkeeperProductsComponent implements OnInit {
     return image || '';
   }
 
+  currentFormImagePreview(): string {
+    return this.selectedImageDataUrl() || this.existingImages()[0] || '';
+  }
+
   formatPrice(value: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -304,6 +346,14 @@ export class ShopkeeperProductsComponent implements OnInit {
   }
 
   private toPayload(): ProductPayload {
+    const selectedImage = this.selectedImageDataUrl();
+    const images =
+      selectedImage && selectedImage.trim().length > 0
+        ? [selectedImage]
+        : this.existingImages().length > 0
+          ? this.existingImages()
+          : undefined;
+
     return {
       name: String(this.form.value.name || '').trim(),
       description: this.toOptionalString(this.form.value.description),
@@ -311,7 +361,7 @@ export class ShopkeeperProductsComponent implements OnInit {
       stock: Number(this.form.value.stock || 0),
       shopId: String(this.form.value.shopId || '').trim(),
       categoryId: String(this.form.value.categoryId || '').trim(),
-      images: this.parseImages(this.form.value.images),
+      images,
       isActive: !!this.form.value.isActive,
     };
   }
@@ -319,14 +369,6 @@ export class ShopkeeperProductsComponent implements OnInit {
   private toOptionalString(value: unknown): string | undefined {
     const trimmed = String(value || '').trim();
     return trimmed.length > 0 ? trimmed : undefined;
-  }
-
-  private parseImages(value: unknown): string[] | undefined {
-    const items = String(value || '')
-      .split(',')
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-    return items.length > 0 ? items : undefined;
   }
 
   private filterShopsForCurrentUser(shops: ShopOption[]): ShopOption[] {

@@ -6,15 +6,44 @@ import { ShopsComponent } from './admin/shops/shops.component';
 import { UsersComponent } from './admin/users/users.component';
 import { CategoriesComponent } from './admin/categories/categories.component';
 import { ShopkeeperProductsComponent } from './shopkeeper/products/products.component';
+import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
+import { roleGuard } from './auth/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'admin/dashboard', component: DashboardComponent },
+  {
+    path: 'admin/dashboard',
+    component: DashboardComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
   { path: 'home', redirectTo: 'admin/dashboard', pathMatch: 'full' },
-  { path: 'admin/shops', component: ShopsComponent },
-  { path: 'admin/categories', component: CategoriesComponent },
-  { path: 'admin/users', component: UsersComponent },
-  { path: 'shopkeeper/products', component: ShopkeeperProductsComponent },
+  {
+    path: 'admin/shops',
+    component: ShopsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
+  {
+    path: 'admin/categories',
+    component: CategoriesComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client', 'shopkeeper'] },
+  },
+  {
+    path: 'admin/users',
+    component: UsersComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
+  {
+    path: 'shopkeeper/products',
+    component: ShopkeeperProductsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['shopkeeper'] },
+  },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: '**', redirectTo: 'unauthorized' },
 ];

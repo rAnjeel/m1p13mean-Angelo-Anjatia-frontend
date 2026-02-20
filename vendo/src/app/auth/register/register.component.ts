@@ -31,6 +31,7 @@ export class RegisterComponent {
     return [
       { value: 'client', label: 'Customer' },
       { value: 'shopKeeper', label: 'ShopKeeper' },
+      { value: 'admin', label: 'Admin' },
     ];
   }
 

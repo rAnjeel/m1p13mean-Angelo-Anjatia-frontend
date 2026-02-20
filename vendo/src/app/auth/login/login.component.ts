@@ -38,12 +38,8 @@ export class LoginComponent {
     this.authService.login(this.form.value).subscribe({
       next: (response) => {
         const token = response?.token ?? response?.accessToken;
-        if (token) {
-          localStorage.setItem('auth_token', token);
-        }
-
-        if (response?.user) {
-          localStorage.setItem('auth_user', JSON.stringify(response.user));
+        if (token && response?.user) {
+          this.authService.setSession(token, response.user);
         }
 
         this.successMessage.set(response?.message || 'Logged in successfully.');
