@@ -1,32 +1,121 @@
 ﻿<div *ngIf="showLayout(); else authOnly" class="page">
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="brand">VENDEO</div>
-      <nav class="site-nav">
-        <a class="nav-link" routerLink="/admin/dashboard">Dashboard</a>
-        <div class="nav-dropdown">
-          <button class="nav-link nav-trigger" type="button">Manage</button>
-          <div class="nav-menu" role="menu">
-            <a class="nav-menu-item" routerLink="/admin/shops" role="menuitem">Shops</a>
-            <a class="nav-menu-item" routerLink="/admin/categories" role="menuitem">Categories</a>
-            <a class="nav-menu-item" routerLink="/admin/users" role="menuitem">Users</a>
-            <a class="nav-menu-item" routerLink="/shopkeeper/products" role="menuitem">Shopkeeper products</a>
-          </div>
-        </div>
-        <div class="nav-dropdown account-dropdown">
-          <button class="nav-link nav-emphasis icon-link nav-trigger" type="button" aria-label="Account menu">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
-              <path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c3.3 0 6 2 6 4.5V20H6v-1.5C6 16 8.7 14 12 14z" />
-            </svg>
-          </button>
-          <div class="nav-menu" role="menu">
-            <button class="nav-menu-item nav-menu-action" type="button" role="menuitem" (click)="logout()" [disabled]="isLoggingOut()">
-              {{ isLoggingOut() ? 'Logging out...' : 'Logout' }}
+  <header class="header" role="banner">
+    <div class="header-container">
+      <div class="logo-section">
+        <h1 class="logo">VENDEO</h1>
+      </div>
+
+      <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li *ngFor="let item of navigationItems" class="nav-item">
+            <a
+              [routerLink]="hasSubmenu(item) ? null : item.href"
+              class="nav-link"
+              [class.has-submenu]="hasSubmenu(item)"
+              [attr.aria-expanded]="isDropdownOpen(item.label)"
+              [attr.aria-haspopup]="hasSubmenu(item) ? 'true' : 'false'"
+              (click)="hasSubmenu(item) && toggleDropdown(item.label); hasSubmenu(item) && $event.preventDefault()"
+            >
+              {{ item.label }}
+              <span *ngIf="hasSubmenu(item)" class="dropdown-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </a>
+
+            <div
+              *ngIf="hasSubmenu(item)"
+              class="dropdown-menu"
+              [class.active]="isDropdownOpen(item.label)"
+              role="menu"
+            >
+              <a
+                *ngFor="let subitem of item.submenu"
+                [routerLink]="subitem.href"
+                class="dropdown-item"
+                role="menuitem"
+                (click)="closeMenu()"
+              >
+                {{ subitem.label }}
+              </a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="actions">
+        <div class="nav-item profile-menu">
+        <button
+          class="user-icon-btn"
+          aria-label="User profile menu"
+          [attr.aria-expanded]="isDropdownOpen('profile-menu')"
+          title="Open user menu"
+          (click)="toggleDropdown('profile-menu')"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+          <div class="dropdown-menu" [class.active]="isDropdownOpen('profile-menu')" role="menu">
+            <button class="dropdown-item profile-disconnect" type="button" role="menuitem" (click)="logout()" [disabled]="isLoggingOut()">
+              {{ isLoggingOut() ? 'Disconnecting...' : 'Disconnect' }}
             </button>
           </div>
         </div>
-      </nav>
+      </div>
+
+      <button
+        class="mobile-menu-btn"
+        aria-label="Toggle mobile menu"
+        [attr.aria-expanded]="currentMenuState.mainMenuOpen"
+        (click)="toggleMainMenu()"
+      >
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </div>
+
+    <nav
+      class="nav-mobile"
+      [class.active]="currentMenuState.mainMenuOpen"
+      role="navigation"
+      aria-label="Mobile navigation"
+    >
+      <ul class="mobile-nav-list">
+        <li *ngFor="let item of navigationItems" class="mobile-nav-item">
+          <a
+            [routerLink]="hasSubmenu(item) ? null : item.href"
+            class="mobile-nav-link"
+            (click)="hasSubmenu(item) ? toggleDropdown(item.label) : closeMenu(); hasSubmenu(item) && $event.preventDefault()"
+          >
+            {{ item.label }}
+          </a>
+
+          <div
+            *ngIf="hasSubmenu(item)"
+            class="mobile-submenu"
+            [class.active]="isDropdownOpen(item.label)"
+          >
+            <a
+              *ngFor="let subitem of item.submenu"
+              [routerLink]="subitem.href"
+              class="mobile-submenu-item"
+              (click)="closeMenu()"
+            >
+              {{ subitem.label }}
+            </a>
+          </div>
+        </li>
+        <li class="mobile-nav-item">
+          <button class="mobile-nav-link mobile-disconnect" type="button" (click)="logout()" [disabled]="isLoggingOut()">
+            {{ isLoggingOut() ? 'Disconnecting...' : 'Disconnect' }}
+          </button>
+        </li>
+      </ul>
+    </nav>
   </header>
 
   <main class="site-main">
