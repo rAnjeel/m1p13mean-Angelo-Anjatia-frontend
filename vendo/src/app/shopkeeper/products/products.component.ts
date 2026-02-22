@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import {
   Product,
@@ -15,7 +16,7 @@ type AvailabilityFilter = 'all' | 'inStock' | 'outOfStock';
 @Component({
   selector: 'app-shopkeeper-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
 })
@@ -55,6 +56,12 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   readonly loggedUserId = signal<string | null>(this.extractLoggedUserId());
   readonly loggedUserRole = signal<string | null>(this.extractLoggedUserRole());
+  readonly associatedShop = computed(() => this.shopOptions()[0] || null);
+  readonly hasAssociatedShop = computed(() => !!this.associatedShop());
+  readonly requiresShopAssociation = computed(() => {
+    const role = (this.loggedUserRole() || '').toLowerCase();
+    return role === 'shopkeeper' && !this.hasAssociatedShop();
+  });
 
   readonly visibleProducts = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
@@ -125,6 +132,7 @@ export class ShopkeeperProductsComponent implements OnInit {
           this.products.set(filteredProducts);
           this.categoryOptions.set(categoriesResponse.categories || []);
           this.shopOptions.set(allowedShops);
+          this.applyShopAssociationState();
           this.currentPage.set(1);
         },
         error: (error) => {
@@ -134,6 +142,13 @@ export class ShopkeeperProductsComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.requiresShopAssociation()) {
+      this.serverErrors.set([
+        'No shop is associated with this shopkeeper. Link a shop from About > Shop Association.',
+      ]);
+      return;
+    }
+
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
@@ -221,6 +236,7 @@ export class ShopkeeperProductsComponent implements OnInit {
       categoryId: '',
       isActive: true,
     });
+    this.applyShopAssociationState();
     this.form.markAsPristine();
   }
 
@@ -359,11 +375,26 @@ export class ShopkeeperProductsComponent implements OnInit {
       description: this.toOptionalString(this.form.value.description),
       price: Number(this.form.value.price || 0),
       stock: Number(this.form.value.stock || 0),
-      shopId: String(this.form.value.shopId || '').trim(),
+      shopId: this.associatedShop()?._id || String(this.form.value.shopId || '').trim(),
       categoryId: String(this.form.value.categoryId || '').trim(),
       images,
       isActive: !!this.form.value.isActive,
     };
+  }
+
+  private applyShopAssociationState(): void {
+    if (this.requiresShopAssociation()) {
+      this.form.disable({ emitEvent: false });
+      this.form.patchValue({ shopId: '' }, { emitEvent: false });
+      return;
+    }
+
+    this.form.enable({ emitEvent: false });
+    const associatedShopId = this.associatedShop()?._id || '';
+    const currentShopId = String(this.form.value.shopId || '').trim();
+    if (associatedShopId && currentShopId !== associatedShopId) {
+      this.form.patchValue({ shopId: associatedShopId }, { emitEvent: false });
+    }
   }
 
   private toOptionalString(value: unknown): string | undefined {

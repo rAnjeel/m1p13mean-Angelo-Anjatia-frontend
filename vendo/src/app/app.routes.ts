@@ -7,6 +7,7 @@ import { UsersComponent } from './admin/users/users.component';
 import { CategoriesComponent } from './admin/categories/categories.component';
 import { ShopkeeperProductsComponent } from './shopkeeper/products/products.component';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
+import { AboutUserComponent } from './shared/about-user/about-user.component';
 import { roleGuard } from './auth/role.guard';
 
 export const routes: Routes = [
@@ -30,7 +31,7 @@ export const routes: Routes = [
     path: 'admin/categories',
     component: CategoriesComponent,
     canActivate: [roleGuard],
-    data: { roles: ['admin', 'client', 'shopkeeper'] },
+    data: { roles: ['admin', 'shopkeeper'] },
   },
   {
     path: 'admin/users',
@@ -43,6 +44,12 @@ export const routes: Routes = [
     component: ShopkeeperProductsComponent,
     canActivate: [roleGuard],
     data: { roles: ['shopkeeper'] },
+  },
+  {
+    path: 'profile/about',
+    component: AboutUserComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client', 'shopkeeper'] },
   },
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: '**', redirectTo: 'unauthorized' },

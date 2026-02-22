@@ -59,6 +59,9 @@
           </svg>
         </button>
           <div class="dropdown-menu" [class.active]="isDropdownOpen('profile-menu')" role="menu">
+            <a class="dropdown-item profile-about" routerLink="/profile/about" role="menuitem" (click)="closeMenu()">
+              About
+            </a>
             <button class="dropdown-item profile-disconnect" type="button" role="menuitem" (click)="logout()" [disabled]="isLoggingOut()">
               {{ isLoggingOut() ? 'Disconnecting...' : 'Disconnect' }}
             </button>
@@ -108,6 +111,11 @@
               {{ subitem.label }}
             </a>
           </div>
+        </li>
+        <li class="mobile-nav-item">
+          <a class="mobile-nav-link" routerLink="/profile/about" (click)="closeMenu()">
+            About
+          </a>
         </li>
         <li class="mobile-nav-item">
           <button class="mobile-nav-link mobile-disconnect" type="button" (click)="logout()" [disabled]="isLoggingOut()">
