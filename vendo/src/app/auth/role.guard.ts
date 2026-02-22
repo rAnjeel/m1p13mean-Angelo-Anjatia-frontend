@@ -20,6 +20,11 @@ const getStoredRole = (): string | null => {
 };
 
 export const roleGuard: CanActivateFn = (route, state) => {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    // On server render we cannot read browser storage; let client-side guard enforce auth.
+    return true;
+  }
+
   const router = inject(Router);
   const allowedRoles = ((route.data?.['roles'] as string[] | undefined) ?? []).map((role) =>
     role.toLowerCase()

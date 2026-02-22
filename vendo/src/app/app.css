@@ -165,6 +165,27 @@
   flex: 0 0 auto;
 }
 
+.profile-menu .dropdown-menu {
+  left: auto;
+  right: 0;
+  min-width: 170px;
+  border-top: 1px solid rgba(16, 17, 20, 0.12);
+  border-radius: 10px;
+}
+
+.profile-disconnect {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-disconnect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .user-icon-btn {
   display: flex;
   align-items: center;
@@ -300,6 +321,19 @@
   background-color: var(--surface);
   border-left-color: rgba(16, 17, 20, 0.6);
   padding-left: 3.75rem;
+}
+
+.mobile-disconnect {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font: inherit;
+}
+
+.mobile-disconnect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .site-main {
@@ -475,6 +509,8 @@
 
 .nav-link:focus-visible,
 .mobile-nav-link:focus-visible,
+.mobile-disconnect:focus-visible,
+.profile-disconnect:focus-visible,
 .user-icon-btn:focus-visible,
 .mobile-menu-btn:focus-visible {
   outline: 2px solid rgba(16, 17, 20, 0.7);

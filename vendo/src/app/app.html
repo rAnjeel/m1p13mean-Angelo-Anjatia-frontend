@@ -45,16 +45,25 @@
       </nav>
 
       <div class="actions">
+        <div class="nav-item profile-menu">
         <button
           class="user-icon-btn"
           aria-label="User profile menu"
+          [attr.aria-expanded]="isDropdownOpen('profile-menu')"
           title="Open user menu"
+          (click)="toggleDropdown('profile-menu')"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </button>
+          <div class="dropdown-menu" [class.active]="isDropdownOpen('profile-menu')" role="menu">
+            <button class="dropdown-item profile-disconnect" type="button" role="menuitem" (click)="logout()" [disabled]="isLoggingOut()">
+              {{ isLoggingOut() ? 'Disconnecting...' : 'Disconnect' }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <button
@@ -99,6 +108,11 @@
               {{ subitem.label }}
             </a>
           </div>
+        </li>
+        <li class="mobile-nav-item">
+          <button class="mobile-nav-link mobile-disconnect" type="button" (click)="logout()" [disabled]="isLoggingOut()">
+            {{ isLoggingOut() ? 'Disconnecting...' : 'Disconnect' }}
+          </button>
         </li>
       </ul>
     </nav>
