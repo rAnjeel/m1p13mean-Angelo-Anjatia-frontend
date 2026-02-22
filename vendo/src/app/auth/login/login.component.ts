@@ -38,17 +38,15 @@ export class LoginComponent {
     this.authService.login(this.form.value).subscribe({
       next: (response) => {
         const token = response?.token ?? response?.accessToken;
-        if (token) {
-          localStorage.setItem('auth_token', token);
-        }
-
-        if (response?.user) {
-          localStorage.setItem('auth_user', JSON.stringify(response.user));
+        if (token && response?.user) {
+          this.authService.setSession(token, response.user);
         }
 
         this.successMessage.set(response?.message || 'Logged in successfully.');
         this.loading.set(false);
-        void this.router.navigateByUrl('/home');
+        const role = String((response as any)?.user?.role || '').toLowerCase();
+        const targetRoute = role === 'shopkeeper' ? '/shopkeeper/products' : '/admin/dashboard';
+        void this.router.navigateByUrl(targetRoute);
       },
       error: (error) => {
         this.serverErrors.set(this.parseApiErrors(error));

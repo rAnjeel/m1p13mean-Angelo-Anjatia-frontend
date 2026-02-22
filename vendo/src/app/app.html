@@ -3,20 +3,28 @@
     <div class="container header-inner">
       <div class="brand">VENDEO</div>
       <nav class="site-nav">
-        <a class="nav-link" routerLink="/home">Dashboard</a>
+        <a class="nav-link" routerLink="/admin/dashboard">Dashboard</a>
         <div class="nav-dropdown">
           <button class="nav-link nav-trigger" type="button">Manage</button>
           <div class="nav-menu" role="menu">
             <a class="nav-menu-item" routerLink="/admin/shops" role="menuitem">Shops</a>
             <a class="nav-menu-item" routerLink="/admin/categories" role="menuitem">Categories</a>
             <a class="nav-menu-item" routerLink="/admin/users" role="menuitem">Users</a>
+            <a class="nav-menu-item" routerLink="/shopkeeper/products" role="menuitem">Shopkeeper products</a>
           </div>
         </div>
-        <a class="nav-link nav-emphasis icon-link" routerLink="/home" aria-label="Account">
-          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
-            <path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c3.3 0 6 2 6 4.5V20H6v-1.5C6 16 8.7 14 12 14z" />
-          </svg>
-        </a>
+        <div class="nav-dropdown account-dropdown">
+          <button class="nav-link nav-emphasis icon-link nav-trigger" type="button" aria-label="Account menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+              <path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 10c3.3 0 6 2 6 4.5V20H6v-1.5C6 16 8.7 14 12 14z" />
+            </svg>
+          </button>
+          <div class="nav-menu" role="menu">
+            <button class="nav-menu-item nav-menu-action" type="button" role="menuitem" (click)="logout()" [disabled]="isLoggingOut()">
+              {{ isLoggingOut() ? 'Logging out...' : 'Logout' }}
+            </button>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
