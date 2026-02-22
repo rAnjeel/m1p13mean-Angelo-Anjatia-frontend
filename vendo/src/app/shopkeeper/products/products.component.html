@@ -133,12 +133,20 @@
       </div>
     </section>
 
-    <section class="panel form-panel">
+    <section class="panel form-panel" [class.is-locked]="requiresShopAssociation()">
       <div class="panel-header">
         <div>
           <h2>{{ isEditMode ? 'Edit product' : 'Create product' }}</h2>
           <p>CRUD form for shopkeeper products</p>
         </div>
+      </div>
+
+      <div class="association-overlay" *ngIf="requiresShopAssociation()">
+        <h3>Shop association required</h3>
+        <p>You must associate this shopkeeper account with a shop before creating products.</p>
+        <a class="association-btn" routerLink="/profile/about" fragment="shop-association">
+          Go to shop association
+        </a>
       </div>
 
       <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
@@ -150,7 +158,7 @@
         </div>
       </div>
 
-      <form class="product-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <form class="product-form" [class.form-disabled]="requiresShopAssociation()" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <label class="field">
           <span>Product name *</span>
           <input type="text" formControlName="name" placeholder="Product name" />
@@ -172,13 +180,9 @@
           <small class="field-error" *ngIf="hasError('stock', 'min')">Stock must be >= 0.</small>
         </label>
 
-        <label class="field">
+        <label class="field" *ngIf="hasAssociatedShop()">
           <span>Shop *</span>
-          <select formControlName="shopId">
-            <option value="">Select a shop</option>
-            <option *ngFor="let shop of shopOptions()" [value]="shop._id">{{ shop.name }}</option>
-          </select>
-          <small class="field-error" *ngIf="hasError('shopId', 'required')">Shop is required.</small>
+          <input type="text" [value]="associatedShop().name" readonly />
         </label>
 
         <label class="field">
