@@ -198,8 +198,13 @@
 
         <label class="field field-wide">
           <span>Product image</span>
-          <input type="file" accept="image/*" (change)="onImageSelected($event)" />
-          <small>Select one image file (max 5MB).</small>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            multiple
+            (change)="onImageSelected($event)"
+          />
+          <small>Select up to 5 images (max 5MB each).</small>
           <div class="image-preview" *ngIf="currentFormImagePreview() as imageSrc">
             <img [src]="imageSrc" alt="Selected product image preview" />
           </div>

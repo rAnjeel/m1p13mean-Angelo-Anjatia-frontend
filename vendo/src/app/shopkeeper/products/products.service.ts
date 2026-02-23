@@ -46,12 +46,16 @@ export interface ProductPayload {
   description?: string;
   price: number;
   stock: number;
-  images?: string[];
   isActive: boolean;
 }
 
 interface ProductsResponse {
   products: Product[];
+}
+
+export interface ProductMutationResponse {
+  message: string;
+  product: Product;
 }
 
 interface CategoriesResponse {
@@ -75,16 +79,34 @@ export class ShopkeeperProductsService {
     return this.http.get<ProductsResponse>(this.productsBaseUrl);
   }
 
-  createProduct(payload: ProductPayload): Observable<unknown> {
-    return this.http.post(this.productsBaseUrl, payload);
+  createProduct(payload: ProductPayload): Observable<ProductMutationResponse> {
+    return this.http.post<ProductMutationResponse>(this.productsBaseUrl, payload);
   }
 
-  updateProduct(productId: string, payload: Partial<ProductPayload>): Observable<unknown> {
-    return this.http.put(`${this.productsBaseUrl}/${productId}`, payload);
+  updateProduct(
+    productId: string,
+    payload: Partial<ProductPayload>
+  ): Observable<ProductMutationResponse> {
+    return this.http.put<ProductMutationResponse>(`${this.productsBaseUrl}/${productId}`, payload);
   }
 
-  deleteProduct(productId: string): Observable<unknown> {
-    return this.http.delete(`${this.productsBaseUrl}/${productId}`);
+  uploadProductImages(
+    productId: string,
+    files: File[],
+    replace = false
+  ): Observable<ProductMutationResponse> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+    const replaceQuery = replace ? '?replace=true' : '';
+    return this.http.post<ProductMutationResponse>(
+      `${this.productsBaseUrl}/${productId}/images${replaceQuery}`,
+      formData
+    );
+  }
+
+  deleteProduct(productId: string): Observable<ProductMutationResponse> {
+    // Backend deletes product images from Cloudinary automatically on product deletion.
+    return this.http.delete<ProductMutationResponse>(`${this.productsBaseUrl}/${productId}`);
   }
 
   getProductCategories(): Observable<CategoriesResponse> {

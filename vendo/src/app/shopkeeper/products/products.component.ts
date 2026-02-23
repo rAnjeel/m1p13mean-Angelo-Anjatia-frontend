@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, of, switchMap } from 'rxjs';
 import {
   Product,
   ProductCategory,
+  ProductMutationResponse,
   ProductPayload,
   ShopOption,
   ShopkeeperProductsService,
@@ -20,9 +21,16 @@ type AvailabilityFilter = 'all' | 'inStock' | 'outOfStock';
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
 })
-export class ShopkeeperProductsComponent implements OnInit {
+export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly productsService = inject(ShopkeeperProductsService);
+  private readonly allowedImageMimeTypes = new Set([
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ]);
+  private successMessageTimer: ReturnType<typeof setTimeout> | null = null;
 
   form: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -45,7 +53,8 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   serverErrors = signal<string[]>([]);
   successMessage = signal<string | null>(null);
-  selectedImageDataUrl = signal<string | null>(null);
+  selectedImageFiles = signal<File[]>([]);
+  selectedImagePreviewUrls = signal<string[]>([]);
   existingImages = signal<string[]>([]);
 
   searchTerm = signal('');
@@ -109,6 +118,11 @@ export class ShopkeeperProductsComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy(): void {
+    this.clearSelectedImageState();
+    this.clearSuccessMessageTimer();
+  }
+
   loadData(): void {
     this.loadingData.set(true);
     this.serverErrors.set([]);
@@ -156,6 +170,8 @@ export class ShopkeeperProductsComponent implements OnInit {
 
     const payload = this.toPayload();
     const selectedId = this.selectedProductId();
+    const selectedFiles = this.selectedImageFiles();
+    const shouldReplaceImages = !!selectedId;
     const request$ = selectedId
       ? this.productsService.updateProduct(selectedId, payload)
       : this.productsService.createProduct(payload);
@@ -164,9 +180,29 @@ export class ShopkeeperProductsComponent implements OnInit {
     this.serverErrors.set([]);
     this.successMessage.set(null);
 
-    request$.pipe(finalize(() => this.saving.set(false))).subscribe({
+    request$
+      .pipe(
+        switchMap((response: ProductMutationResponse) => {
+          if (selectedFiles.length === 0) {
+            return of(response);
+          }
+
+          const productId = response?.product?._id || selectedId;
+          if (!productId) {
+            return of(response);
+          }
+
+          return this.productsService.uploadProductImages(
+            productId,
+            selectedFiles,
+            shouldReplaceImages
+          );
+        }),
+        finalize(() => this.saving.set(false))
+      )
+      .subscribe({
       next: () => {
-        this.successMessage.set(
+        this.showSuccessMessage(
           selectedId ? 'Product updated successfully.' : 'Product created successfully.'
         );
         this.resetForm();
@@ -184,7 +220,7 @@ export class ShopkeeperProductsComponent implements OnInit {
     this.serverErrors.set([]);
 
     this.existingImages.set((product.images || []).filter((img) => !!img && img.trim().length > 0));
-    this.selectedImageDataUrl.set(null);
+    this.clearSelectedImageState();
 
     this.form.patchValue({
       name: product.name || '',
@@ -211,7 +247,7 @@ export class ShopkeeperProductsComponent implements OnInit {
       .pipe(finalize(() => this.deletingId.set(null)))
       .subscribe({
         next: () => {
-          this.successMessage.set('Product deleted successfully.');
+          this.showSuccessMessage('Product deleted successfully.');
           if (this.selectedProductId() === productId) {
             this.resetForm();
           }
@@ -225,7 +261,7 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   resetForm(): void {
     this.selectedProductId.set(null);
-    this.selectedImageDataUrl.set(null);
+    this.clearSelectedImageState();
     this.existingImages.set([]);
     this.form.reset({
       name: '',
@@ -242,36 +278,37 @@ export class ShopkeeperProductsComponent implements OnInit {
 
   onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
-    const file = input?.files?.[0];
-    if (!file) {
-      this.selectedImageDataUrl.set(null);
+    const files = Array.from(input?.files || []);
+    if (files.length === 0) {
+      this.clearSelectedImageState();
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      this.serverErrors.set(['Please select a valid image file.']);
-      this.selectedImageDataUrl.set(null);
+    if (files.length > 5) {
+      this.serverErrors.set(['You can upload up to 5 images.']);
+      this.clearSelectedImageState();
+      return;
+    }
+
+    const invalidMime = files.some((file) => !this.allowedImageMimeTypes.has(file.type.toLowerCase()));
+    if (invalidMime) {
+      this.serverErrors.set(['Only jpg, jpeg, png and webp images are allowed.']);
+      this.clearSelectedImageState();
       return;
     }
 
     const maxSizeBytes = 5 * 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      this.serverErrors.set(['Image must be smaller than 5MB.']);
-      this.selectedImageDataUrl.set(null);
+    const tooLarge = files.some((file) => file.size > maxSizeBytes);
+    if (tooLarge) {
+      this.serverErrors.set(['Each image must be smaller than 5MB.']);
+      this.clearSelectedImageState();
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : null;
-      this.selectedImageDataUrl.set(result);
-      this.serverErrors.set([]);
-    };
-    reader.onerror = () => {
-      this.serverErrors.set(['Unable to read the selected file.']);
-      this.selectedImageDataUrl.set(null);
-    };
-    reader.readAsDataURL(file);
+    this.clearSelectedImageState();
+    this.selectedImageFiles.set(files);
+    this.selectedImagePreviewUrls.set(files.map((file) => URL.createObjectURL(file)));
+    this.serverErrors.set([]);
   }
 
   updateSearch(value: string): void {
@@ -332,7 +369,7 @@ export class ShopkeeperProductsComponent implements OnInit {
   }
 
   currentFormImagePreview(): string {
-    return this.selectedImageDataUrl() || this.existingImages()[0] || '';
+    return this.selectedImagePreviewUrls()[0] || this.existingImages()[0] || '';
   }
 
   formatPrice(value: number): string {
@@ -362,14 +399,6 @@ export class ShopkeeperProductsComponent implements OnInit {
   }
 
   private toPayload(): ProductPayload {
-    const selectedImage = this.selectedImageDataUrl();
-    const images =
-      selectedImage && selectedImage.trim().length > 0
-        ? [selectedImage]
-        : this.existingImages().length > 0
-          ? this.existingImages()
-          : undefined;
-
     return {
       name: String(this.form.value.name || '').trim(),
       description: this.toOptionalString(this.form.value.description),
@@ -377,9 +406,30 @@ export class ShopkeeperProductsComponent implements OnInit {
       stock: Number(this.form.value.stock || 0),
       shopId: this.associatedShop()?._id || String(this.form.value.shopId || '').trim(),
       categoryId: String(this.form.value.categoryId || '').trim(),
-      images,
       isActive: !!this.form.value.isActive,
     };
+  }
+
+  private clearSelectedImageState(): void {
+    this.selectedImagePreviewUrls().forEach((url) => URL.revokeObjectURL(url));
+    this.selectedImagePreviewUrls.set([]);
+    this.selectedImageFiles.set([]);
+  }
+
+  private showSuccessMessage(message: string): void {
+    this.clearSuccessMessageTimer();
+    this.successMessage.set(message);
+    this.successMessageTimer = setTimeout(() => {
+      this.successMessage.set(null);
+      this.successMessageTimer = null;
+    }, 5000);
+  }
+
+  private clearSuccessMessageTimer(): void {
+    if (this.successMessageTimer) {
+      clearTimeout(this.successMessageTimer);
+      this.successMessageTimer = null;
+    }
   }
 
   private applyShopAssociationState(): void {
