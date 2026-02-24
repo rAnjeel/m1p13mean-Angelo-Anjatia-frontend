@@ -9,18 +9,25 @@ import { ShopkeeperProductsComponent } from './shopkeeper/products/products.comp
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 import { AboutUserComponent } from './shared/about-user/about-user.component';
 import { roleGuard } from './auth/role.guard';
+import { ClientHomeComponent } from './client/home/home.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   {
+    path: 'client/home',
+    component: ClientHomeComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['client'] },
+  },
+  {
     path: 'admin/dashboard',
     component: DashboardComponent,
     canActivate: [roleGuard],
     data: { roles: ['admin', 'client'] },
   },
-  { path: 'home', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+  { path: 'home', redirectTo: 'client/home', pathMatch: 'full' },
   {
     path: 'admin/shops',
     component: ShopsComponent,

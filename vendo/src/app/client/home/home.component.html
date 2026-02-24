@@ -1,0 +1,232 @@
+<section class="client-home">
+  <header class="nav" id="navbar">
+    <div class="nav-logo">Vend<span>e</span>o</div>
+    <ul class="nav-links">
+      <li><a href="#boutiques">Boutiques</a></li>
+      <li><a href="#nouveautes">Nouveautes</a></li>
+      <li><a href="#promotions">Promotions</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#plan">Plan</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button type="button" class="nav-icon-btn" title="Rechercher">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+      <button type="button" class="nav-icon-btn" title="Favoris">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
+      <button id="cartBtn" type="button" class="nav-icon-btn">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="cart-count">{{ cartCount }}</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="hero-ring hero-ring-1"></span>
+    <span class="hero-ring hero-ring-2"></span>
+    <span class="hero-ring hero-ring-3"></span>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Client experience</div>
+      <h1 class="hero-title">Vendeo <em>Mall</em></h1>
+      <p class="hero-sub">Votre shopping premium. Explorez les boutiques, promotions et nouveautes en temps reel.</p>
+      <div class="hero-ctas">
+        <button type="button" class="btn btn-primary">Explorer</button>
+        <button type="button" class="btn btn-outline">Promotions</button>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="cat-strip">
+    <button
+      *ngFor="let category of categories"
+      type="button"
+      class="cat-pill"
+      [ngClass]="{ active: selectedCategory === category.key }"
+      (click)="setCategory(category)"
+    >
+      <span class="cat-emoji">{{ category.icon }}</span>
+      {{ category.label }}
+    </button>
+  </section>
+
+  <section id="boutiques" class="block">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Selection du centre</div>
+        <h2 class="section-title">Boutiques <em>phares</em></h2>
+      </div>
+      <a class="see-all" href="#">Voir tout</a>
+    </div>
+
+    <div class="carousel-track">
+      <article *ngFor="let shop of filteredShops; trackBy: trackById" class="boutique-card">
+        <div class="boutique-thumb">
+          <div class="boutique-thumb-bg" [style.background]="shop.gradient">{{ shop.icon }}</div>
+          <span class="boutique-floor-tag">{{ shop.floor }}</span>
+          <span class="boutique-open-badge" [ngClass]="{ open: shop.isOpen, closed: !shop.isOpen }"></span>
+        </div>
+        <div class="boutique-info">
+          <h3 class="boutique-name">{{ shop.name }}</h3>
+          <div class="boutique-cat">{{ shop.category }}</div>
+          <div class="boutique-meta">
+            <div class="boutique-rating">
+              <span>{{ shop.rating }}</span>
+              <span class="stars">★★★★★</span>
+            </div>
+            <span class="boutique-hours">{{ shop.hours }}</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="featured-banner">
+    <div class="featured-banner-bg"></div>
+    <div class="featured-content">
+      <div class="featured-eyebrow">Offre flash</div>
+      <h2 class="featured-title">Ventes <em>privees</em></h2>
+      <p class="featured-sub">Jusqu'a -40% sur les enseignes partenaires pendant une periode limitee.</p>
+      <div class="featured-timer">
+        <div class="timer-block">
+          <div class="timer-num">{{ timerDays }}</div>
+          <div class="timer-label">Jours</div>
+        </div>
+        <div class="timer-block">
+          <div class="timer-num">{{ timerHours }}</div>
+          <div class="timer-label">Heures</div>
+        </div>
+        <div class="timer-block">
+          <div class="timer-num">{{ timerMinutes }}</div>
+          <div class="timer-label">Minutes</div>
+        </div>
+        <div class="timer-block">
+          <div class="timer-num">{{ timerSeconds }}</div>
+          <div class="timer-label">Secondes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="nouveautes" class="block">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Nouveautes</div>
+        <h2 class="section-title">Produits <em>a decouvrir</em></h2>
+      </div>
+      <a class="see-all" href="#">Voir tout</a>
+    </div>
+
+    <div class="products-grid">
+      <article *ngFor="let product of filteredProducts; trackBy: trackById" class="product-card">
+        <div class="product-thumb" [style.background]="product.gradient">
+          <span>{{ product.icon }}</span>
+          <span class="product-badge" [ngClass]="product.badgeType">{{ product.badge }}</span>
+          <button type="button" class="product-fav" (click)="toggleFavorite(product.id)">
+            {{ isFavorite(product.id) ? '❤' : '♡' }}
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-shop">{{ product.shop }}</div>
+          <h3 class="product-name">{{ product.name }}</h3>
+          <div class="product-footer">
+            <div class="product-price">
+              <span class="price-current">{{ product.price }}</span>
+              <span *ngIf="product.oldPrice" class="price-old">{{ product.oldPrice }}</span>
+            </div>
+            <button type="button" class="add-btn" (click)="addToCart()">+</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="promotions" class="block">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Offres du moment</div>
+        <h2 class="section-title">Promotions <em>actives</em></h2>
+      </div>
+    </div>
+    <div class="deals-grid">
+      <article *ngFor="let deal of deals; trackBy: trackById" class="deal-card" [style.background]="deal.gradient">
+        <div class="deal-pct">{{ deal.value }}</div>
+        <div class="deal-name">{{ deal.title }}</div>
+        <div class="deal-shop">{{ deal.shop }} {{ deal.icon }}</div>
+      </article>
+    </div>
+  </section>
+
+  <section id="services" class="block services">
+    <div class="section-header">
+      <div>
+        <div class="section-label">A votre service</div>
+        <h2 class="section-title">Services <em>du centre</em></h2>
+      </div>
+    </div>
+    <div class="services-strip">
+      <article *ngFor="let service of services; trackBy: trackById" class="service-card">
+        <div class="service-icon">{{ service.icon }}</div>
+        <h3 class="service-name">{{ service.name }}</h3>
+        <p class="service-desc">{{ service.description }}</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">Vend<span>e</span>o</div>
+        <p class="footer-brand-desc">
+          Le centre commercial qui reinvente l'experience shopping. Plus de 120 boutiques, restaurants et services au coeur de la ville.
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-title">Explorer</div>
+        <ul class="footer-links">
+          <li><a href="#boutiques">Toutes les boutiques</a></li>
+          <li><a href="#plan">Plan interactif</a></li>
+          <li><a href="#nouveautes">Nouveautes</a></li>
+          <li><a href="#promotions">Promotions</a></li>
+          <li><a href="#">Evenements</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Services</div>
+        <ul class="footer-links">
+          <li><a href="#">Parking et acces</a></li>
+          <li><a href="#">Click and Collect</a></li>
+          <li><a href="#">Carte cadeau</a></li>
+          <li><a href="#">Programme fidelite</a></li>
+          <li><a href="#">Espace famille</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Infos pratiques</div>
+        <ul class="footer-links">
+          <li><a href="#">Horaires d'ouverture</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="#">Recrutement</a></li>
+          <li><a href="#">Presse</a></li>
+          <li><a href="#">Mentions legales</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Vendeo Centre Commercial. Tous droits reserves.</span>
+      <span>Lun-Dim : 09h - 21h · Jours feries : 10h - 19h</span>
+    </div>
+  </footer>
+</section>
