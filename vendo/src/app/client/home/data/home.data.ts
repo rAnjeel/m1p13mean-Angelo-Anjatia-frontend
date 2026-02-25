@@ -174,25 +174,25 @@ export const CLIENT_PRODUCTS: ClientProduct[] = [
 export const CLIENT_SERVICES: ClientService[] = [
   {
     id: 1,
-    icon: '\u{1F17F}',
+    icon: 'parking',
     name: 'Parking gratuit',
     description: '2000 places couvertes et bornes de recharge électrique.',
   },
   {
     id: 2,
-    icon: '\u{1F6CD}',
+    icon: 'pickup',
     name: 'Retrait express',
     description: 'Commandez en ligne et récupérez en moins de 2 heures.',
   },
   {
     id: 3,
-    icon: '\u{1F476}',
+    icon: 'family',
     name: 'Espace famille',
     description: 'Salle bébé, espace de jeux et accès poussettes.',
   },
   {
     id: 4,
-    icon: '\u{1F381}',
+    icon: 'gift',
     name: 'Emballage cadeau',
     description: 'Comptoir d\'emballage premium disponible tous les jours.',
   },

@@ -5,7 +5,7 @@ export interface ClientCategory {
 }
 
 export interface ClientShop {
-  id: number;
+  id: string | number;
   name: string;
   category: string;
   floor: string;
@@ -26,7 +26,7 @@ export interface ClientDeal {
 }
 
 export interface ClientProduct {
-  id: number;
+  id: string | number;
   shop: string;
   name: string;
   category: string;
