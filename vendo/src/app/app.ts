@@ -16,13 +16,14 @@ interface MenuState {
 }
 
 const ROLE_PAGES: Record<string, string[]> = {
-  client: ['/client/home'],
+  client: ['/client/home', '/client/profile'],
   shopkeeper: ['/shopkeeper/products', '/admin/categories'],
   admin: ['/admin/dashboard', '/admin/shops', '/admin/categories', '/admin/users']
 };
 
 const ROUTE_LABELS: Record<string, string> = {
   '/client/home': 'Home',
+  '/client/profile': 'Profil',
   '/admin/dashboard': 'Dashboard',
   '/admin/shops': 'Shops',
   '/admin/categories': 'Categories',
@@ -75,7 +76,7 @@ export class App {
       .subscribe((event) => {
         const path = (event as NavigationEnd).urlAfterRedirects ?? '';
         const isAuthRoute = path.startsWith('/login') || path.startsWith('/register');
-        const isClientShowcaseRoute = path.startsWith('/client/home');
+        const isClientShowcaseRoute = path.startsWith('/client/');
         this.showLayout.set(!isAuthRoute && !isClientShowcaseRoute);
         this.refreshNavigation();
       });

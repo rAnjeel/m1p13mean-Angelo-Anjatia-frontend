@@ -1,0 +1,58 @@
+<section class="client-profile">
+  <header class="profile-nav">
+    <div class="nav-logo">Vend<span>e</span>o</div>
+    <div class="nav-actions">
+      <a class="nav-link" routerLink="/client/home">Retour &agrave; l'accueil</a>
+    </div>
+  </header>
+
+  <section class="profile-hero">
+    <div class="profile-identity-card">
+      <div class="avatar">AR</div>
+      <div class="identity-content">
+        <p class="identity-eyebrow">Espace client</p>
+        <h1 class="identity-name">Anjatia Ranaivo</h1>
+        <p class="identity-meta">anjatia@email.com &middot; +261 34 00 000 00</p>
+      </div>
+      <button type="button" class="edit-btn">Modifier le profil</button>
+    </div>
+    <div class="profile-stats-grid">
+      <article *ngFor="let stat of stats" class="stat-card">
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="profile-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Pr&eacute;f&eacute;rences</h2>
+      </div>
+      <div class="panel-list">
+        <div *ngFor="let preference of preferences" class="panel-row">
+          <span>{{ preference.label }}</span>
+          <strong>{{ preference.value }}</strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Commandes r&eacute;centes</h2>
+      </div>
+      <div class="panel-list">
+        <div *ngFor="let order of recentOrders" class="panel-row order-row">
+          <div>
+            <strong>{{ order.id }}</strong>
+            <div class="row-sub">{{ order.date }}</div>
+          </div>
+          <div class="order-meta">
+            <span class="status-pill">{{ order.status }}</span>
+            <strong>{{ order.total }}</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</section>

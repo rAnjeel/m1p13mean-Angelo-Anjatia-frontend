@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   CLIENT_CATEGORIES,
   CLIENT_DEALS,
@@ -12,7 +13,7 @@ import { ClientCategory, ClientProduct, ClientShop } from './models/home.models'
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf],
+  imports: [NgFor, NgClass, NgIf, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
