@@ -1,9 +1,9 @@
-<section class="client-home">
+﻿<section class="client-home">
   <header class="nav" id="navbar">
     <div class="nav-logo">Vend<span>e</span>o</div>
     <ul class="nav-links">
       <li><a href="#boutiques">Boutiques</a></li>
-      <li><a href="#nouveautes">Nouveautes</a></li>
+      <li><a href="#nouveautes">Nouveautés</a></li>
       <li><a href="#promotions">Promotions</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#plan">Plan</a></li>
@@ -36,12 +36,12 @@
     <span class="hero-ring hero-ring-2"></span>
     <span class="hero-ring hero-ring-3"></span>
     <div class="hero-content">
-      <div class="hero-eyebrow">Client experience</div>
-      <h1 class="hero-title">Vendeo <em>Mall</em></h1>
-      <p class="hero-sub">Votre shopping premium. Explorez les boutiques, promotions et nouveautes en temps reel.</p>
+      <div class="hero-eyebrow">Le meilleur endroit pour votre expérience d'achat</div>
+      <h1 class="hero-title">Vendeo <em>Centre commercial</em></h1>
+      <p class="hero-sub">Votre expérience d'achat premium. Explorez les boutiques, promotions et nouveautés en temps réel.</p>
       <div class="hero-ctas">
-        <button type="button" class="btn btn-primary">Explorer</button>
-        <button type="button" class="btn btn-outline">Promotions</button>
+        <button type="button" class="btn btn-primary">Découvrir</button>
+        <button type="button" class="btn btn-outline">Voir les promos</button>
       </div>
     </div>
 
@@ -63,7 +63,7 @@
   <section id="boutiques" class="block">
     <div class="section-header">
       <div>
-        <div class="section-label">Selection du centre</div>
+        <div class="section-label">Sélection du centre</div>
         <h2 class="section-title">Boutiques <em>phares</em></h2>
       </div>
       <a class="see-all" href="#">Voir tout</a>
@@ -82,7 +82,7 @@
           <div class="boutique-meta">
             <div class="boutique-rating">
               <span>{{ shop.rating }}</span>
-              <span class="stars">★★★★★</span>
+              <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
             </div>
             <span class="boutique-hours">{{ shop.hours }}</span>
           </div>
@@ -95,8 +95,8 @@
     <div class="featured-banner-bg"></div>
     <div class="featured-content">
       <div class="featured-eyebrow">Offre flash</div>
-      <h2 class="featured-title">Ventes <em>privees</em></h2>
-      <p class="featured-sub">Jusqu'a -40% sur les enseignes partenaires pendant une periode limitee.</p>
+      <h2 class="featured-title">Ventes <em>privées</em></h2>
+      <p class="featured-sub">Jusqu'à -40% sur les enseignes partenaires pendant une période limitée.</p>
       <div class="featured-timer">
         <div class="timer-block">
           <div class="timer-num">{{ timerDays }}</div>
@@ -121,8 +121,8 @@
   <section id="nouveautes" class="block">
     <div class="section-header">
       <div>
-        <div class="section-label">Nouveautes</div>
-        <h2 class="section-title">Produits <em>a decouvrir</em></h2>
+        <div class="section-label">Nouveautés</div>
+        <h2 class="section-title">Produits <em>à découvrir</em></h2>
       </div>
       <a class="see-all" href="#">Voir tout</a>
     </div>
@@ -133,7 +133,7 @@
           <span>{{ product.icon }}</span>
           <span class="product-badge" [ngClass]="product.badgeType">{{ product.badge }}</span>
           <button type="button" class="product-fav" (click)="toggleFavorite(product.id)">
-            {{ isFavorite(product.id) ? '❤' : '♡' }}
+            {{ isFavorite(product.id) ? '♥' : '♡' }}
           </button>
         </div>
         <div class="product-info">
@@ -170,7 +170,7 @@
   <section id="services" class="block services">
     <div class="section-header">
       <div>
-        <div class="section-label">A votre service</div>
+        <div class="section-label">À votre service</div>
         <h2 class="section-title">Services <em>du centre</em></h2>
       </div>
     </div>
@@ -190,7 +190,7 @@
       <div>
         <div class="footer-brand-name">Vend<span>e</span>o</div>
         <p class="footer-brand-desc">
-          Le centre commercial qui reinvente l'experience shopping. Plus de 120 boutiques, restaurants et services au coeur de la ville.
+          Le centre commercial qui réinvente l'expérience d'achat. Plus de 120 boutiques, restaurants et services au cœur de la ville.
         </p>
       </div>
       <div>
@@ -198,18 +198,18 @@
         <ul class="footer-links">
           <li><a href="#boutiques">Toutes les boutiques</a></li>
           <li><a href="#plan">Plan interactif</a></li>
-          <li><a href="#nouveautes">Nouveautes</a></li>
+          <li><a href="#nouveautes">Nouveautés</a></li>
           <li><a href="#promotions">Promotions</a></li>
-          <li><a href="#">Evenements</a></li>
+          <li><a href="#">Événements</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-col-title">Services</div>
         <ul class="footer-links">
-          <li><a href="#">Parking et acces</a></li>
-          <li><a href="#">Click and Collect</a></li>
+          <li><a href="#">Parking et accès</a></li>
+          <li><a href="#">Retrait en magasin</a></li>
           <li><a href="#">Carte cadeau</a></li>
-          <li><a href="#">Programme fidelite</a></li>
+          <li><a href="#">Programme fidélité</a></li>
           <li><a href="#">Espace famille</a></li>
         </ul>
       </div>
@@ -220,13 +220,13 @@
           <li><a href="#">Nous contacter</a></li>
           <li><a href="#">Recrutement</a></li>
           <li><a href="#">Presse</a></li>
-          <li><a href="#">Mentions legales</a></li>
+          <li><a href="#">Mentions légales</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Vendeo Centre Commercial. Tous droits reserves.</span>
-      <span>Lun-Dim : 09h - 21h · Jours feries : 10h - 19h</span>
+      <span>© 2026 Vendeo Centre Commercial. Tous droits réservés.</span>
+      <span>Lun-Dim : 09h - 21h · Jours fériés : 10h - 19h</span>
     </div>
   </footer>
 </section>

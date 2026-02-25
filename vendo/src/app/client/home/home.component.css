@@ -15,6 +15,9 @@
   --white40: rgba(255, 255, 255, 0.42);
   --border: rgba(142, 131, 169, 0.18);
   --shadow: rgba(46, 40, 64, 0.1);
+  --space-section: clamp(56px, 7vw, 88px);
+  --space-block: clamp(52px, 6vw, 76px);
+  --space-between: clamp(44px, 5vw, 72px);
 
   position: relative;
   overflow-x: hidden;
@@ -148,6 +151,7 @@
   align-items: center;
   justify-content: center;
   padding-top: 70px;
+  padding-bottom: var(--space-section);
   overflow: hidden;
   text-align: center;
 }
@@ -257,7 +261,7 @@
 }
 
 .cat-strip {
-  padding: 28px 40px;
+  padding: 24px 40px 0;
   display: flex;
   gap: 12px;
   overflow-x: auto;
@@ -287,7 +291,7 @@
 }
 
 .block {
-  padding: 80px 40px;
+  padding: var(--space-block) 40px;
   max-width: 1300px;
   margin: 0 auto;
 }
@@ -296,7 +300,6 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 40px;
 }
 
 .section-label {
@@ -427,10 +430,8 @@
 }
 
 .featured-banner {
-  margin: 0 40px;
-  max-width: 1220px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: var(--space-between) auto;
+  width: min(1220px, calc(100% - 80px));
   border-radius: 28px;
   overflow: hidden;
   min-height: 280px;
@@ -598,8 +599,8 @@
 
 .deal-card {
   min-height: 180px;
-  border-radius: 18px;
-  color: #fff;
+  border-radius: 10px;
+  color: #f0eef0;
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
@@ -629,7 +630,7 @@
 
 .services-strip {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  padding-bottom: 80px;
+  padding-bottom: clamp(40px, 5vw, 72px);
 }
 
 .service-card {
@@ -657,7 +658,7 @@
 
 .divider {
   max-width: 1300px;
-  margin: 0 auto;
+  margin: var(--space-between) auto 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--lav-mid), transparent);
   opacity: 0.3;
@@ -750,15 +751,16 @@
   }
 
   .block {
-    padding: 60px 20px;
+    padding: clamp(42px, 7vw, 56px) 20px;
   }
 
   .cat-strip {
-    padding: 28px 20px;
+    padding: 20px 20px 0;
   }
 
   .featured-banner {
-    margin: 0 20px;
+    margin: clamp(36px, 6vw, 52px) auto;
+    width: calc(100% - 40px);
   }
 
   .featured-content {
