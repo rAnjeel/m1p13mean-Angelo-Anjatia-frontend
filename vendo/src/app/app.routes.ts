@@ -10,6 +10,7 @@ import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.compon
 import { AboutUserComponent } from './shared/about-user/about-user.component';
 import { roleGuard } from './auth/role.guard';
 import { ClientHomeComponent } from './client/home/home.component';
+import { ClientProfileComponent } from './client/profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,6 +19,12 @@ export const routes: Routes = [
   {
     path: 'client/home',
     component: ClientHomeComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['client'] },
+  },
+  {
+    path: 'client/profile',
+    component: ClientProfileComponent,
     canActivate: [roleGuard],
     data: { roles: ['client'] },
   },
