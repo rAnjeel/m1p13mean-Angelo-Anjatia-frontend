@@ -161,6 +161,39 @@ export class ShopsComponent implements OnInit {
     this.form.markAsPristine();
   }
 
+  onShopImagesSelected(shopId: string, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const files = input?.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const fileArray = Array.from(files);
+    this.saving.set(true);
+    this.serverErrors.set([]);
+    this.successMessage.set(null);
+
+    this.shopsService
+      .addShopImages(shopId, fileArray)
+      .pipe(
+        finalize(() => {
+          this.saving.set(false);
+          if (input) {
+            input.value = '';
+          }
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.successMessage.set('Shop images uploaded successfully.');
+          this.loadInitialData();
+        },
+        error: (error) => {
+          this.serverErrors.set(this.parseApiErrors(error));
+        },
+      });
+  }
+
   deleteShop(shopId: string): void {
     if (this.deletingId()) return;
     if (!confirm('Delete this shop permanently?')) return;
@@ -240,6 +273,27 @@ export class ShopsComponent implements OnInit {
 
   shopStatusLabel(shop: Shop): string {
     return shop.isOpen ? 'Open' : 'Closed';
+  }
+
+  getShopImageUrl(shop: Shop): string | null {
+    const images = Array.isArray(shop.images) ? shop.images : [];
+    if (!images.length) {
+      return null;
+    }
+    const primary = images.find((image) => image?.isPrimary) ?? images[0];
+    return primary?.url || null;
+  }
+
+  getShopInitials(name: string | undefined | null): string {
+    const value = (name || '').trim();
+    if (!value) {
+      return '?';
+    }
+    const parts = value.split(/\s+/);
+    if (parts.length === 1) {
+      return value.slice(0, 2).toUpperCase();
+    }
+    return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
   }
 
   trackByShopId(_index: number, shop: Shop): string {
