@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe } from '@angular/common';
 import { Observable, map } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
 import {
   Shop,
   ShopCategory,
@@ -17,17 +18,19 @@ import {
   Product,
   ShopkeeperProductsService,
 } from '../../shopkeeper/products/products.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe],
+  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class ClientHomeComponent implements AfterViewInit {
   cartCount = 0;
+  isMenuOpen = false;
 
   readonly shops$: Observable<Shop[]>;
   readonly products$: Observable<Product[]>;
@@ -38,6 +41,8 @@ export class ClientHomeComponent implements AfterViewInit {
 
   private readonly shopsService = inject(ShopsService);
   private readonly productsService = inject(ShopkeeperProductsService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   @ViewChild('cartBtn', { static: false })
   cartBtn!: ElementRef<HTMLDivElement>;
@@ -101,6 +106,43 @@ export class ClientHomeComponent implements AfterViewInit {
     return 'Boutique';
   }
 
+  getProductImageUrl(product: Product): string | null {
+    const images = Array.isArray(product.images) ? product.images : [];
+    if (!images.length) {
+      return null;
+    }
+    const first = images[0];
+    return typeof first === 'string' && first.trim().length > 0 ? first : null;
+  }
+
+  getShopImageUrl(shop: Shop): string | null {
+    const anyShop = shop as any;
+    const images: any[] = Array.isArray(anyShop.images) ? anyShop.images : [];
+    if (!images.length) {
+      return null;
+    }
+    const primary = images.find((image) => image && image.isPrimary) ?? images[0];
+    return primary?.url || null;
+  }
+
+  getShopInitials(name: string | undefined | null): string {
+    if (!name) {
+      return '?';
+    }
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return '?';
+    }
+    const parts = trimmed.split(/\s+/);
+    if (parts.length === 1) {
+      return trimmed.slice(0, 2).toUpperCase();
+    }
+    const first = parts[0][0] ?? '';
+    const second = parts[1][0] ?? '';
+    const initials = `${first}${second}`;
+    return initials.toUpperCase();
+  }
+
   toggleFav(event: MouseEvent): void {
     const target = event.currentTarget as HTMLElement | null;
     if (!target) {
@@ -122,6 +164,25 @@ export class ClientHomeComponent implements AfterViewInit {
       pill.classList.remove('active');
     });
     current.classList.add('active');
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authService.clearSession();
+        this.isMenuOpen = false;
+        void this.router.navigateByUrl('/login');
+      },
+      error: () => {
+        this.authService.clearSession();
+        this.isMenuOpen = false;
+        void this.router.navigateByUrl('/login');
+      },
+    });
   }
 
   private initCarousels(): void {

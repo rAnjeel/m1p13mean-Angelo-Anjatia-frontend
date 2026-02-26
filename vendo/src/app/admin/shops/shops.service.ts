@@ -14,6 +14,14 @@ export interface ShopMerchant {
   email: string;
 }
 
+export interface ShopImage {
+  url: string;
+  publicId: string;
+  alt: string;
+  isPrimary: boolean;
+  order: number;
+}
+
 export interface Shop {
   _id: string;
   name: string;
@@ -23,6 +31,7 @@ export interface Shop {
   location?: string;
   isOpen: boolean;
   createdAt: string;
+  images?: ShopImage[];
 }
 
 export interface ShopPayload {
@@ -84,5 +93,17 @@ export class ShopsService {
 
   getUsers(): Observable<UsersResponse> {
     return this.http.get<UsersResponse>(this.usersBaseUrl);
+  }
+
+  addShopImages(shopId: string, files: File[], replace = false): Observable<Shop> {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+    const replaceQuery = replace ? '?replace=true' : '';
+    return this.http.post<Shop>(`${this.shopsBaseUrl}/${shopId}/images${replaceQuery}`, formData);
+  }
+
+  removeShopImage(shopId: string, publicId: string): Observable<Shop> {
+    const encodedId = encodeURIComponent(publicId);
+    return this.http.delete<Shop>(`${this.shopsBaseUrl}/${shopId}/images/${encodedId}`);
   }
 }

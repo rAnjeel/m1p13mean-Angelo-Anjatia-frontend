@@ -98,7 +98,14 @@
 
         <div class="table-row" *ngFor="let shop of filteredShops; trackBy: trackByShopId">
           <div class="cell title">
-            <div class="avatar">{{ (shop.name || '?').slice(0, 2).toUpperCase() }}</div>
+            <div class="avatar">
+              <ng-container *ngIf="getShopImageUrl(shop) as imageUrl; else shopAvatarFallback">
+                <img [src]="imageUrl" [alt]="shop.name" class="avatar-image" />
+              </ng-container>
+              <ng-template #shopAvatarFallback>
+                <span>{{ getShopInitials(shop.name) }}</span>
+              </ng-template>
+            </div>
             <div>
               <strong>{{ shop.name }}</strong>
               <span>{{ shop.description || 'No description' }}</span>
@@ -113,14 +120,40 @@
           </div>
           <div class="cell">{{ shop.location || '-' }}</div>
           <div class="cell actions">
-            <button class="action-btn" type="button" (click)="editShop(shop)">Edit</button>
+            <button class="action-btn icon" type="button" title="Edit shop" aria-label="Edit shop" (click)="editShop(shop)">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25z"></path>
+                <path d="M14.06 4.94l3.75 3.75 1.53-1.53a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.53 1.53z"></path>
+              </svg>
+            </button>
+            <label class="action-btn icon upload" title="Upload images" aria-label="Upload images">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V6"></path>
+                <path d="M8.5 9.5L12 6l3.5 3.5"></path>
+                <path d="M5 17.5v1A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-1"></path>
+              </svg>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                (change)="onShopImagesSelected(shop._id, $event)"
+                hidden
+              />
+            </label>
             <button
-              class="action-btn danger"
+              class="action-btn icon danger"
               type="button"
+              title="Delete shop"
+              aria-label="Delete shop"
               [disabled]="deletingId() === shop._id"
               (click)="deleteShop(shop._id)"
             >
-              {{ deletingId() === shop._id ? 'Deleting...' : 'Delete' }}
+              <svg *ngIf="deletingId() !== shop._id" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 7h12"></path>
+                <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
+                <path d="M8 7l.7 11a1 1 0 0 0 1 .94h4.6a1 1 0 0 0 1-.94L16 7"></path>
+              </svg>
+              <span *ngIf="deletingId() === shop._id">…</span>
             </button>
           </div>
         </div>
