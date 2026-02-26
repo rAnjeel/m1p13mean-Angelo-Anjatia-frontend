@@ -1,326 +1,253 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
 import {
-  CLIENT_CATEGORIES,
-  CLIENT_DEALS,
-  CLIENT_SERVICES,
-  CLIENT_SHOPS,
-} from './data/home.data';
-import { ClientCategory, ClientProduct, ClientShop } from './models/home.models';
+  AfterViewInit,
+  Component,
+  ElementRef,
+  ViewChild,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
+import { NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe } from '@angular/common';
+import { Observable, map } from 'rxjs';
+import {
+  Shop,
+  ShopCategory,
+  ShopsService,
+} from '../../admin/shops/shops.service';
+import {
+  Product,
+  ShopkeeperProductsService,
+} from '../../shopkeeper/products/products.service';
 
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, RouterLink],
+  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
+  encapsulation: ViewEncapsulation.None,
 })
-export class ClientHomeComponent implements OnInit, OnDestroy {
-  private readonly http = inject(HttpClient);
-  private readonly categoriesBaseUrl = 'http://localhost:3000/api/categories';
-  private readonly shopsBaseUrl = 'http://localhost:3000/api/shops';
-  private readonly productsBaseUrl = 'http://localhost:3000/api/products';
-
-  categories: ClientCategory[] = [...CLIENT_CATEGORIES];
-  shops: ClientShop[] = [...CLIENT_SHOPS];
-  products: ClientProduct[] = [];
-  shopsLoading = false;
-  productsLoading = false;
-  readonly deals = CLIENT_DEALS;
-  readonly services = CLIENT_SERVICES;
-  readonly stars = Array.from({ length: 5 });
-
-  selectedCategory = 'all';
+export class ClientHomeComponent implements AfterViewInit {
   cartCount = 0;
-  favoriteProductIds = new Set<string | number>();
-  timerDays = '00';
-  timerHours = '00';
-  timerMinutes = '00';
-  timerSeconds = '00';
 
-  private readonly countdownTarget = new Date(Date.now() + (3 * 86400 + 14 * 3600 + 27 * 60) * 1000);
-  private timerId: ReturnType<typeof setInterval> | null = null;
+  readonly shops$: Observable<Shop[]>;
+  readonly products$: Observable<Product[]>;
+  readonly productCategories$: Observable<ShopCategory[]>;
 
-  ngOnInit(): void {
-    this.loadShopCategories();
-    this.loadShops();
-    this.updateTimer();
-    this.timerId = setInterval(() => this.updateTimer(), 1000);
+  private readonly isBrowser =
+    typeof window !== 'undefined' && typeof document !== 'undefined';
+
+  private readonly shopsService = inject(ShopsService);
+  private readonly productsService = inject(ShopkeeperProductsService);
+
+  @ViewChild('cartBtn', { static: false })
+  cartBtn!: ElementRef<HTMLDivElement>;
+
+  constructor() {
+    this.shops$ = this.shopsService
+      .getShops()
+      .pipe(map((response) => response?.shops ?? []));
+
+    this.products$ = this.productsService
+      .getProducts()
+      .pipe(map((response) => response?.products ?? []));
+
+    this.productCategories$ = this.shopsService
+      .getShopCategories()
+      .pipe(map((response) => response?.categories ?? []));
   }
 
-  ngOnDestroy(): void {
-    if (this.timerId) {
-      clearInterval(this.timerId);
+  ngAfterViewInit(): void {
+    if (!this.isBrowser) {
+      return;
     }
-  }
-
-  get filteredShops(): ClientShop[] {
-    if (this.selectedCategory === 'all') {
-      return this.shops;
-    }
-
-    return this.shops.filter(
-      (shop) => this.toCategoryKey(shop.category) === this.selectedCategory
-    );
-  }
-
-  get filteredProducts(): ClientProduct[] {
-    if (this.selectedCategory === 'all') {
-      return this.products;
-    }
-
-    return this.products.filter(
-      (product) => this.toCategoryKey(product.category) === this.selectedCategory
-    );
-  }
-
-  setCategory(category: ClientCategory): void {
-    this.selectedCategory = category.key;
+    this.initCarousels();
+    this.initScrollEffects();
+    this.initCountdown();
+    this.initCategoryPills();
   }
 
   addToCart(): void {
-    this.cartCount += 1;
+    this.cartCount++;
+    const btn = this.cartBtn?.nativeElement;
+    if (btn) {
+      btn.style.transform = 'scale(1.25)';
+      setTimeout(() => {
+        btn.style.transform = 'scale(1)';
+      }, 200);
+    }
   }
 
-  toggleFavorite(productId: string | number): void {
-    if (this.favoriteProductIds.has(productId)) {
-      this.favoriteProductIds.delete(productId);
+  scrollTo(sectionId: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    el?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  getShopCategoryName(shop: Shop): string {
+    const cat: unknown = shop.categoryId;
+    if (cat && typeof cat === 'object' && 'name' in cat) {
+      return (cat as { name: string }).name;
+    }
+    return 'Boutique';
+  }
+
+  getProductShopName(product: Product): string {
+    const shopRef: unknown = product.shopId;
+    if (shopRef && typeof shopRef === 'object' && 'name' in shopRef) {
+      return (shopRef as { name: string }).name;
+    }
+    return 'Boutique';
+  }
+
+  toggleFav(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+    target.classList.toggle('active');
+    target.style.transform = 'scale(1.4)';
+    setTimeout(() => {
+      target.style.transform = 'scale(1)';
+    }, 200);
+  }
+
+  onCategoryClick(event: MouseEvent): void {
+    const current = event.currentTarget as HTMLElement | null;
+    if (!current) {
+      return;
+    }
+    document.querySelectorAll('.cat-pill').forEach((pill) => {
+      pill.classList.remove('active');
+    });
+    current.classList.add('active');
+  }
+
+  private initCarousels(): void {
+    this.initCarousel('boutCarousel', 'boutPrev', 'boutNext');
+    this.initCarousel('dealCarousel', 'dealPrev', 'dealNext');
+  }
+
+  private initCarousel(trackId: string, prevId: string, nextId: string): void {
+    const track = document.getElementById(trackId);
+    const prev = document.getElementById(prevId);
+    const next = document.getElementById(nextId);
+
+    if (!track || !prev || !next) {
       return;
     }
 
-    this.favoriteProductIds.add(productId);
+    const scrollAmount = () =>
+      ((track.children[0] as HTMLElement | undefined)?.offsetWidth ?? 280) +
+      22;
+
+    next.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+    });
+
+    prev.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+    });
+
+    // drag scroll
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+      (track as HTMLElement).style.userSelect = 'none';
+    });
+
+    track.addEventListener('mouseleave', () => {
+      isDown = false;
+    });
+
+    track.addEventListener('mouseup', () => {
+      isDown = false;
+      (track as HTMLElement).style.userSelect = '';
+    });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) {
+        return;
+      }
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      track.scrollLeft = scrollLeft - (x - startX);
+    });
   }
 
-  isFavorite(productId: string | number): boolean {
-    return this.favoriteProductIds.has(productId);
+  private initCountdown(): void {
+    const endTime = new Date(
+      Date.now() + (3 * 86400 + 14 * 3600 + 27 * 60) * 1000
+    );
+
+    const updateTimer = () => {
+      const diff = Math.max(0, endTime.getTime() - Date.now());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      const setValue = (id: string, value: string) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = value;
+        }
+      };
+
+      setValue('tDays', String(d).padStart(2, '0'));
+      setValue('tHours', String(h).padStart(2, '0'));
+      setValue('tMins', String(m).padStart(2, '0'));
+      setValue('tSecs', String(s).padStart(2, '0'));
+    };
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
   }
 
-  trackById(_: number, item: { id: string | number }): string | number {
-    return item.id;
-  }
+  private initScrollEffects(): void {
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (!navbar) {
+        return;
+      }
+      navbar.style.boxShadow =
+        window.scrollY > 20 ? '0 4px 30px rgba(46,40,64,.10)' : 'none';
+    });
 
-  private updateTimer(): void {
-    const diff = Math.max(0, this.countdownTarget.getTime() - Date.now());
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-
-    this.timerDays = String(days).padStart(2, '0');
-    this.timerHours = String(hours).padStart(2, '0');
-    this.timerMinutes = String(minutes).padStart(2, '0');
-    this.timerSeconds = String(seconds).padStart(2, '0');
-  }
-
-  private loadShopCategories(): void {
-    this.http
-      .get<{ categories?: Array<{ _id: string; name: string; type: 'shop' | 'product' }> }>(
-        `${this.categoriesBaseUrl}/type/shop`
-      )
-      .subscribe({
-        next: (response) => {
-          const apiCategories = (response?.categories || [])
-            .filter((category) => category?.name)
-            .map((category) => ({
-              key: this.toCategoryKey(category.name),
-              label: category.name,
-              icon: this.getCategoryIcon(category.name),
-            }))
-            .filter((category) => category.key && category.key !== 'all');
-
-          if (apiCategories.length === 0) {
-            this.categories = [...CLIENT_CATEGORIES];
-            return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
           }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-          const uniqueCategories = Array.from(
-            new Map(apiCategories.map((item) => [item.key, item])).values()
-          );
-          this.categories = [
-            { key: 'all', label: 'Toutes', icon: '\u{1F9ED}' },
-            ...uniqueCategories,
-          ];
-        },
-        error: () => {
-          this.categories = [...CLIENT_CATEGORIES];
-        },
+    document
+      .querySelectorAll('.product-card, .boutique-card, .service-card')
+      .forEach((el) => {
+        const element = el as HTMLElement;
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(24px)';
+        element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(element);
       });
   }
 
-  private loadShops(): void {
-    this.shopsLoading = true;
-    this.http
-      .get<{
-        shops?: Array<{
-          _id: string;
-          name?: string;
-          location?: string;
-          isOpen?: boolean;
-          categoryId?: string | { _id?: string; name?: string; type?: 'shop' | 'product' };
-        }>;
-      }>(this.shopsBaseUrl)
-      .subscribe({
-        next: (response) => {
-          const apiShops = (response?.shops || [])
-            .filter((shop) => shop?._id && shop?.name)
-            .map((shop) => {
-              const categoryName = this.extractCategoryName(shop.categoryId);
-              const categoryKey = this.toCategoryKey(categoryName);
-              return {
-                id: shop._id,
-                name: String(shop.name),
-                category: categoryName,
-                floor: shop.location?.trim() || 'Niveau non précisé',
-                rating: this.getShopRating(shop._id),
-                hours: '09:00 - 21:00',
-                isOpen: !!shop.isOpen,
-                icon: this.getCategoryIcon(categoryName),
-                gradient: this.getCategoryGradient(categoryKey),
-              };
-            });
-
-          this.shops = apiShops.length > 0 ? apiShops : [...CLIENT_SHOPS];
-          this.shopsLoading = false;
-          this.loadProducts();
-        },
-        error: () => {
-          this.shops = [...CLIENT_SHOPS];
-          this.shopsLoading = false;
-          this.loadProducts();
-        },
-      });
-  }
-
-  private loadProducts(): void {
-    this.productsLoading = true;
-    this.http
-      .get<{
-        products?: Array<{
-          _id: string;
-          shopId?: string | { _id?: string; name?: string };
-          categoryId?: string | { _id?: string; name?: string; type?: 'shop' | 'product' };
-          name?: string;
-          price?: number;
-          stock?: number;
-          isActive?: boolean;
-        }>;
-      }>(this.productsBaseUrl)
-      .subscribe({
-        next: (response) => {
-          const apiProducts = (response?.products || [])
-            .filter((product) => product?._id && product?.name && product?.isActive !== false)
-            .map((product) => {
-              const shopId = this.extractRefId(product.shopId);
-              const linkedShop = this.shops.find((shop) => String(shop.id) === shopId);
-              const categoryFromProduct = this.extractCategoryName(product.categoryId);
-              const categoryName =
-                categoryFromProduct !== 'Autres'
-                  ? categoryFromProduct
-                  : linkedShop?.category || 'Autres';
-              const categoryKey = this.toCategoryKey(categoryName);
-              const stock = Number(product.stock ?? 0);
-              const priceValue = Number(product.price ?? 0);
-              const isLowStock = stock > 0 && stock <= 5;
-
-              return {
-                id: product._id,
-                shop: this.extractShopName(product.shopId) || linkedShop?.name || 'Boutique',
-                name: String(product.name),
-                category: categoryName,
-                price: this.formatEurPrice(priceValue),
-                oldPrice: isLowStock ? this.formatEurPrice(priceValue * 1.15) : undefined,
-                badge: isLowStock ? 'Stock limité' : stock >= 20 ? 'Top' : 'Nouveau',
-                badgeType: isLowStock ? 'promo' : stock >= 20 ? 'exclusive' : 'new',
-                icon: this.getCategoryIcon(categoryName),
-                gradient: this.getCategoryGradient(categoryKey),
-              } as ClientProduct;
-            });
-
-          this.products = apiProducts;
-          this.productsLoading = false;
-        },
-        error: () => {
-          this.products = [];
-          this.productsLoading = false;
-        },
-      });
-  }
-
-  private toCategoryKey(value: string): string {
-    return String(value || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  }
-
-  private getCategoryIcon(categoryName: string): string {
-    const normalized = this.toCategoryKey(categoryName);
-
-    if (/(mode|fashion|vetement|style)/.test(normalized)) return '\u{1F457}';
-    if (/(beaute|beauty|cosmetique|soin|parfum)/.test(normalized)) return '\u{1F484}';
-    if (/(tech|technologie|electronique|high-tech|hightech)/.test(normalized)) return '\u{1F4F1}';
-    if (/(sport|fitness|runner|running)/.test(normalized)) return '\u{1F3C3}';
-    if (/(food|restauration|restaurant|cafe|coffee|snack)/.test(normalized)) return '\u{1F37D}';
-
-    return '\u{1F6CD}';
-  }
-
-  private getCategoryGradient(categoryKey: string): string {
-    if (/(mode|fashion|vetement|style)/.test(categoryKey)) return 'linear-gradient(135deg,#e6ddf5,#cab6e8)';
-    if (/(beaute|beauty|cosmetique|soin|parfum)/.test(categoryKey))
-      return 'linear-gradient(135deg,#f5e1ea,#e8c0d8)';
-    if (/(tech|technologie|electronique|high-tech|hightech)/.test(categoryKey))
-      return 'linear-gradient(135deg,#dde8fb,#bcd0f4)';
-    if (/(sport|fitness|runner|running)/.test(categoryKey)) return 'linear-gradient(135deg,#e4f0df,#c8e1b9)';
-    if (/(food|restauration|restaurant|cafe|coffee|snack)/.test(categoryKey))
-      return 'linear-gradient(135deg,#f6eadf,#e8cdb1)';
-
-    return 'linear-gradient(135deg,#ece7f3,#d7cfe8)';
-  }
-
-  private extractCategoryName(
-    category: string | { _id?: string; name?: string; type?: 'shop' | 'product' } | undefined
-  ): string {
-    if (category && typeof category === 'object' && category.name) {
-      return String(category.name);
+  private initCategoryPills(): void {
+    const firstPill = document.querySelector('.cat-pill') as HTMLElement | null;
+    if (firstPill) {
+      firstPill.classList.add('active');
     }
-    if (typeof category === 'string' && category.trim()) {
-      return category;
-    }
-    return 'Autres';
-  }
-
-  private extractShopName(shop: string | { _id?: string; name?: string } | undefined): string {
-    if (shop && typeof shop === 'object' && shop.name) {
-      return String(shop.name);
-    }
-    return '';
-  }
-
-  private extractRefId(ref: string | { _id?: string } | undefined): string {
-    if (ref && typeof ref === 'object' && ref._id) {
-      return String(ref._id);
-    }
-    if (typeof ref === 'string') {
-      return ref;
-    }
-    return '';
-  }
-
-  private formatEurPrice(value: number): string {
-    const safeValue = Number.isFinite(value) ? value : 0;
-    return `${Math.round(safeValue)} EUR`;
-  }
-
-  private getShopRating(shopId: string): number {
-    const hash = shopId
-      .split('')
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return Number((4.2 + (hash % 8) * 0.1).toFixed(1));
   }
 }
