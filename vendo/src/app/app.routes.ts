@@ -12,6 +12,7 @@ import { roleGuard } from './auth/role.guard';
 import { ClientHomeComponent } from './client/home/home.component';
 import { ClientProfileComponent } from './client/profile/profile.component';
 import { ClientShopsComponent } from './client/shops/shops.component';
+import { ClientProductsComponent } from './client/products/products.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -32,6 +33,12 @@ export const routes: Routes = [
   {
     path: 'client/shops',
     component: ClientShopsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['client'] },
+  },
+  {
+    path: 'client/products',
+    component: ClientProductsComponent,
     canActivate: [roleGuard],
     data: { roles: ['client'] },
   },
