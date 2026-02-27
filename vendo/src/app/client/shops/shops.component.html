@@ -122,6 +122,7 @@
   <div class="state-box" *ngIf="!loading() && !serverError() && filteredShops().length === 0">
     Aucune boutique ne correspond aux filtres.
   </div>
+</section>
 
   <div class="divider"></div>
 
@@ -129,37 +130,43 @@
     <div class="footer-grid">
       <div>
         <div class="footer-brand-name">Vend<span>e</span>o</div>
-        <p class="footer-brand-desc">Le centre commercial qui reinvente l'experience shopping. Plus de 120 boutiques,
-          restaurants et services au coeur de la ville.</p>
+        <p class="footer-brand-desc">Le centre commercial qui réinvente l'expérience shopping. Plus de 120 boutiques,
+          restaurants et services au cœur de la ville.</p>
       </div>
       <div>
         <div class="footer-col-title">Explorer</div>
         <ul class="footer-links">
-          <li><a routerLink="/client/shops">Toutes les boutiques</a></li>
-          <li><a routerLink="/client/home">Accueil</a></li>
-          <li><a routerLink="/client/home" fragment="nouveautes">Nouveautes</a></li>
-          <li><a routerLink="/client/home" fragment="promotions">Promotions</a></li>
+          <li><a href="#">Toutes les boutiques</a></li>
+          <li><a href="#">Plan interactif</a></li>
+          <li><a href="#">Nouveautés</a></li>
+          <li><a href="#">Promotions</a></li>
+          <li><a href="#">Événements</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-col-title">Services</div>
         <ul class="footer-links">
-          <li><a routerLink="/client/home" fragment="services">Parking & acces</a></li>
-          <li><a routerLink="/client/home" fragment="services">Click & Collect</a></li>
-          <li><a routerLink="/client/home" fragment="services">Espace famille</a></li>
+          <li><a href="#">Parking & accès</a></li>
+          <li><a href="#">Click & Collect</a></li>
+          <li><a href="#">Carte cadeau</a></li>
+          <li><a href="#">Programme fidélité</a></li>
+          <li><a href="#">Espace famille</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-col-title">Infos pratiques</div>
         <ul class="footer-links">
-          <li><a routerLink="/client/profile">Mon profil</a></li>
-          <li><a routerLink="/client/home">Plan du centre</a></li>
+          <li><a href="#">Horaires d'ouverture</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="#">Recrutement</a></li>
+          <li><a href="#">Presse</a></li>
+          <li><a href="#">Mentions légales</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Vendeo Centre Commercial. Tous droits reserves.</span>
-      <span>Lun-Dim : 09h - 21h · Jours feries : 10h - 19h</span>
+      <span>© 2026 Vendeo Centre Commercial. Tous droits réservés.</span>
+      <span>Lun–Dim : 09h – 21h · Jours fériés : 10h – 19h</span>
     </div>
   </footer>
-</section>
+

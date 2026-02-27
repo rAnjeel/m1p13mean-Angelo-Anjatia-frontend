@@ -106,11 +106,15 @@ export class ClientShopsComponent implements OnInit {
   }
 
   getShopImageUrl(shop: Shop): string | null {
-    const images = Array.isArray(shop.images) ? shop.images : [];
+    const anyShop = shop as Shop & {
+      images?: Array<{ url?: string; isPrimary?: boolean }>;
+    };
+    const images = Array.isArray(anyShop.images) ? anyShop.images : [];
     if (!images.length) {
       return null;
     }
-    const primary = images.find((image) => image && image.isPrimary) ?? images[0];
+    const primary =
+      images.find((image: { url?: string; isPrimary?: boolean }) => !!image && image.isPrimary) ?? images[0];
     return primary?.url || null;
   }
 

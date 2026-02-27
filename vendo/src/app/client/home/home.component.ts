@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe } from '@angular/common';
 import { Observable, map } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import {
   Shop,
   ShopCategory,
@@ -21,7 +22,7 @@ import {
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe],
+  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -99,6 +100,40 @@ export class ClientHomeComponent implements AfterViewInit {
       return (shopRef as { name: string }).name;
     }
     return 'Boutique';
+  }
+
+  getProductImageUrl(product: Product): string | null {
+    const images = Array.isArray(product.images) ? product.images : [];
+    if (!images.length) {
+      return null;
+    }
+    const first = images[0];
+    return typeof first === 'string' && first.trim().length > 0 ? first : null;
+  }
+
+  getShopImageUrl(shop: Shop): string | null {
+    const anyShop = shop as Shop & {
+      images?: Array<{ url?: string; isPrimary?: boolean }>;
+    };
+    const images = Array.isArray(anyShop.images) ? anyShop.images : [];
+    if (!images.length) {
+      return null;
+    }
+    const primary =
+      images.find((image: { url?: string; isPrimary?: boolean }) => !!image && image.isPrimary) ?? images[0];
+    return primary?.url || null;
+  }
+
+  getShopInitials(name: string | undefined | null): string {
+    const value = (name || '').trim();
+    if (!value) {
+      return '?';
+    }
+    const parts = value.split(/\s+/);
+    if (parts.length === 1) {
+      return value.slice(0, 2).toUpperCase();
+    }
+    return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
   }
 
   toggleFav(event: MouseEvent): void {
