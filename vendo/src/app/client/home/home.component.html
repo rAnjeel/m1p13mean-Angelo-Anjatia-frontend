@@ -84,13 +84,13 @@
           <div class="section-label">Nos enseignes</div>
           <h2 class="section-title">Boutiques <em>à la une</em></h2>
         </div>
-        <div class="see-all">
+        <a class="see-all" routerLink="/client/shops">
           Toutes les boutiques
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
-        </div>
+        </a>
       </div>
     </div>
 
@@ -103,7 +103,7 @@
         </button>
         <div class="carousel-track" id="boutCarousel">
           <ng-container *ngIf="shops$ | async as shops">
-            <div class="boutique-card" *ngFor="let shop of shops">
+            <a class="boutique-card" *ngFor="let shop of shops" [routerLink]="'/client/shops'" [queryParams]="{ shop: shop._id }">
               <div class="boutique-thumb">
                 <div class="boutique-thumb-bg"
                   style="background: linear-gradient(135deg, #f0e6f0, #e0d5e8);">
@@ -132,7 +132,7 @@
                   <div class="boutique-hours">09h – 20h</div>
                 </div>
               </div>
-            </div>
+            </a>
           </ng-container>
         </div>
         <button class="carousel-arrow next" id="boutNext">
