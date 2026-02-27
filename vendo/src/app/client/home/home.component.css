@@ -440,6 +440,7 @@ section {
   display: flex;
   align-items: center;
   gap: 6px;
+  text-decoration: none;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -539,6 +540,8 @@ section {
   scroll-snap-align: start;
   flex-shrink: 0;
   width: 280px;
+  text-decoration: none;
+  color: inherit;
   border-radius: var(--r);
   overflow: hidden;
   background: var(--white70);

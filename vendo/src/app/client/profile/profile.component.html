@@ -8,13 +8,23 @@
 
   <section class="profile-hero">
     <div class="profile-identity-card">
-      <div class="avatar">AR</div>
+      <div class="avatar">
+        <img
+          *ngIf="profilePhoto(); else initialsAvatar"
+          [src]="profilePhoto()"
+          alt="Photo de profil"
+          class="avatar-img"
+        />
+        <ng-template #initialsAvatar>{{ userInitials }}</ng-template>
+      </div>
       <div class="identity-content">
         <p class="identity-eyebrow">Espace client</p>
-        <h1 class="identity-name">Anjatia Ranaivo</h1>
-        <p class="identity-meta">anjatia@email.com &middot; +261 34 00 000 00</p>
+        <h1 class="identity-name">{{ displayName }}</h1>
+        <p class="identity-meta">{{ displayEmail }} &middot; {{ displayPhone }}</p>
+        <p class="identity-meta" *ngIf="loading()">Chargement du profil...</p>
+        <p class="identity-meta" *ngIf="serverError()">{{ serverError() }}</p>
       </div>
-      <button type="button" class="edit-btn">Modifier le profil</button>
+      <button type="button" class="edit-btn" disabled>Modifier le profil</button>
     </div>
     <div class="profile-stats-grid">
       <article *ngFor="let stat of stats" class="stat-card">
