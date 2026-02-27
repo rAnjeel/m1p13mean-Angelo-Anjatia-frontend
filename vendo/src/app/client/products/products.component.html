@@ -1,0 +1,131 @@
+<section class="client-products-page">
+  <nav class="nav" id="navbar">
+    <div class="nav-logo">Vend<span>e</span>o</div>
+    <ul class="nav-links">
+      <li><a routerLink="/client/shops">Boutiques</a></li>
+      <li><a routerLink="/client/home" fragment="nouveautes">Nouveautes</a></li>
+      <li><a routerLink="/client/products">Produits</a></li>
+      <li><a routerLink="/client/home" fragment="services">Services</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a class="nav-icon-btn" title="Accueil" routerLink="/client/home">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 10.5 12 3l9 7.5"></path>
+          <path d="M5 9.5V21h14V9.5"></path>
+        </svg>
+      </a>
+      <div class="nav-icon-btn" title="Panier">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        <span class="cart-count">{{ cartCount }}</span>
+      </div>
+      <a class="nav-icon-btn" title="Profil" routerLink="/client/profile">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+      </a>
+      <button type="button" class="nav-icon-btn" title="Menu" (click)="toggleMenu()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="7" x2="20" y2="7"></line>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <line x1="4" y1="17" x2="20" y2="17"></line>
+        </svg>
+      </button>
+      <div class="nav-menu" *ngIf="isMenuOpen">
+        <button type="button" class="nav-menu-item" (click)="logout()">Se deconnecter</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <p class="eyebrow">Catalogue produits</p>
+    <h1>Tous les produits</h1>
+    <p class="subtitle">Filtrez par categorie et par boutique.</p>
+  </section>
+
+  <section class="filters">
+    <label class="search-field">
+      <span>Recherche</span>
+      <input
+        type="text"
+        placeholder="Nom du produit, categorie ou boutique"
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </label>
+
+    <div class="filter-row">
+      <div class="filter-box">
+        <span>Categorie produit</span>
+        <div class="pill-wrap">
+          <button type="button" class="pill" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="pill"
+            *ngFor="let category of categories()"
+            [class.active]="selectedCategory() === category._id"
+            (click)="setCategory(category._id)"
+          >
+            {{ category.name }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-box">
+        <span>Boutique</span>
+        <div class="pill-wrap">
+          <button type="button" class="pill" [class.active]="selectedShop() === 'all'" (click)="setShop('all')">
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="pill"
+            *ngFor="let shop of shops()"
+            [class.active]="selectedShop() === shop._id"
+            (click)="setShop(shop._id)"
+          >
+            {{ shop.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="state-box" *ngIf="loading()">Chargement des produits...</div>
+  <div class="state-box error" *ngIf="serverError()">{{ serverError() }}</div>
+
+  <section class="products-grid" *ngIf="!loading() && !serverError()">
+    <article class="product-card" *ngFor="let product of filteredProducts()">
+      <div class="product-thumb">
+        <ng-container *ngIf="getProductImageUrl(product) as imageUrl; else noProductImage">
+          <img [src]="imageUrl" [alt]="product.name" class="product-thumb-image" />
+        </ng-container>
+        <ng-template #noProductImage>
+          <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="7" width="16" height="11" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M4 10h16" fill="none" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </ng-template>
+      </div>
+      <div class="product-info">
+        <div class="product-shop">{{ getProductShopName(product) }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-category">{{ getProductCategoryName(product) }}</div>
+        <div class="product-footer">
+          <strong class="price">Ar {{ product.price | number : '1.0-0' }}</strong>
+          <span class="stock" [class.off]="product.stock <= 0">{{ product.stock > 0 ? 'En stock' : 'Rupture' }}</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="state-box" *ngIf="!loading() && !serverError() && filteredProducts().length === 0">
+    Aucun produit ne correspond aux filtres.
+  </div>
+</section>

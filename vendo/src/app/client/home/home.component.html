@@ -2,11 +2,10 @@
   <nav class="nav" id="navbar">
     <div class="nav-logo">Vend<span>e</span>o</div>
     <ul class="nav-links">
-      <li><a href="#boutiques">Boutiques</a></li>
+      <li><a href="/client/shops">Boutiques</a></li>
       <li><a href="#nouveautes">Nouveautés</a></li>
-      <li><a href="#promotions">Promotions</a></li>
+      <li><a routerLink="/client/products">Produits</a></li>
       <li><a href="#services">Services</a></li>
-      <li><a href="#plan">Plan</a></li>
     </ul>
     <div class="nav-actions">
       <div class="nav-icon-btn" title="Rechercher">
@@ -43,7 +42,7 @@
     <div class="hero-content">
       <div class="hero-eyebrow">Collection Printemps 2026</div>
       <h1 class="hero-title">Votre univers<br><em>shopping</em> au<br>cœur de la ville</h1>
-      <p class="hero-sub">Plus de 120 boutiques, restauration raffinée et services exclusifs — tout sous un même toit.
+      <p class="hero-sub">Plusieurs boutiques, restauration raffinée et services exclusifs tout sous un même toit.
       </p>
       <div class="hero-ctas">
         <button class="btn btn-primary" (click)="scrollTo('boutiques')">
@@ -57,10 +56,6 @@
           Voir les promos
         </button>
       </div>
-    </div>
-    <div class="scroll-hint">
-      <span>Découvrir</span>
-      <div class="scroll-line"></div>
     </div>
   </section>
 
@@ -285,11 +280,11 @@
           <div class="section-label">Arrivages récents</div>
           <h2 class="section-title">Nouveautés <em>à découvrir</em></h2>
         </div>
-        <div class="see-all">Tout voir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <a class="see-all" routerLink="/client/products">Tout voir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
-          </svg></div>
+          </svg></a>
       </div>
 
       <div class="products-grid">

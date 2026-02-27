@@ -79,7 +79,9 @@ export class ClientShopsComponent implements OnInit {
 
   openShop(shop: Shop): void {
     this.selectedShopId.set(shop._id);
-    this.updateQueryParams();
+    void this.router.navigate(['/client/products'], {
+      queryParams: { shop: shop._id },
+    });
   }
 
   toggleMenu(): void {
