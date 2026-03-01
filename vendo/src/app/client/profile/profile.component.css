@@ -3,18 +3,20 @@
 }
 
 .profile-page {
-  --bg: #f6f7f9;
-  --card: #ffffff;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --accent: #0f766e;
+  --bg: #f4eaf1;
+  --card: rgba(255, 255, 255, 0.72);
+  --card-soft: rgba(255, 255, 255, 0.56);
+  --text: #2e2840;
+  --muted: #7a728f;
+  --border: rgba(142, 131, 169, 0.2);
+  --accent: #8e83a9;
+  --accent-soft: #b6a8ca;
 
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
   padding: 88px 20px 36px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Jost', sans-serif;
 }
 
 .profile-header,
@@ -30,6 +32,7 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 16px;
+  box-shadow: 0 8px 28px rgba(46, 40, 64, 0.08);
 }
 
 .profile-main {
@@ -44,7 +47,7 @@
   height: 68px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: #eef2f7;
+  background: linear-gradient(135deg, #ede0f5, #d8c8ec);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -102,7 +105,7 @@
 }
 
 .status-text.error {
-  color: #b91c1c;
+  color: #8b3f3f;
 }
 
 .stats-grid {
@@ -157,6 +160,7 @@
 
 .row {
   border: 1px solid var(--border);
+  background: var(--card-soft);
   border-radius: 10px;
   padding: 10px;
   display: flex;
@@ -193,9 +197,9 @@
 
 .badge {
   justify-self: end;
-  background: #ecfeff;
-  color: #0f766e;
-  border: 1px solid #a5f3fc;
+  background: rgba(182, 168, 202, 0.2);
+  color: var(--accent);
+  border: 1px solid rgba(142, 131, 169, 0.35);
   border-radius: 999px;
   padding: 2px 8px;
   font-size: 11px;
