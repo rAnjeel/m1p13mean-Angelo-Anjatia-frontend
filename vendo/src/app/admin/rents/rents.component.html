@@ -1,0 +1,140 @@
+﻿<section class="admin-rents">
+  <header class="admin-header">
+    <div>
+      <h1>Rent management</h1>
+      <p>Track unpaid monthly rents for all shops and mark payments.</p>
+    </div>
+    <button class="ghost-btn" type="button" (click)="loadUnpaidRents()" [disabled]="loading()">
+      {{ loading() ? 'Refreshing...' : 'Refresh' }}
+    </button>
+  </header>
+
+  <section class="panel filters-panel">
+    <form [formGroup]="filterForm" class="filters-form" (ngSubmit)="loadUnpaidRents()" novalidate>
+      <label class="field">
+        <span>Month *</span>
+        <select formControlName="month">
+          <option *ngFor="let month of monthOptions" [value]="month.value">{{ month.label }}</option>
+        </select>
+        <small class="field-error" *ngIf="hasError('month')">Please choose a valid month.</small>
+      </label>
+
+      <label class="field">
+        <span>Year *</span>
+        <input type="number" min="2000" formControlName="year" />
+        <small class="field-error" *ngIf="hasError('year')">Please provide a valid year.</small>
+      </label>
+
+      <button class="primary-btn" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Loading...' : 'Load unpaid rents' }}
+      </button>
+    </form>
+  </section>
+
+  <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+    <div class="server-error" *ngIf="serverErrors().length">
+      <p *ngFor="let error of serverErrors()">{{ error }}</p>
+    </div>
+    <div class="server-success" *ngIf="successMessage()">
+      <p>{{ successMessage() }}</p>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <article class="stat-card accent-1">
+      <div class="stat-label">Selected month</div>
+      <div class="stat-value">{{ formatMonth(selectedMonthLabel()) }}</div>
+      <div class="stat-meta">Query period</div>
+    </article>
+    <article class="stat-card accent-2">
+      <div class="stat-label">Unpaid rents</div>
+      <div class="stat-value">{{ totalUnpaidRents }}</div>
+      <div class="stat-meta">Records pending</div>
+    </article>
+    <article class="stat-card accent-3">
+      <div class="stat-label">Amount to collect</div>
+      <div class="stat-value">{{ formatAmount(totalAmountToCollect) }} Ar</div>
+      <div class="stat-meta">Total for current filter</div>
+    </article>
+  </div>
+
+  <section class="panel section-gap">
+    <div class="panel-header">
+      <div>
+        <h2>Unpaid rents list</h2>
+        <p>{{ totalUnpaidRents }} entries for {{ formatMonth(selectedMonthLabel()) }}</p>
+      </div>
+    </div>
+
+    <div class="table" *ngIf="!loading(); else loadingTemplate">
+      <div class="table-row table-head">
+        <div class="cell">Shop</div>
+        <div class="cell">Location</div>
+        <div class="cell">Month</div>
+        <div class="cell">Amount</div>
+        <div class="cell">Status</div>
+        <div class="cell">Actions</div>
+      </div>
+
+      <div class="table-row" *ngFor="let rent of rents(); trackBy: trackByRentId">
+        <div class="cell"><strong>{{ getShopName(rent) }}</strong></div>
+        <div class="cell">{{ getShopLocation(rent) }}</div>
+        <div class="cell">{{ formatMonth(rent.month) }}</div>
+        <div class="cell">{{ formatAmount(rent.amount) }} Ar</div>
+        <div class="cell">
+          <span class="badge" [class.badge-paid]="rent.status === 'paid'">{{ rent.status }}</span>
+        </div>
+        <div class="cell actions">
+          <button
+            class="action-btn"
+            type="button"
+            [disabled]="rent.status === 'paid' || payingId() === rent._id"
+            (click)="payRent(rent)"
+          >
+            {{ payingId() === rent._id ? 'Paying...' : 'Mark paid' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="rents().length === 0">No unpaid rents found for this month.</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Paid rents history</h2>
+        <p>{{ totalPaidRents }} paid rents recorded</p>
+      </div>
+      <div class="history-total">Total paid: {{ formatAmount(totalPaidAmount) }} Ar</div>
+    </div>
+
+    <div class="table" *ngIf="!loading(); else loadingTemplate">
+      <div class="table-row table-head table-history-head">
+        <div class="cell">Shop</div>
+        <div class="cell">Location</div>
+        <div class="cell">Month</div>
+        <div class="cell">Amount</div>
+        <div class="cell">Paid at</div>
+        <div class="cell">Status</div>
+      </div>
+
+      <div class="table-row table-history-row" *ngFor="let rent of paidRents(); trackBy: trackByRentId">
+        <div class="cell"><strong>{{ getShopName(rent) }}</strong></div>
+        <div class="cell">{{ getShopLocation(rent) }}</div>
+        <div class="cell">{{ formatMonth(rent.month) }}</div>
+        <div class="cell">{{ formatAmount(rent.amount) }} Ar</div>
+        <div class="cell">{{ formatDateTime(rent.paidAt) }}</div>
+        <div class="cell">
+          <span class="badge badge-paid">paid</span>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="paidRents().length === 0">No paid rents history yet.</div>
+    </div>
+  </section>
+</section>
+
+<ng-template #loadingTemplate>
+  <div class="loading-state">Loading rents...</div>
+</ng-template>
