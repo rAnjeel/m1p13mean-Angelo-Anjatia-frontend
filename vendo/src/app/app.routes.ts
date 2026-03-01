@@ -1,10 +1,11 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { ShopsComponent } from './admin/shops/shops.component';
 import { UsersComponent } from './admin/users/users.component';
 import { CategoriesComponent } from './admin/categories/categories.component';
+import { RentsComponent } from './admin/rents/rents.component';
 import { ShopkeeperProductsComponent } from './shopkeeper/products/products.component';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 import { AboutUserComponent } from './shared/about-user/about-user.component';
@@ -58,6 +59,12 @@ export const routes: Routes = [
     data: { roles: ['admin', 'client'] },
   },
   {
+    path: 'admin/rents',
+    component: RentsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+  },
+  {
     path: 'shopkeeper/products',
     component: ShopkeeperProductsComponent,
     canActivate: [roleGuard],
@@ -72,3 +79,4 @@ export const routes: Routes = [
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: '**', redirectTo: 'unauthorized' },
 ];
+
