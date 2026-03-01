@@ -356,6 +356,27 @@
   font-size: 11px;
 }
 
+.field small {
+  color: #6d6f7d;
+  font-size: 11px;
+}
+
+.file-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.file-chip {
+  background: #f1ecfb;
+  color: #5f5884;
+  border: 1px solid #ddd7ea;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
 .form-actions {
   display: flex;
   gap: 8px;

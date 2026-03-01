@@ -210,6 +210,16 @@
           </small>
         </label>
 
+        <label class="field field-wide">
+          <span>Shop images</span>
+          <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)" />
+          <small>Optional. Up to 5 images will be uploaded after saving the shop.</small>
+          <div class="file-list" *ngIf="selectedImageNames.length > 0">
+            <span class="file-chip" *ngFor="let name of selectedImageNames">{{ name }}</span>
+            <button type="button" class="action-btn" (click)="clearSelectedImages()">Clear images</button>
+          </div>
+        </label>
+
         <div class="form-actions">
           <button class="ghost-btn" type="button" (click)="resetForm()">Reset</button>
           <button class="primary-btn" type="submit" [disabled]="saving()">

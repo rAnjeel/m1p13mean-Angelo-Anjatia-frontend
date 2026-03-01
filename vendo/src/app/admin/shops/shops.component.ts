@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import {
   Shop,
   ShopCategory,
@@ -47,6 +47,7 @@ export class ShopsComponent implements OnInit {
 
   searchTerm = signal('');
   statusFilter = signal<'all' | 'open' | 'closed'>('all');
+  selectedImages = signal<File[]>([]);
 
   ngOnInit(): void {
     this.loadInitialData();
@@ -131,10 +132,30 @@ export class ShopsComponent implements OnInit {
     this.serverErrors.set([]);
     this.successMessage.set(null);
 
-    request$.pipe(finalize(() => this.saving.set(false))).subscribe({
+    request$
+      .pipe(
+        switchMap((response) => {
+          const files = this.selectedImages();
+          if (files.length === 0) {
+            return of(response);
+          }
+
+          const responseShopId = response?.shop?._id;
+          const shopId = selectedId || responseShopId;
+          if (!shopId) {
+            return of(response);
+          }
+
+          return this.shopsService.uploadShopImages(shopId, files).pipe(map(() => response));
+        }),
+        finalize(() => this.saving.set(false))
+      )
+      .subscribe({
       next: () => {
         this.successMessage.set(
-          selectedId ? 'Shop updated successfully.' : 'Shop created successfully.'
+          selectedId
+            ? 'Shop updated successfully.'
+            : 'Shop created successfully.'
         );
         this.resetForm();
         this.loadInitialData();
@@ -142,7 +163,7 @@ export class ShopsComponent implements OnInit {
       error: (error) => {
         this.serverErrors.set(this.parseApiErrors(error));
       },
-    });
+      });
   }
 
   editShop(shop: Shop): void {
@@ -158,6 +179,7 @@ export class ShopsComponent implements OnInit {
       location: shop.location || '',
       isOpen: !!shop.isOpen,
     });
+    this.clearSelectedImages();
     this.form.markAsPristine();
   }
 
@@ -196,7 +218,24 @@ export class ShopsComponent implements OnInit {
       location: '',
       isOpen: true,
     });
+    this.clearSelectedImages();
     this.form.markAsPristine();
+  }
+
+  onImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    if (files.length === 0) {
+      this.selectedImages.set([]);
+      return;
+    }
+
+    const imageFiles = files.filter((file) => file.type.startsWith('image/')).slice(0, 5);
+    this.selectedImages.set(imageFiles);
+  }
+
+  clearSelectedImages(): void {
+    this.selectedImages.set([]);
   }
 
   setStatusFilter(value: 'all' | 'open' | 'closed'): void {
@@ -244,6 +283,10 @@ export class ShopsComponent implements OnInit {
 
   trackByShopId(_index: number, shop: Shop): string {
     return shop._id;
+  }
+
+  get selectedImageNames(): string[] {
+    return this.selectedImages().map((file) => file.name);
   }
 
   private toPayload(): ShopPayload {

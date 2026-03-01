@@ -22,6 +22,13 @@ export interface Shop {
   categoryId: string | ShopCategory;
   location?: string;
   isOpen: boolean;
+  images?: Array<{
+    url: string;
+    publicId: string;
+    alt?: string;
+    isPrimary?: boolean;
+    order?: number;
+  }>;
   createdAt: string;
 }
 
@@ -53,6 +60,11 @@ interface UsersResponse {
   users: UserOption[];
 }
 
+interface ShopMutationResponse {
+  message?: string;
+  shop?: Shop;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -66,12 +78,22 @@ export class ShopsService {
     return this.http.get<ShopsResponse>(this.shopsBaseUrl);
   }
 
-  createShop(payload: ShopPayload): Observable<unknown> {
-    return this.http.post(this.shopsBaseUrl, payload);
+  createShop(payload: ShopPayload): Observable<ShopMutationResponse> {
+    return this.http.post<ShopMutationResponse>(this.shopsBaseUrl, payload);
   }
 
-  updateShop(shopId: string, payload: Partial<ShopPayload>): Observable<unknown> {
-    return this.http.put(`${this.shopsBaseUrl}/${shopId}`, payload);
+  updateShop(shopId: string, payload: Partial<ShopPayload>): Observable<ShopMutationResponse> {
+    return this.http.put<ShopMutationResponse>(`${this.shopsBaseUrl}/${shopId}`, payload);
+  }
+
+  uploadShopImages(shopId: string, files: File[], replace = false): Observable<unknown> {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('images', file, file.name);
+    });
+
+    const query = replace ? '?replace=true' : '';
+    return this.http.post(`${this.shopsBaseUrl}/${shopId}/images${query}`, formData);
   }
 
   deleteShop(shopId: string): Observable<unknown> {
