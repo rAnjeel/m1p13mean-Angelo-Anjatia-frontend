@@ -271,6 +271,10 @@ h1 {
   box-shadow: 0 14px 36px rgba(46, 40, 64, 0.16);
 }
 
+.boutique-card.favorite {
+  border-color: rgba(78, 105, 178, 0.35);
+}
+
 .boutique-card.selected {
   outline: 2px solid var(--lav-accent);
 }
@@ -350,6 +354,28 @@ h1 {
   background: #b47a7a;
 }
 
+.favorite-btn {
+  position: static;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.85);
+  color: #7a728f;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.favorite-btn.active {
+  color: #d15478;
+}
+
+.favorite-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .boutique-info {
   padding: 16px;
 }
@@ -357,6 +383,13 @@ h1 {
 .boutique-name {
   font-family: 'Playfair Display', serif;
   font-size: 18px;
+}
+
+.boutique-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 4px;
 }
 

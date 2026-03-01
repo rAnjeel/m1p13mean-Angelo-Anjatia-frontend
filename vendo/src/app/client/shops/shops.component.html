@@ -1,4 +1,4 @@
-<section class="client-shops-page">
+﻿<section class="client-shops-page">
   <section class="hero">
     <p class="eyebrow">Annuaire boutiques</p>
     <h1>Toutes les boutiques</h1>
@@ -45,6 +45,7 @@
       type="button"
       class="boutique-card"
       *ngFor="let shop of filteredShops()"
+      [class.favorite]="isFavorite(shop)"
       [class.selected]="isSelected(shop)"
       (click)="openShop(shop)"
     >
@@ -65,7 +66,17 @@
       </div>
 
       <div class="boutique-info">
-        <div class="boutique-name">{{ shop.name }}</div>
+        <div class="boutique-title-row">
+          <div class="boutique-name">{{ shop.name }}</div>
+          <span
+            class="favorite-btn"
+            [class.active]="isFavorite(shop)"
+            [class.disabled]="isFavoritePending(shop._id)"
+            (click)="toggleFavorite($event, shop)"
+          >
+            &#10084;
+          </span>
+        </div>
         <div class="boutique-cat">{{ getShopCategoryName(shop) }}</div>
         <div class="boutique-meta">
           <span class="status-pill" [class.open]="shop.isOpen" [class.closed]="!shop.isOpen">
@@ -81,5 +92,3 @@
     Aucune boutique ne correspond aux filtres.
   </div>
 </section>
-
-

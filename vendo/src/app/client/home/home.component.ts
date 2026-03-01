@@ -1,11 +1,13 @@
 import {
   AfterViewInit,
   Component,
+  OnInit,
   ViewEncapsulation,
   inject,
+  signal,
 } from '@angular/core';
 import { NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe } from '@angular/common';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import {
   Shop,
@@ -16,6 +18,7 @@ import {
   Product,
   ShopkeeperProductsService,
 } from '../../shopkeeper/products/products.service';
+import { FavoritesService } from '../shared/favorites.service';
 
 @Component({
   selector: 'app-client-home',
@@ -32,10 +35,13 @@ import {
   styleUrl: './home.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class ClientHomeComponent implements AfterViewInit {
+export class ClientHomeComponent implements OnInit, AfterViewInit {
   cartCount = 0;
 
-  readonly shops$: Observable<Shop[]>;
+  readonly shops = signal<Shop[]>([]);
+  readonly favoriteShopIds = signal<Set<string>>(new Set());
+  readonly favoritePendingIds = signal<Set<string>>(new Set());
+
   readonly products$: Observable<Product[]>;
   readonly productCategories$: Observable<ShopCategory[]>;
 
@@ -44,12 +50,9 @@ export class ClientHomeComponent implements AfterViewInit {
 
   private readonly shopsService = inject(ShopsService);
   private readonly productsService = inject(ShopkeeperProductsService);
+  private readonly favoritesService = inject(FavoritesService);
 
   constructor() {
-    this.shops$ = this.shopsService
-      .getShops()
-      .pipe(map((response) => response?.shops ?? []));
-
     this.products$ = this.productsService
       .getProducts()
       .pipe(map((response) => response?.products ?? []));
@@ -57,6 +60,10 @@ export class ClientHomeComponent implements AfterViewInit {
     this.productCategories$ = this.shopsService
       .getShopCategories()
       .pipe(map((response) => response?.categories ?? []));
+  }
+
+  ngOnInit(): void {
+    this.loadShopsWithFavorites();
   }
 
   ngAfterViewInit(): void {
@@ -141,6 +148,48 @@ export class ClientHomeComponent implements AfterViewInit {
     setTimeout(() => {
       target.style.transform = 'scale(1)';
     }, 200);
+  }
+
+  toggleShopFavorite(event: MouseEvent, shop: Shop): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const shopId = String(shop?._id || '').trim();
+    if (!shopId || this.isFavoritePending(shopId)) {
+      return;
+    }
+
+    const isFavorite = this.isFavoriteShop(shopId);
+    this.setFavoritePending(shopId, true);
+
+    const request$ = isFavorite
+      ? this.favoritesService.removeFavorite(shopId)
+      : this.favoritesService.addFavorite(shopId);
+
+    request$.subscribe({
+      next: () => {
+        const next = new Set(this.favoriteShopIds());
+        if (isFavorite) {
+          next.delete(shopId);
+        } else {
+          next.add(shopId);
+        }
+        this.favoriteShopIds.set(next);
+        this.shops.set(this.sortShopsByFavorite(this.shops(), next));
+        this.setFavoritePending(shopId, false);
+      },
+      error: () => {
+        this.setFavoritePending(shopId, false);
+      },
+    });
+  }
+
+  isFavoriteShop(shopId: string): boolean {
+    return this.favoriteShopIds().has(String(shopId || '').trim());
+  }
+
+  isFavoritePending(shopId: string): boolean {
+    return this.favoritePendingIds().has(String(shopId || '').trim());
   }
 
   onCategoryClick(event: MouseEvent): void {
@@ -279,5 +328,45 @@ export class ClientHomeComponent implements AfterViewInit {
     if (firstPill) {
       firstPill.classList.add('active');
     }
+  }
+
+  private loadShopsWithFavorites(): void {
+    forkJoin({
+      shopsResponse: this.shopsService.getShops(),
+      favoritesResponse: this.favoritesService.getFavorites().pipe(
+        catchError(() => of({ favorites: [] }))
+      ),
+    }).subscribe({
+      next: ({ shopsResponse, favoritesResponse }) => {
+        const shops = shopsResponse?.shops || [];
+        const favoriteIds = new Set(
+          this.favoritesService.extractShopIds(favoritesResponse?.favorites || [])
+        );
+        this.favoriteShopIds.set(favoriteIds);
+        this.shops.set(this.sortShopsByFavorite(shops, favoriteIds));
+      },
+      error: () => {
+        this.shops.set([]);
+        this.favoriteShopIds.set(new Set());
+      },
+    });
+  }
+
+  private sortShopsByFavorite(shops: Shop[], favoriteIds: Set<string>): Shop[] {
+    return [...(shops || [])].sort((left, right) => {
+      const leftFav = favoriteIds.has(String(left?._id || ''));
+      const rightFav = favoriteIds.has(String(right?._id || ''));
+      if (leftFav === rightFav) return 0;
+      return leftFav ? -1 : 1;
+    });
+  }
+
+  private setFavoritePending(shopId: string, pending: boolean): void {
+    const id = String(shopId || '').trim();
+    if (!id) return;
+    const next = new Set(this.favoritePendingIds());
+    if (pending) next.add(id);
+    else next.delete(id);
+    this.favoritePendingIds.set(next);
   }
 }
