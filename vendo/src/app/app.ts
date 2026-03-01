@@ -17,7 +17,7 @@ interface MenuState {
 
 const ROLE_PAGES: Record<string, string[]> = {
   client: ['/client/home', '/client/profile'],
-  shopkeeper: ['/shopkeeper/products', '/admin/categories'],
+  shopkeeper: ['/shopkeeper/my-shop', '/shopkeeper/products', '/admin/categories'],
   admin: ['/admin/dashboard', '/admin/shops', '/admin/categories', '/admin/users', '/admin/rents']
 };
 
@@ -29,6 +29,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/admin/categories': 'Categories',
   '/admin/users': 'Users',
   '/admin/rents': 'Rents',
+  '/shopkeeper/my-shop': 'My Shop',
   '/shopkeeper/products': 'Products'
 };
 
