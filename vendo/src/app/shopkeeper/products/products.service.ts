@@ -34,7 +34,7 @@ export interface Product {
   description?: string;
   price: number;
   stock: number;
-  images?: string[];
+  images?: Array<string | { url?: string; publicId?: string; alt?: string; isPrimary?: boolean; order?: number }>;
   isActive: boolean;
   createdAt: string;
 }

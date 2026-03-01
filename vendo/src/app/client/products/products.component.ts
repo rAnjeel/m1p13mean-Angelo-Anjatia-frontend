@@ -7,6 +7,7 @@ import {
   ShopOption,
   ShopkeeperProductsService,
 } from '../../shopkeeper/products/products.service';
+import { ProductReview, ProductReviewsService } from '../shared/product-reviews.service';
 
 @Component({
   selector: 'app-client-products',
@@ -17,6 +18,7 @@ import {
 })
 export class ClientProductsComponent implements OnInit {
   private readonly productsService = inject(ShopkeeperProductsService);
+  private readonly productReviewsService = inject(ProductReviewsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -30,6 +32,15 @@ export class ClientProductsComponent implements OnInit {
   readonly selectedCategory = signal('all');
   readonly selectedShop = signal('all');
   readonly searchTerm = signal('');
+  readonly selectedProductForReview = signal<Product | null>(null);
+  readonly reviewRating = signal(0);
+  readonly reviewComment = signal('');
+  readonly reviewSubmitting = signal(false);
+  readonly reviewLoading = signal(false);
+  readonly reviewError = signal<string | null>(null);
+  readonly reviewSuccess = signal<string | null>(null);
+  readonly productReviews = signal<ProductReview[]>([]);
+  readonly stars = [1, 2, 3, 4, 5];
 
   readonly filteredProducts = computed(() => {
     const category = this.selectedCategory();
@@ -116,7 +127,97 @@ export class ClientProductsComponent implements OnInit {
       return null;
     }
     const first = images[0];
+    if (first && typeof first === 'object' && 'url' in first && typeof first.url === 'string') {
+      return first.url.trim() || null;
+    }
     return typeof first === 'string' && first.trim().length > 0 ? first : null;
+  }
+
+  getSelectedReviewShopName(): string {
+    const product = this.selectedProductForReview();
+    return product ? this.getProductShopName(product) : '';
+  }
+
+  openReviewPopup(product: Product): void {
+    this.selectedProductForReview.set(product);
+    this.reviewRating.set(0);
+    this.reviewComment.set('');
+    this.reviewSubmitting.set(false);
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+    this.loadReviews(product._id);
+  }
+
+  closeReviewPopup(): void {
+    this.selectedProductForReview.set(null);
+    this.reviewRating.set(0);
+    this.reviewComment.set('');
+    this.reviewSubmitting.set(false);
+    this.reviewLoading.set(false);
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+    this.productReviews.set([]);
+  }
+
+  setReviewRating(rating: number): void {
+    this.reviewRating.set(Math.min(5, Math.max(1, Number(rating) || 0)));
+  }
+
+  onReviewCommentInput(value: string): void {
+    this.reviewComment.set(String(value || ''));
+  }
+
+  submitReview(): void {
+    const product = this.selectedProductForReview();
+    if (!product?._id) {
+      return;
+    }
+
+    const rating = this.reviewRating();
+    if (rating < 1 || rating > 5) {
+      this.reviewError.set("Choisissez une note d'au moins 1 etoile.");
+      return;
+    }
+
+    this.reviewSubmitting.set(true);
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+
+    this.productReviewsService
+      .add(product._id, {
+        rating,
+        comment: this.reviewComment().trim(),
+      })
+      .subscribe({
+        next: () => {
+          this.reviewSubmitting.set(false);
+          this.reviewSuccess.set('Votre avis a ete enregistre.');
+          this.reviewRating.set(0);
+          this.reviewComment.set('');
+          this.loadReviews(product._id);
+        },
+        error: (error) => {
+          const message =
+            error?.error?.message || "Impossible d'envoyer l'avis pour le moment.";
+          this.reviewError.set(message);
+          this.reviewSubmitting.set(false);
+        },
+      });
+  }
+
+  getReviewClientName(review: ProductReview): string {
+    const client = review?.clientId;
+    if (typeof client === 'string') {
+      return 'Client';
+    }
+    return client?.fullName || 'Client';
+  }
+
+  formatReviewDate(dateValue?: string): string {
+    if (!dateValue) return '';
+    const parsed = new Date(dateValue);
+    if (Number.isNaN(parsed.getTime())) return '';
+    return parsed.toLocaleDateString('fr-FR');
   }
 
   private loadData(): void {
@@ -176,6 +277,22 @@ export class ClientProductsComponent implements OnInit {
         search: search || null,
       },
       queryParamsHandling: 'merge',
+    });
+  }
+
+  private loadReviews(productId: string): void {
+    this.reviewLoading.set(true);
+    this.reviewError.set(null);
+
+    this.productReviewsService.getByProduct(productId).subscribe({
+      next: (response) => {
+        this.productReviews.set(response?.reviews || []);
+        this.reviewLoading.set(false);
+      },
+      error: () => {
+        this.productReviews.set([]);
+        this.reviewLoading.set(false);
+      },
     });
   }
 }

@@ -219,7 +219,11 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
     this.successMessage.set(null);
     this.serverErrors.set([]);
 
-    this.existingImages.set((product.images || []).filter((img) => !!img && img.trim().length > 0));
+    this.existingImages.set(
+      (product.images || [])
+        .map((img) => this.extractImageUrl(img))
+        .filter((url) => url.length > 0)
+    );
     this.clearSelectedImageState();
 
     this.form.patchValue({
@@ -364,7 +368,9 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   }
 
   getProductImage(product: Product): string {
-    const image = (product.images || []).find((item) => item && item.trim().length > 0);
+    const image = (product.images || [])
+      .map((item) => this.extractImageUrl(item))
+      .find((url) => url.length > 0);
     return image || '';
   }
 
@@ -396,6 +402,19 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
     return typeof product.categoryId === 'string'
       ? product.categoryId
       : product.categoryId?._id || '';
+  }
+
+  private extractImageUrl(image: unknown): string {
+    if (typeof image === 'string') {
+      return image.trim();
+    }
+
+    if (image && typeof image === 'object' && 'url' in image) {
+      const maybeUrl = (image as { url?: unknown }).url;
+      return typeof maybeUrl === 'string' ? maybeUrl.trim() : '';
+    }
+
+    return '';
   }
 
   private toPayload(): ProductPayload {
