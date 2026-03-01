@@ -1,46 +1,4 @@
 <section class="client-shops-page">
-  <nav class="nav" id="navbar">
-    <div class="nav-logo">Vend<span>e</span>o</div>
-    <ul class="nav-links">
-      <li><a routerLink="/client/shops">Boutiques</a></li>
-      <li><a routerLink="/client/home" fragment="nouveautes">Nouveautes</a></li>
-      <li><a routerLink="/client/products">Produits</a></li>
-      <li><a routerLink="/client/home" fragment="services">Services</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a class="nav-icon-btn" title="Accueil" routerLink="/client/home">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 10.5 12 3l9 7.5"></path>
-          <path d="M5 9.5V21h14V9.5"></path>
-        </svg>
-      </a>
-      <div class="nav-icon-btn" title="Panier">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <path d="M16 10a4 4 0 0 1-8 0" />
-        </svg>
-        <span class="cart-count">{{ cartCount }}</span>
-      </div>
-      <a class="nav-icon-btn" title="Profil" routerLink="/client/profile">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 21a8 8 0 0 1 16 0"></path>
-        </svg>
-      </a>
-      <button type="button" class="nav-icon-btn" title="Menu" (click)="toggleMenu()">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="4" y1="7" x2="20" y2="7"></line>
-          <line x1="4" y1="12" x2="20" y2="12"></line>
-          <line x1="4" y1="17" x2="20" y2="17"></line>
-        </svg>
-      </button>
-      <div class="nav-menu" *ngIf="isMenuOpen">
-        <button type="button" class="nav-menu-item" (click)="logout()">Se deconnecter</button>
-      </div>
-    </div>
-  </nav>
-
   <section class="hero">
     <p class="eyebrow">Annuaire boutiques</p>
     <h1>Toutes les boutiques</h1>
@@ -124,49 +82,4 @@
   </div>
 </section>
 
-  <div class="divider"></div>
-
-  <footer>
-    <div class="footer-grid">
-      <div>
-        <div class="footer-brand-name">Vend<span>e</span>o</div>
-        <p class="footer-brand-desc">Le centre commercial qui réinvente l'expérience shopping. Plus de 120 boutiques,
-          restaurants et services au cœur de la ville.</p>
-      </div>
-      <div>
-        <div class="footer-col-title">Explorer</div>
-        <ul class="footer-links">
-          <li><a href="#">Toutes les boutiques</a></li>
-          <li><a href="#">Plan interactif</a></li>
-          <li><a href="#">Nouveautés</a></li>
-          <li><a href="#">Promotions</a></li>
-          <li><a href="#">Événements</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Services</div>
-        <ul class="footer-links">
-          <li><a href="#">Parking & accès</a></li>
-          <li><a href="#">Click & Collect</a></li>
-          <li><a href="#">Carte cadeau</a></li>
-          <li><a href="#">Programme fidélité</a></li>
-          <li><a href="#">Espace famille</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Infos pratiques</div>
-        <ul class="footer-links">
-          <li><a href="#">Horaires d'ouverture</a></li>
-          <li><a href="#">Nous contacter</a></li>
-          <li><a href="#">Recrutement</a></li>
-          <li><a href="#">Presse</a></li>
-          <li><a href="#">Mentions légales</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Vendeo Centre Commercial. Tous droits réservés.</span>
-      <span>Lun–Dim : 09h – 21h · Jours fériés : 10h – 19h</span>
-    </div>
-  </footer>
 
