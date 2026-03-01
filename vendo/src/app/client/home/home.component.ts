@@ -1,8 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
-  ViewChild,
   ViewEncapsulation,
   inject,
 } from '@angular/core';
@@ -22,7 +20,14 @@ import {
 @Component({
   selector: 'app-client-home',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe, RouterLink],
+  imports: [
+    NgFor,
+    NgIf,
+    NgClass,
+    DecimalPipe,
+    AsyncPipe,
+    RouterLink,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -39,9 +44,6 @@ export class ClientHomeComponent implements AfterViewInit {
 
   private readonly shopsService = inject(ShopsService);
   private readonly productsService = inject(ShopkeeperProductsService);
-
-  @ViewChild('cartBtn', { static: false })
-  cartBtn!: ElementRef<HTMLDivElement>;
 
   constructor() {
     this.shops$ = this.shopsService
@@ -69,13 +71,6 @@ export class ClientHomeComponent implements AfterViewInit {
 
   addToCart(): void {
     this.cartCount++;
-    const btn = this.cartBtn?.nativeElement;
-    if (btn) {
-      btn.style.transform = 'scale(1.25)';
-      setTimeout(() => {
-        btn.style.transform = 'scale(1)';
-      }, 200);
-    }
   }
 
   scrollTo(sectionId: string): void {

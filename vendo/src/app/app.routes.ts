@@ -13,34 +13,24 @@ import { ClientHomeComponent } from './client/home/home.component';
 import { ClientProfileComponent } from './client/profile/profile.component';
 import { ClientShopsComponent } from './client/shops/shops.component';
 import { ClientProductsComponent } from './client/products/products.component';
+import { ClientLayoutComponent } from './client/layout/client-layout.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   {
-    path: 'client/home',
-    component: ClientHomeComponent,
+    path: 'client',
+    component: ClientLayoutComponent,
     canActivate: [roleGuard],
     data: { roles: ['client'] },
-  },
-  {
-    path: 'client/profile',
-    component: ClientProfileComponent,
-    canActivate: [roleGuard],
-    data: { roles: ['client'] },
-  },
-  {
-    path: 'client/shops',
-    component: ClientShopsComponent,
-    canActivate: [roleGuard],
-    data: { roles: ['client'] },
-  },
-  {
-    path: 'client/products',
-    component: ClientProductsComponent,
-    canActivate: [roleGuard],
-    data: { roles: ['client'] },
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: ClientHomeComponent },
+      { path: 'profile', component: ClientProfileComponent },
+      { path: 'shops', component: ClientShopsComponent },
+      { path: 'products', component: ClientProductsComponent },
+    ],
   },
   {
     path: 'admin/dashboard',

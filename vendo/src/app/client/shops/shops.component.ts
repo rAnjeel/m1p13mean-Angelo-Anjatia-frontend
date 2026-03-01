@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Shop, ShopCategory, ShopsService } from '../../admin/shops/shops.service';
-import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-client-shops',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './shops.component.html',
   styleUrl: './shops.component.css',
 })
@@ -15,10 +14,6 @@ export class ClientShopsComponent implements OnInit {
   private readonly shopsService = inject(ShopsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
-
-  cartCount = 0;
-  isMenuOpen = false;
 
   readonly loading = signal(true);
   readonly serverError = signal<string | null>(null);
@@ -81,25 +76,6 @@ export class ClientShopsComponent implements OnInit {
     this.selectedShopId.set(shop._id);
     void this.router.navigate(['/client/products'], {
       queryParams: { shop: shop._id },
-    });
-  }
-
-  toggleMenu(): void {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.authService.clearSession();
-        this.isMenuOpen = false;
-        void this.router.navigateByUrl('/login');
-      },
-      error: () => {
-        this.authService.clearSession();
-        this.isMenuOpen = false;
-        void this.router.navigateByUrl('/login');
-      },
     });
   }
 
