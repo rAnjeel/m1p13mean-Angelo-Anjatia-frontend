@@ -15,6 +15,7 @@ import { ClientHomeComponent } from './client/home/home.component';
 import { ClientProfileComponent } from './client/profile/profile.component';
 import { ClientShopsComponent } from './client/shops/shops.component';
 import { ClientProductsComponent } from './client/products/products.component';
+import { ClientServicesComponent } from './client/services/services.component';
 import { ClientLayoutComponent } from './client/layout/client-layout.component';
 
 export const routes: Routes = [
@@ -32,6 +33,7 @@ export const routes: Routes = [
       { path: 'profile', component: ClientProfileComponent },
       { path: 'shops', component: ClientShopsComponent },
       { path: 'products', component: ClientProductsComponent },
+      { path: 'services', component: ClientServicesComponent },
     ],
   },
   {

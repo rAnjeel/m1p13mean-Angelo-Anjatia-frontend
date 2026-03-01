@@ -1,0 +1,17 @@
+<section class="services-page">
+  <header class="services-header">
+    <p class="eyebrow">Services client</p>
+    <h1>Des services simples pour votre experience d'achat</h1>
+    <p class="subtitle">
+      Vendeo accompagne vos achats avec des options pratiques, du paiement jusqu'a la livraison.
+    </p>
+  </header>
+
+  <section class="services-grid">
+    <article class="service-card" *ngFor="let item of services">
+      <h2>{{ item.title }}</h2>
+      <p>{{ item.description }}</p>
+      <button type="button">{{ item.cta }}</button>
+    </article>
+  </section>
+</section>
