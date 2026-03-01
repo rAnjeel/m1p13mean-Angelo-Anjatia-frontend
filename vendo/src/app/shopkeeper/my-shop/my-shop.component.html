@@ -1,0 +1,144 @@
+<section class="my-shop">
+  <div class="server-messages" *ngIf="serverErrors().length || successMessage() || noShopMessage()">
+    <div class="server-error" *ngIf="serverErrors().length">
+      <p *ngFor="let error of serverErrors()">{{ error }}</p>
+    </div>
+    <div class="server-success" *ngIf="successMessage()">
+      <p>{{ successMessage() }}</p>
+    </div>
+    <div class="server-info" *ngIf="noShopMessage()">
+      <p>{{ noShopMessage() }}</p>
+    </div>
+  </div>
+
+  <section *ngIf="myShop() as shop; else emptyState">
+    <div class="profile-shell">
+      <div class="profile-cover">
+        <button class="ghost-btn refresh-btn" type="button" (click)="loadMyShop()" [disabled]="loadingData()">
+          {{ loadingData() ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <div class="profile-main">
+        <aside class="profile-left">
+          <div class="profile-card">
+            <div class="avatar-wrap">
+              <ng-container *ngIf="getShopPrimaryImage(shop) as imageUrl; else initialsAvatar">
+                <button class="avatar-btn" type="button" (click)="openImagePopup(imageUrl)">
+                  <img [src]="imageUrl" [alt]="shop.name" class="shop-avatar" />
+                </button>
+              </ng-container>
+              <ng-template #initialsAvatar>
+                <div class="shop-avatar avatar-fallback">{{ getShopInitials(shop.name) }}</div>
+              </ng-template>
+            </div>
+
+            <div class="profile-title">{{ shop.name }}</div>
+            <div class="profile-subtitle">{{ shop.location || 'Location not set' }}</div>
+            <div class="profile-meta">
+              <span class="meta-label">Shopkeeper:</span>
+              <span class="meta-value">{{ getShopkeeperName(shop) }}</span>
+            </div>
+            <div class="profile-status" [class.status-open]="shop.isOpen">
+              {{ shop.isOpen ? 'Open now' : 'Currently closed' }}
+            </div>
+            <p class="profile-description">
+              {{ shop.description || 'No description yet for this shop.' }}
+            </p>
+          </div>
+        </aside>
+
+        <section class="profile-right">
+          <div class="panel form-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Edit My Shop</h2>
+                <p>Quick settings for your public shop profile</p>
+              </div>
+            </div>
+
+            <form class="shop-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+              <label class="field">
+                <span>Shop name *</span>
+                <input type="text" formControlName="name" />
+                <small class="field-error" *ngIf="hasError('name', 'required')">Shop name is required.</small>
+                <small class="field-error" *ngIf="hasError('name', 'minlength')">
+                  Shop name must be at least 2 characters.
+                </small>
+              </label>
+
+              <label class="field">
+                <span>Category *</span>
+                <select formControlName="categoryId">
+                  <option value="">Select a category</option>
+                  <option *ngFor="let category of categoryOptions()" [value]="category._id">
+                    {{ category.name }}
+                  </option>
+                </select>
+                <small class="field-error" *ngIf="hasError('categoryId', 'required')">Category is required.</small>
+              </label>
+
+              <label class="field">
+                <span>Location</span>
+                <input type="text" formControlName="location" />
+                <small class="field-error" *ngIf="hasError('location', 'maxlength')">
+                  Location cannot exceed 120 characters.
+                </small>
+              </label>
+
+              <label class="field">
+                <span>Status *</span>
+                <select formControlName="isOpen">
+                  <option [ngValue]="true">Open</option>
+                  <option [ngValue]="false">Closed</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Description</span>
+                <textarea rows="3" formControlName="description"></textarea>
+                <small class="field-error" *ngIf="hasError('description', 'maxlength')">
+                  Description cannot exceed 500 characters.
+                </small>
+              </label>
+
+              <label class="field">
+                <span>Shop images</span>
+                <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)" />
+                <small>Up to 5 images. Saving replaces current images.</small>
+                <div class="file-list" *ngIf="selectedImageNames.length > 0">
+                  <span class="file-chip" *ngFor="let name of selectedImageNames">{{ name }}</span>
+                  <button type="button" class="ghost-btn mini-btn" (click)="clearSelectedImages()">
+                    Clear
+                  </button>
+                </div>
+              </label>
+
+              <div class="form-actions">
+                <button class="primary-btn" type="submit" [disabled]="saving() || loadingData()">
+                  {{ saving() ? 'Saving...' : 'Update my shop' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+</section>
+
+<ng-template #emptyState>
+  <section class="panel">
+    <div class="empty-state" *ngIf="!loadingData()">No shop linked to this shopkeeper account.</div>
+    <div class="loading-state" *ngIf="loadingData()">Loading your shop...</div>
+  </section>
+</ng-template>
+
+<div class="image-popup-backdrop" *ngIf="popupImageUrl() as imageUrl" (click)="closeImagePopup()">
+  <div class="image-popup-card" (click)="$event.stopPropagation()">
+    <img [src]="imageUrl" alt="Shop image enlarged" class="image-popup-preview" />
+    <button type="button" class="primary-btn popup-close-btn" (click)="closeImagePopup()">
+      Back to profile 
+    </button>
+  </div>
+</div>
