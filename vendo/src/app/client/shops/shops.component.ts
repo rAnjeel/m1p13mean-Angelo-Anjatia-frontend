@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Shop, ShopCategory, ShopsService } from '../../admin/shops/shops.service';
+import { FavoritesService } from '../shared/favorites.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-client-shops',
@@ -14,11 +16,14 @@ export class ClientShopsComponent implements OnInit {
   private readonly shopsService = inject(ShopsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly favoritesService = inject(FavoritesService);
 
   readonly loading = signal(true);
   readonly serverError = signal<string | null>(null);
   readonly shops = signal<Shop[]>([]);
   readonly categories = signal<ShopCategory[]>([]);
+  readonly favoriteShopIds = signal<Set<string>>(new Set());
+  readonly favoritePendingIds = signal<Set<string>>(new Set());
 
   readonly searchTerm = signal('');
   readonly selectedCategory = signal('all');
@@ -28,7 +33,7 @@ export class ClientShopsComponent implements OnInit {
     const search = this.searchTerm().trim().toLowerCase();
     const category = this.selectedCategory();
 
-    return this.shops().filter((shop) => {
+    const filtered = this.shops().filter((shop) => {
       const shopCategoryId = this.extractCategoryId(shop);
       const shopCategoryName = this.getShopCategoryName(shop).toLowerCase();
       const shopLocation = (shop.location || '').toLowerCase();
@@ -45,6 +50,14 @@ export class ClientShopsComponent implements OnInit {
       }
 
       return shopName.includes(search) || shopLocation.includes(search) || shopCategoryName.includes(search);
+    });
+
+    const favoriteIds = this.favoriteShopIds();
+    return [...filtered].sort((left, right) => {
+      const leftFav = favoriteIds.has(String(left?._id || ''));
+      const rightFav = favoriteIds.has(String(right?._id || ''));
+      if (leftFav === rightFav) return 0;
+      return leftFav ? -1 : 1;
     });
   });
 
@@ -77,6 +90,40 @@ export class ClientShopsComponent implements OnInit {
     void this.router.navigate(['/client/products'], {
       queryParams: { shop: shop._id },
     });
+  }
+
+  toggleFavorite(event: MouseEvent, shop: Shop): void {
+    event.stopPropagation();
+    const shopId = String(shop?._id || '').trim();
+    if (!shopId || this.isFavoritePending(shopId)) return;
+
+    const isFavorite = this.isFavorite(shop);
+    this.setFavoritePending(shopId, true);
+
+    const request$ = isFavorite
+      ? this.favoritesService.removeFavorite(shopId)
+      : this.favoritesService.addFavorite(shopId);
+
+    request$.subscribe({
+      next: () => {
+        const next = new Set(this.favoriteShopIds());
+        if (isFavorite) next.delete(shopId);
+        else next.add(shopId);
+        this.favoriteShopIds.set(next);
+        this.setFavoritePending(shopId, false);
+      },
+      error: () => {
+        this.setFavoritePending(shopId, false);
+      },
+    });
+  }
+
+  isFavorite(shop: Shop): boolean {
+    return this.favoriteShopIds().has(String(shop?._id || ''));
+  }
+
+  isFavoritePending(shopId: string): boolean {
+    return this.favoritePendingIds().has(String(shopId || '').trim());
   }
 
   isSelected(shop: Shop): boolean {
@@ -140,6 +187,16 @@ export class ClientShopsComponent implements OnInit {
         this.loading.set(false);
       },
     });
+
+    this.favoritesService
+      .getFavorites()
+      .pipe(catchError(() => of({ favorites: [] })))
+      .subscribe({
+        next: (response) => {
+          const ids = new Set(this.favoritesService.extractShopIds(response?.favorites || []));
+          this.favoriteShopIds.set(ids);
+        },
+      });
   }
 
   private extractCategoryId(shop: Shop): string {
@@ -161,5 +218,14 @@ export class ClientShopsComponent implements OnInit {
       },
       queryParamsHandling: 'merge',
     });
+  }
+
+  private setFavoritePending(shopId: string, pending: boolean): void {
+    const id = String(shopId || '').trim();
+    if (!id) return;
+    const next = new Set(this.favoritePendingIds());
+    if (pending) next.add(id);
+    else next.delete(id);
+    this.favoritePendingIds.set(next);
   }
 }

@@ -551,9 +551,42 @@ section {
   transition: transform .3s, box-shadow .3s;
 }
 
+.boutique-card.favorite-shop {
+  border-color: rgba(78, 105, 178, 0.35);
+}
+
 .boutique-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 16px 40px rgba(46, 40, 64, .14);
+}
+
+.shop-favorite-btn {
+  position: static;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  color: #7a728f;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.shop-favorite-btn:hover {
+  transform: scale(1.08);
+}
+
+.shop-favorite-btn.active {
+  color: #d15478;
+  background-color: blanchedalmond;
+}
+
+.shop-favorite-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .boutique-thumb {
@@ -649,6 +682,13 @@ section {
   font-size: 17px;
   font-weight: 400;
   color: var(--text);
+}
+
+.boutique-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 4px;
 }
 
@@ -738,7 +778,7 @@ section {
   max-width: 1220px;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 28px;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
   min-height: 280px;
@@ -1050,11 +1090,11 @@ section {
 .deal-card {
   scroll-snap-align: start;
   flex-shrink: 0;
-  width: 340px;
+  width: 220px;
   border-radius: var(--r);
   overflow: hidden;
   position: relative;
-  min-height: 200px;
+  min-height: 110px;
   display: flex;
   align-items: flex-end;
   cursor: pointer;

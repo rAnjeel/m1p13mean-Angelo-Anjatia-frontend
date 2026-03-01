@@ -1,63 +1,63 @@
-<section class="client-profile">
-  <section class="profile-hero">
-    <div class="profile-identity-card">
-      <div class="avatar">
+<section class="profile-page">
+  <header class="profile-header">
+    <div class="profile-main">
+      <div class="profile-avatar">
         <img
           *ngIf="profilePhoto(); else initialsAvatar"
           [src]="profilePhoto()"
           alt="Photo de profil"
-          class="avatar-img"
+          class="profile-avatar-img"
         />
         <ng-template #initialsAvatar>{{ userInitials }}</ng-template>
       </div>
-      <div class="identity-content">
-        <p class="identity-eyebrow">Espace client</p>
-        <h1 class="identity-name">{{ displayName }}</h1>
-        <p class="identity-meta">{{ displayEmail }} &middot; {{ displayPhone }}</p>
-        <p class="identity-meta" *ngIf="loading()">Chargement du profil...</p>
-        <p class="identity-meta" *ngIf="serverError()">{{ serverError() }}</p>
+
+      <div class="profile-info">
+        <h1>{{ displayName }}</h1>
+        <p>{{ displayEmail }}</p>
+        <p>{{ displayPhone }}</p>
       </div>
-      <button type="button" class="edit-btn" disabled>Modifier le profil</button>
+
+      <div class="profile-actions">
+        <button type="button" class="btn btn-primary" disabled>Modifier</button>
+      </div>
     </div>
-    <div class="profile-stats-grid">
-      <article *ngFor="let stat of stats" class="stat-card">
-        <div class="stat-value">{{ stat.value }}</div>
-        <div class="stat-label">{{ stat.label }}</div>
-      </article>
-    </div>
+
+    <p class="status-text" *ngIf="loading()">Chargement du profil...</p>
+    <p class="status-text error" *ngIf="serverError()">{{ serverError() }}</p>
+  </header>
+
+  <section class="stats-grid">
+    <article class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-value">{{ stat.value }}</div>
+      <div class="stat-label">{{ stat.label }}</div>
+    </article>
   </section>
 
-  <section class="profile-grid">
-    <article class="panel">
-      <div class="panel-head">
-        <h2>Pr&eacute;f&eacute;rences</h2>
-      </div>
-      <div class="panel-list">
-        <div *ngFor="let preference of preferences" class="panel-row">
+  <main class="content-grid">
+    <section class="panel">
+      <h2>Preferences</h2>
+      <div class="list">
+        <div *ngFor="let preference of preferences" class="row">
           <span>{{ preference.label }}</span>
           <strong>{{ preference.value }}</strong>
         </div>
       </div>
-    </article>
+    </section>
 
-    <article class="panel">
-      <div class="panel-head">
-        <h2>Commandes r&eacute;centes</h2>
-      </div>
-      <div class="panel-list">
-        <div *ngFor="let order of recentOrders" class="panel-row order-row">
+    <section class="panel">
+      <h2>Recent orders</h2>
+      <div class="list">
+        <div *ngFor="let order of recentOrders" class="row order-row">
           <div>
             <strong>{{ order.id }}</strong>
             <div class="row-sub">{{ order.date }}</div>
           </div>
           <div class="order-meta">
-            <span class="status-pill">{{ order.status }}</span>
+            <span class="badge">{{ order.status }}</span>
             <strong>{{ order.total }}</strong>
           </div>
         </div>
       </div>
-    </article>
-  </section>
+    </section>
+  </main>
 </section>
-
-
