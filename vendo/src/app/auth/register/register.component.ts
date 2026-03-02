@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
@@ -29,8 +29,8 @@ export class RegisterComponent {
 
   get roleOptions() {
     return [
-      { value: 'client', label: 'Customer' },
-      { value: 'shopKeeper', label: 'ShopKeeper' },
+      { value: 'client', label: 'Client' },
+      { value: 'shopKeeper', label: 'Boutiquier' },
     ];
   }
 
@@ -46,7 +46,7 @@ export class RegisterComponent {
 
     this.authService.register(this.form.value).subscribe({
       next: (response: any) => {
-        this.successMessage.set(response?.message || 'Account created successfully.');
+        this.successMessage.set(response?.message || 'Compte créé avec succès.');
         this.form.reset({ role: 'client' });
         this.loading.set(false);
       },
@@ -79,20 +79,19 @@ export class RegisterComponent {
 
     switch (error?.status) {
       case 400:
-        apiErrors.push('Please check the form fields and try again.');
+        apiErrors.push('Veuillez vérifier les champs du formulaire et réessayer.');
         break;
       case 409:
-        apiErrors.push('A user with this email already exists.');
+        apiErrors.push('Un utilisateur avec cet e-mail existe déjà.');
         break;
       case 0:
-        apiErrors.push('Unable to reach the server. Please check your connection.');
+        apiErrors.push('Impossible de joindre le serveur. Vérifiez votre connexion.');
         break;
       default:
-        apiErrors.push('An unexpected error occurred. Please try again.');
+        apiErrors.push('Une erreur inattendue est survenue. Veuillez réessayer.');
         break;
     }
 
     return apiErrors;
   }
 }
-
