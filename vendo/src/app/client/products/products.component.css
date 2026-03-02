@@ -318,6 +318,13 @@ h1 {
   color: #b47a7a;
 }
 
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.add-cart-trigger,
 .review-trigger {
   border: 1px solid var(--border);
   background: var(--white50);
@@ -327,6 +334,17 @@ h1 {
   width: 100%;
   font-size: 12px;
   cursor: pointer;
+}
+
+.add-cart-trigger {
+  background: var(--lav-deep);
+  border-color: var(--lav-deep);
+  color: #fff;
+}
+
+.add-cart-trigger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .state-box {
@@ -340,6 +358,11 @@ h1 {
 .state-box.error {
   color: #8b3f3f;
   border-color: rgba(139, 63, 63, 0.25);
+}
+
+.state-box.success {
+  color: #2f855a;
+  border-color: rgba(47, 133, 90, 0.25);
 }
 
 .review-modal-backdrop {
@@ -597,6 +620,10 @@ h1 {
 
   .nav {
     padding: 0 20px;
+  }
+
+  .product-actions {
+    grid-template-columns: 1fr;
   }
 
   .review-modal {

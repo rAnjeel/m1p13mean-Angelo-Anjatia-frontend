@@ -57,6 +57,8 @@
 
   <div class="state-box" *ngIf="loading()">Chargement des produits...</div>
   <div class="state-box error" *ngIf="serverError()">{{ serverError() }}</div>
+  <div class="state-box success" *ngIf="addToCartSuccess()">{{ addToCartSuccess() }}</div>
+  <div class="state-box error" *ngIf="addToCartError()">{{ addToCartError() }}</div>
 
   <section class="products-grid" *ngIf="!loading() && !serverError()">
     <article class="product-card" *ngFor="let product of filteredProducts()" (click)="openReviewPopup(product)">
@@ -79,7 +81,19 @@
           <strong class="price">Ar {{ product.price | number : '1.0-0' }}</strong>
           <span class="stock" [class.off]="product.stock <= 0">{{ product.stock > 0 ? 'En stock' : 'Rupture' }}</span>
         </div>
-        <button type="button" class="review-trigger">Donner un avis</button>
+        <div class="product-actions">
+          <button
+            type="button"
+            class="add-cart-trigger"
+            [disabled]="isAddingToCart(product._id) || product.stock <= 0 || !product.isActive"
+            (click)="addProductToCart(product, $event)"
+          >
+            {{ isAddingToCart(product._id) ? 'Ajout...' : 'Ajouter au panier' }}
+          </button>
+          <button type="button" class="review-trigger" (click)="openReviewFromButton(product, $event)">
+            Donner un avis
+          </button>
+        </div>
       </div>
     </article>
   </section>

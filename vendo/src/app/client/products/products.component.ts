@@ -7,6 +7,7 @@ import {
   ShopOption,
   ShopkeeperProductsService,
 } from '../../shopkeeper/products/products.service';
+import { CartService } from '../shared/cart.service';
 import { ProductReview, ProductReviewsService } from '../shared/product-reviews.service';
 
 @Component({
@@ -18,6 +19,7 @@ import { ProductReview, ProductReviewsService } from '../shared/product-reviews.
 })
 export class ClientProductsComponent implements OnInit {
   private readonly productsService = inject(ShopkeeperProductsService);
+  private readonly cartService = inject(CartService);
   private readonly productReviewsService = inject(ProductReviewsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -33,6 +35,9 @@ export class ClientProductsComponent implements OnInit {
   readonly selectedShop = signal('all');
   readonly searchTerm = signal('');
   readonly selectedProductForReview = signal<Product | null>(null);
+  readonly addToCartLoadingProductId = signal<string | null>(null);
+  readonly addToCartError = signal<string | null>(null);
+  readonly addToCartSuccess = signal<string | null>(null);
   readonly reviewRating = signal(0);
   readonly reviewComment = signal('');
   readonly reviewSubmitting = signal(false);
@@ -101,6 +106,40 @@ export class ClientProductsComponent implements OnInit {
   onSearchInput(value: string): void {
     this.searchTerm.set(value || '');
     this.updateQueryParams();
+  }
+
+  addProductToCart(product: Product, event: Event): void {
+    event.stopPropagation();
+
+    if (!product?._id || product.stock <= 0 || !product.isActive) {
+      this.addToCartError.set('Ce produit ne peut pas etre ajoute au panier.');
+      this.addToCartSuccess.set(null);
+      return;
+    }
+
+    this.addToCartError.set(null);
+    this.addToCartSuccess.set(null);
+    this.addToCartLoadingProductId.set(product._id);
+
+    this.cartService.addToCart(product._id, 1).subscribe({
+      next: () => {
+        this.addToCartLoadingProductId.set(null);
+        this.addToCartSuccess.set(`Produit ajoute au panier: ${product.name}.`);
+      },
+      error: (error) => {
+        this.addToCartLoadingProductId.set(null);
+        this.addToCartError.set(error?.error?.message || 'Impossible d ajouter le produit au panier.');
+      },
+    });
+  }
+
+  isAddingToCart(productId: string): boolean {
+    return this.addToCartLoadingProductId() === productId;
+  }
+
+  openReviewFromButton(product: Product, event: Event): void {
+    event.stopPropagation();
+    this.openReviewPopup(product);
   }
 
   getProductCategoryName(product: Product): string {
