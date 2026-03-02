@@ -17,13 +17,34 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   form: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    email: ['angela@gmail.com', [Validators.required, Validators.email]],
+    password: ['angela1234', [Validators.required, Validators.minLength(8)]],
   });
 
   loading = signal(false);
   serverErrors = signal<string[]>([]);
   successMessage = signal<string | null>(null);
+
+  fillClientCredentials(): void {
+    this.form.patchValue({
+      email: 'angela@gmail.com',
+      password: 'angela1234',
+    });
+  }
+
+  fillShopkeeperCredentials(): void {
+    this.form.patchValue({
+      email: 'angelo@gmail.com',
+      password: 'angelo123',
+    });
+  }
+
+  fillAdminCredentials(): void {
+    this.form.patchValue({
+      email: 'admin@gmail.com',
+      password: 'admin1234',
+    });
+  }
 
   submit(): void {
     if (this.form.invalid || this.loading()) {
