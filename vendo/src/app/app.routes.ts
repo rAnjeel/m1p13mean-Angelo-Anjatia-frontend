@@ -18,6 +18,7 @@ import { ClientProductsComponent } from './client/products/products.component';
 import { ClientServicesComponent } from './client/services/services.component';
 import { ClientLayoutComponent } from './client/layout/client-layout.component';
 import { ClientCartsComponent } from './client/carts/carts.component';
+import { ClientOrdersComponent } from './client/orders/orders.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -35,6 +36,7 @@ export const routes: Routes = [
       { path: 'shops', component: ClientShopsComponent },
       { path: 'products', component: ClientProductsComponent },
       { path: 'carts', component: ClientCartsComponent },
+      { path: 'orders', component: ClientOrdersComponent },
       { path: 'services', component: ClientServicesComponent },
     ],
   },
