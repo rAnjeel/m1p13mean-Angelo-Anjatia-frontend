@@ -56,7 +56,18 @@ export class ClientHomeComponent implements OnInit, AfterViewInit {
   constructor() {
     this.products$ = this.productsService
       .getProducts()
-      .pipe(map((response) => response?.products ?? []));
+      .pipe(
+        map((response) => response?.products ?? []),
+        map((products) =>
+          [...products]
+            .sort(
+              (a, b) =>
+                new Date(String(b?.createdAt || 0)).getTime() -
+                new Date(String(a?.createdAt || 0)).getTime()
+            )
+            .slice(0, 4)
+        )
+      );
 
     this.productCategories$ = this.shopsService
       .getShopCategories()

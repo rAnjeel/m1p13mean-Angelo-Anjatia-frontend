@@ -84,6 +84,9 @@
           </span>
           <span class="hours">09h - 20h</span>
         </div>
+        <button type="button" class="shop-review-btn" (click)="openShopReview($event, shop)">
+          Donner un avis
+        </button>
       </div>
     </button>
   </section>
@@ -92,3 +95,71 @@
     Aucune boutique ne correspond aux filtres.
   </div>
 </section>
+
+<div class="review-modal-backdrop" *ngIf="selectedShopForReview()" (click)="closeShopReview()">
+  <section class="review-modal" (click)="$event.stopPropagation()">
+    <header class="review-modal-head">
+      <div>
+        <h2>{{ selectedShopForReview()?.name }}</h2>
+        <p>Donnez une note et un commentaire sur cette boutique.</p>
+      </div>
+      <button type="button" class="close-btn" (click)="closeShopReview()">Fermer</button>
+    </header>
+
+    <div class="review-rating-input">
+      <button
+        type="button"
+        *ngFor="let star of stars"
+        [class.active]="star <= reviewRating()"
+        (click)="setReviewRating(star)"
+      >
+        ★
+      </button>
+      <p class="rating-hint" *ngIf="reviewRating() > 0">{{ reviewRating() }}/5</p>
+    </div>
+
+    <label class="review-comment-field">
+      <span>Commentaire</span>
+      <textarea
+        rows="3"
+        placeholder="Votre avis sur la boutique..."
+        [value]="reviewComment()"
+        (input)="updateReviewComment(($any($event.target)).value)"
+      ></textarea>
+    </label>
+
+    <p class="review-feedback success" *ngIf="reviewSuccess()">{{ reviewSuccess() }}</p>
+    <p class="review-feedback error" *ngIf="reviewError()">{{ reviewError() }}</p>
+
+    <div class="review-actions">
+      <button type="button" class="secondary-btn" (click)="closeShopReview()">Annuler</button>
+      <button
+        type="button"
+        class="primary-btn"
+        [disabled]="reviewSubmitting() || reviewRating() < 1"
+        (click)="submitShopReview()"
+      >
+        {{ reviewSubmitting() ? 'Envoi...' : 'Valider mon avis' }}
+      </button>
+    </div>
+
+    <section class="reviews-list-box">
+      <h3>Avis clients</h3>
+      <p class="reviews-state" *ngIf="reviewLoading()">Chargement des avis...</p>
+      <p class="reviews-state" *ngIf="!reviewLoading() && shopReviews().length === 0">
+        Aucun avis pour cette boutique.
+      </p>
+
+      <article class="review-item" *ngFor="let review of shopReviews()">
+        <div class="review-item-top">
+          <strong>{{ getReviewClientName(review) }}</strong>
+          <span>{{ formatReviewDate(review.createdAt) }}</span>
+        </div>
+        <div class="review-stars">
+          <span *ngFor="let star of stars" [class.filled]="star <= review.rating">★</span>
+        </div>
+        <p *ngIf="review.comment">{{ review.comment }}</p>
+      </article>
+    </section>
+  </section>
+</div>
