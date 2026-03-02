@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface CartShopRef {
   _id?: string;
@@ -64,6 +65,7 @@ interface UpdateQuantityPayload {
 export class CartService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = 'http://localhost:3000/api/carts';
+  readonly cartAlertTick = signal(0);
 
   getMyCarts(): Observable<ClientCartsResponse> {
     return this.http.get<ClientCartsResponse>(this.baseUrl);
@@ -74,7 +76,9 @@ export class CartService {
       productId,
       quantity: Math.max(1, Number(quantity) || 1),
     };
-    return this.http.post<{ message: string }>(`${this.baseUrl}/add`, payload);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/add`, payload).pipe(
+      tap(() => this.cartAlertTick.update((value) => value + 1))
+    );
   }
 
   checkout(shopId: string, selectedProductIds: string[] = []): Observable<CheckoutResponse> {
