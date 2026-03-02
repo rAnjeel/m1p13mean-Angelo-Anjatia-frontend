@@ -373,6 +373,20 @@
   border-color: #e2deef;
 }
 
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
 .action-btn.danger {
   background: #f8e7e7;
   color: #8f3a3a;
@@ -478,6 +492,123 @@
   margin: 0;
 }
 
+.reviews-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 30, 0.62);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 70;
+  padding: 20px;
+}
+
+.reviews-modal {
+  width: min(820px, 100%);
+  max-height: 82vh;
+  overflow: auto;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
+  border: 1px solid #ddd6f0;
+  border-radius: 18px;
+  box-shadow: 0 30px 60px rgba(12, 15, 28, 0.34);
+  padding: 18px;
+}
+
+.reviews-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reviews-modal-head h3 {
+  margin: 0 0 5px;
+  font-size: 27px;
+  line-height: 1.08;
+}
+
+.reviews-modal-head p {
+  margin: 0;
+  color: #5c6478;
+  font-size: 15px;
+}
+
+.close-btn {
+  border: 1px solid #cfc6e8;
+  background: #f3efff;
+  color: #4a3f74;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.reviews-state {
+  margin: 8px 0;
+  color: #6d6f7d;
+  font-size: 13px;
+}
+
+.reviews-state.error {
+  color: #8f3a3a;
+}
+
+.reviews-list {
+  display: grid;
+  gap: 8px;
+}
+
+.review-row {
+  border: 1px solid #e3ddf1;
+  border-radius: 14px;
+  padding: 14px;
+  background: #f6f4fb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-main strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.review-main span {
+  display: block;
+  font-size: 13px;
+  color: #6d6f7d;
+  margin-top: 5px;
+}
+
+.stars {
+  margin: 9px 0 0;
+  color: #c18f00;
+  font-size: 14px;
+}
+
+.stars b {
+  color: #4a4b5b;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.comment {
+  margin: 9px 0 0;
+  font-size: 14px;
+  color: #3f4452;
+}
+
+.review-delete-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
 @media (max-width: 1280px) {
   .catalog-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -540,5 +671,10 @@
   .association-overlay {
     opacity: 1;
     transform: none;
+  }
+
+  .review-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

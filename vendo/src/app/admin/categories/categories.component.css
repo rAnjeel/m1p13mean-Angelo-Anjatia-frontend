@@ -58,6 +58,20 @@
   font-size: 11px;
 }
 
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
 .action-btn.danger {
   background: #f8e7e7;
   color: #8f3a3a;

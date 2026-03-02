@@ -49,6 +49,20 @@ export interface ProductPayload {
   isActive: boolean;
 }
 
+export interface ProductReviewClientRef {
+  _id?: string;
+  fullName?: string;
+}
+
+export interface ProductReviewItem {
+  _id: string;
+  productId: string;
+  clientId: string | ProductReviewClientRef;
+  rating: number;
+  comment?: string;
+  createdAt?: string;
+}
+
 interface ProductsResponse {
   products: Product[];
 }
@@ -64,6 +78,14 @@ interface CategoriesResponse {
 
 interface ShopsResponse {
   shops: ShopOption[];
+}
+
+interface ProductReviewsResponse {
+  reviews: ProductReviewItem[];
+}
+
+interface DeleteReviewResponse {
+  message: string;
 }
 
 @Injectable({
@@ -115,5 +137,13 @@ export class ShopkeeperProductsService {
 
   getShops(): Observable<ShopsResponse> {
     return this.http.get<ShopsResponse>(this.shopsBaseUrl);
+  }
+
+  getProductReviews(productId: string): Observable<ProductReviewsResponse> {
+    return this.http.get<ProductReviewsResponse>(`http://localhost:3000/api/reviews/${productId}`);
+  }
+
+  deleteProductReview(reviewId: string): Observable<DeleteReviewResponse> {
+    return this.http.delete<DeleteReviewResponse>(`http://localhost:3000/api/reviews/${reviewId}`);
   }
 }

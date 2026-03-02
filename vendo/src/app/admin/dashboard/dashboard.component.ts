@@ -120,7 +120,7 @@ export class DashboardComponent implements OnInit {
               <div class="value">${this.formatNumber(this.totalUsers())}</div>
             </div>
             <div class="kpi">
-              <div class="label">Revenue</div>
+              <div class="label">Revenue (10% paid orders + rents)</div>
               <div class="value">${this.escapeHtml(this.formatRevenueAr(this.totalRevenue()))}</div>
             </div>
           </section>
