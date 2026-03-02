@@ -6,6 +6,7 @@ import { finalize, forkJoin, of, switchMap } from 'rxjs';
 import {
   Product,
   ProductCategory,
+  ProductReviewItem,
   ProductMutationResponse,
   ProductPayload,
   ShopOption,
@@ -56,6 +57,11 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   selectedImageFiles = signal<File[]>([]);
   selectedImagePreviewUrls = signal<string[]>([]);
   existingImages = signal<string[]>([]);
+  selectedProductForDetails = signal<Product | null>(null);
+  reviewsLoading = signal(false);
+  reviewsError = signal<string | null>(null);
+  productReviews = signal<ProductReviewItem[]>([]);
+  deletingReviewId = signal<string | null>(null);
 
   searchTerm = signal('');
   categoryFilter = signal('all');
@@ -113,6 +119,12 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   readonly outOfStockProducts = computed(
     () => this.products().filter((item) => Number(item.stock || 0) <= 0).length
   );
+  readonly averageRating = computed(() => {
+    const reviews = this.productReviews();
+    if (!reviews.length) return 0;
+    const total = reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0);
+    return total / reviews.length;
+  });
 
   ngOnInit(): void {
     this.loadData();
@@ -263,6 +275,39 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
       });
   }
 
+  openProductDetails(product: Product): void {
+    this.selectedProductForDetails.set(product);
+    this.loadProductReviews(product._id);
+  }
+
+  closeProductDetails(): void {
+    this.selectedProductForDetails.set(null);
+    this.productReviews.set([]);
+    this.reviewsError.set(null);
+    this.reviewsLoading.set(false);
+    this.deletingReviewId.set(null);
+  }
+
+  deleteReview(reviewId: string): void {
+    if (this.deletingReviewId()) return;
+    if (!confirm('Delete this review?')) return;
+
+    this.deletingReviewId.set(reviewId);
+    this.reviewsError.set(null);
+
+    this.productsService
+      .deleteProductReview(reviewId)
+      .pipe(finalize(() => this.deletingReviewId.set(null)))
+      .subscribe({
+        next: () => {
+          this.productReviews.set(this.productReviews().filter((review) => review._id !== reviewId));
+        },
+        error: (error) => {
+          this.reviewsError.set(error?.error?.message || 'Unable to delete this review.');
+        },
+      });
+  }
+
   resetForm(): void {
     this.selectedProductId.set(null);
     this.clearSelectedImageState();
@@ -386,6 +431,28 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
     }).format(Number(value || 0));
   }
 
+  formatReviewDate(value?: string): string {
+    if (!value) return 'Unknown date';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Unknown date';
+    return date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  getReviewClientName(review: ProductReviewItem): string {
+    const client = review?.clientId;
+    if (typeof client === 'string') return 'Client';
+    return client?.fullName || 'Client';
+  }
+
+  renderStars(rating: number): string {
+    const safeRating = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+    return `${'★'.repeat(safeRating)}${'☆'.repeat(5 - safeRating)}`;
+  }
+
   trackByProductId(_index: number, product: Product): string {
     return product._id;
   }
@@ -469,6 +536,23 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   private toOptionalString(value: unknown): string | undefined {
     const trimmed = String(value || '').trim();
     return trimmed.length > 0 ? trimmed : undefined;
+  }
+
+  private loadProductReviews(productId: string): void {
+    this.reviewsLoading.set(true);
+    this.reviewsError.set(null);
+    this.productReviews.set([]);
+
+    this.productsService.getProductReviews(productId).subscribe({
+      next: (response) => {
+        this.productReviews.set(response?.reviews || []);
+        this.reviewsLoading.set(false);
+      },
+      error: (error) => {
+        this.reviewsError.set(error?.error?.message || 'Unable to load product reviews.');
+        this.reviewsLoading.set(false);
+      },
+    });
   }
 
   private filterShopsForCurrentUser(shops: ShopOption[]): ShopOption[] {

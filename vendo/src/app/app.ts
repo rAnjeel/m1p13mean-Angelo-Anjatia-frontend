@@ -17,7 +17,7 @@ interface MenuState {
 
 const ROLE_PAGES: Record<string, string[]> = {
   client: ['/client/home', '/client/profile'],
-  shopkeeper: ['/shopkeeper/my-shop', '/shopkeeper/products', '/admin/categories'],
+  shopkeeper: ['/shopkeeper/my-shop', '/shopkeeper/products', '/shopkeeper/finance', '/admin/categories'],
   admin: ['/admin/dashboard', '/admin/shops', '/admin/categories', '/admin/users', '/admin/rents']
 };
 
@@ -30,7 +30,8 @@ const ROUTE_LABELS: Record<string, string> = {
   '/admin/users': 'Users',
   '/admin/rents': 'Rents',
   '/shopkeeper/my-shop': 'My Shop',
-  '/shopkeeper/products': 'Products'
+  '/shopkeeper/products': 'Products',
+  '/shopkeeper/finance': 'Financial overview'
 };
 
 const getStoredRole = (): string | null => {
@@ -174,4 +175,5 @@ export class App {
     void this.router.navigateByUrl('/login');
   }
 }
+
 

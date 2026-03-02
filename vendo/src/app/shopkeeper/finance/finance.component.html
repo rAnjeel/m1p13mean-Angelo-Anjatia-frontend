@@ -1,0 +1,78 @@
+<section class="shopkeeper-finance-page">
+  <header class="finance-head">
+    <div>
+      <p class="eyebrow">Financial dashboard</p>
+      <h1>Shop Financial Overview</h1>
+      <p class="sub" *ngIf="shopNames().length > 0">
+        Associated shop: <strong>{{ shopNames().join(', ') }}</strong>
+      </p>
+    </div>
+    <button type="button" class="export-btn" (click)="exportFinancePdf()">Export PDF</button>
+  </header>
+
+  <p class="state" *ngIf="loading()">Loading financial data...</p>
+  <p class="state error" *ngIf="!loading() && serverError()">{{ serverError() }}</p>
+
+  <ng-container *ngIf="!loading() && !serverError()">
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span>Total Sales</span>
+        <strong>Ar {{ formatAmount(totalSales()) }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Orders Completed</span>
+        <strong>{{ totalOrders() }}</strong>
+      </article>
+      <article class="stat-card">
+        <span>Items Sold</span>
+        <strong>{{ totalItemsSold() }}</strong>
+      </article>
+    </section>
+
+    <section class="finance-grid">
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Orders List</h2>
+        </header>
+
+        <p class="state" *ngIf="orders().length === 0">No order recorded.</p>
+
+        <div class="orders-list" *ngIf="orders().length > 0">
+          <article class="order-card" *ngFor="let order of orders()">
+            <div class="order-top">
+              <div>
+                <strong>#{{ order.orderId }}</strong>
+                <p>{{ formatDate(order.createdAt) }}</p>
+                <p class="client-name">Client: {{ order.clientName || 'Unknown client' }}</p>
+              </div>
+              <span class="badge">{{ getStatusLabel(order.status) }}</span>
+            </div>
+            <div class="order-meta">
+              <span>{{ order.itemCount }} item(s)</span>
+              <strong>Ar {{ formatAmount(order.totalAmount) }}</strong>
+            </div>
+          </article>
+        </div>
+      </article>
+
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Top 3 Best-Selling Products</h2>
+        </header>
+
+        <p class="state" *ngIf="topProducts().length === 0">No data available.</p>
+
+        <ol class="top-list" *ngIf="topProducts().length > 0">
+          <li *ngFor="let product of topProducts(); let i = index">
+            <div class="rank">{{ i + 1 }}</div>
+            <div class="top-main">
+              <strong>{{ product.productName }}</strong>
+              <span>{{ product.quantitySold }} sold</span>
+            </div>
+            <div class="top-revenue">Ar {{ formatAmount(product.revenue) }}</div>
+          </li>
+        </ol>
+      </article>
+    </section>
+  </ng-container>
+</section>
