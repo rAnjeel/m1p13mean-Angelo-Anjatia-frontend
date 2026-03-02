@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Shop, ShopCategory, ShopsService } from '../../admin/shops/shops.service';
 import { FavoritesService } from '../shared/favorites.service';
 import { catchError, of } from 'rxjs';
+import { ShopReview, ShopReviewsService } from '../shared/shop-reviews.service';
 
 @Component({
   selector: 'app-client-shops',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './shops.component.html',
   styleUrl: './shops.component.css',
 })
@@ -17,6 +19,7 @@ export class ClientShopsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly favoritesService = inject(FavoritesService);
+  private readonly shopReviewsService = inject(ShopReviewsService);
 
   readonly loading = signal(true);
   readonly serverError = signal<string | null>(null);
@@ -28,6 +31,15 @@ export class ClientShopsComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly selectedCategory = signal('all');
   readonly selectedShopId = signal<string | null>(null);
+  readonly selectedShopForReview = signal<Shop | null>(null);
+  readonly shopReviews = signal<ShopReview[]>([]);
+  readonly reviewLoading = signal(false);
+  readonly reviewSubmitting = signal(false);
+  readonly reviewError = signal<string | null>(null);
+  readonly reviewSuccess = signal<string | null>(null);
+  readonly reviewRating = signal(0);
+  readonly reviewComment = signal('');
+  readonly stars = [1, 2, 3, 4, 5];
 
   readonly filteredShops = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
@@ -90,6 +102,79 @@ export class ClientShopsComponent implements OnInit {
     void this.router.navigate(['/client/products'], {
       queryParams: { shop: shop._id },
     });
+  }
+
+  openShopReview(event: MouseEvent, shop: Shop): void {
+    event.stopPropagation();
+    this.selectedShopForReview.set(shop);
+    this.reviewRating.set(0);
+    this.reviewComment.set('');
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+    this.loadShopReviews(shop._id);
+  }
+
+  closeShopReview(): void {
+    this.selectedShopForReview.set(null);
+    this.shopReviews.set([]);
+    this.reviewLoading.set(false);
+    this.reviewSubmitting.set(false);
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+    this.reviewRating.set(0);
+    this.reviewComment.set('');
+  }
+
+  setReviewRating(value: number): void {
+    this.reviewRating.set(Math.min(5, Math.max(1, Number(value) || 0)));
+  }
+
+  updateReviewComment(value: string): void {
+    this.reviewComment.set(String(value || ''));
+  }
+
+  submitShopReview(): void {
+    const shop = this.selectedShopForReview();
+    if (!shop || this.reviewSubmitting()) return;
+
+    const rating = this.reviewRating();
+    if (rating < 1 || rating > 5) {
+      this.reviewError.set("Choisissez une note d'au moins 1 etoile.");
+      return;
+    }
+
+    this.reviewSubmitting.set(true);
+    this.reviewError.set(null);
+    this.reviewSuccess.set(null);
+
+    this.shopReviewsService
+      .add(shop._id, { rating, comment: this.reviewComment().trim() })
+      .subscribe({
+        next: () => {
+          this.reviewSubmitting.set(false);
+          this.reviewSuccess.set('Votre avis boutique a ete enregistre.');
+          this.reviewRating.set(0);
+          this.reviewComment.set('');
+          this.loadShopReviews(shop._id);
+        },
+        error: (error) => {
+          this.reviewError.set(error?.error?.message || "Impossible d'envoyer votre avis.");
+          this.reviewSubmitting.set(false);
+        },
+      });
+  }
+
+  getReviewClientName(review: ShopReview): string {
+    const client = review?.clientId;
+    if (typeof client === 'string') return 'Client';
+    return String(client?.fullName || 'Client');
+  }
+
+  formatReviewDate(value?: string): string {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   toggleFavorite(event: MouseEvent, shop: Shop): void {
@@ -197,6 +282,22 @@ export class ClientShopsComponent implements OnInit {
           this.favoriteShopIds.set(ids);
         },
       });
+  }
+
+  private loadShopReviews(shopId: string): void {
+    this.reviewLoading.set(true);
+    this.reviewError.set(null);
+
+    this.shopReviewsService.getByShop(shopId).subscribe({
+      next: (response) => {
+        this.shopReviews.set(response?.reviews || []);
+        this.reviewLoading.set(false);
+      },
+      error: () => {
+        this.shopReviews.set([]);
+        this.reviewLoading.set(false);
+      },
+    });
   }
 
   private extractCategoryId(shop: Shop): string {
