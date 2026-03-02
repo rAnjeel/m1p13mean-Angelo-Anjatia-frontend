@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
@@ -42,7 +42,7 @@ export class LoginComponent {
           this.authService.setSession(token, response.user);
         }
 
-        this.successMessage.set(response?.message || 'Logged in successfully.');
+        this.successMessage.set(response?.message || 'Connexion réussie.');
         this.loading.set(false);
         const role = String((response as any)?.user?.role || '').toLowerCase();
         const targetRoute =
@@ -82,22 +82,22 @@ export class LoginComponent {
 
     switch (error?.status) {
       case 400:
-        apiErrors.push('Please provide both email and password.');
+        apiErrors.push('Veuillez saisir l\'e-mail et le mot de passe.');
         break;
       case 401:
-        apiErrors.push('Invalid email or password.');
+        apiErrors.push('E-mail ou mot de passe invalide.');
         break;
       case 403:
-        apiErrors.push('This account is disabled.');
+        apiErrors.push('Ce compte est désactivé.');
         break;
       case 404:
-        apiErrors.push('No account found with this email. Please register first.');
+        apiErrors.push('Aucun compte trouvé avec cet e-mail. Veuillez vous inscrire.');
         break;
       case 0:
-        apiErrors.push('Unable to reach the server. Please check your connection.');
+        apiErrors.push('Impossible de joindre le serveur. Vérifiez votre connexion.');
         break;
       default:
-        apiErrors.push('An unexpected error occurred. Please try again.');
+        apiErrors.push('Une erreur inattendue est survenue. Veuillez réessayer.');
         break;
     }
 

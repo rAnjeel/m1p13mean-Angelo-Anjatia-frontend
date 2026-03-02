@@ -1,7 +1,7 @@
-:host {
+﻿:host {
   display: block;
   min-height: 100vh;
-  background: #ffffff;
+  background: #9e15fa12;
   padding: 2.5rem 1.5rem;
   box-sizing: border-box;
   font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -45,7 +45,7 @@
   height: 48%;
   top: 12%;
   left: 8%;
-  background: #fff13b;
+  background: #a347b7;
 }
 
 .blob-two {
@@ -53,7 +53,7 @@
   height: 48%;
   top: 6%;
   right: 6%;
-  background: #f2d23d;
+  background: #560e6a;
 }
 
 .blob-three {
@@ -61,7 +61,7 @@
   height: 46%;
   bottom: 6%;
   left: 12%;
-  background: #d6bb35;
+  background: #b99cc3;
 }
 
 .auth-form {
@@ -79,10 +79,11 @@
 }
 
 .auth-card-header h1 {
-  font-size: 1.35rem;
+  font-size: 2.35rem;
   margin: 0 0 0.4rem;
-  font-weight: 600;
+  font-weight: 200;
   color: #1f2937;
+  font-family: "Playfair Display", serif;
 }
 
 .auth-card-header p {
@@ -136,7 +137,7 @@ input::placeholder {
 
 input:focus,
 select:focus {
-  border-color: #facc15;
+  border-color: #770497;
   box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.35);
   background: #f1f3f5;
 }
@@ -160,8 +161,8 @@ select.ng-invalid.ng-touched {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  color: #1f2937;
-  background: #facc15;
+  color: #e4e4e4;
+  background: #9e15fa;
   box-shadow: 0 10px 20px rgba(250, 204, 21, 0.25);
   display: inline-flex;
   align-items: center;
@@ -262,7 +263,7 @@ select.ng-invalid.ng-touched {
 }
 
 .link {
-  color: #c58b07;
+  color: #9e15fa;
   text-decoration: none;
   font-weight: 600;
 }
@@ -320,3 +321,4 @@ select.ng-invalid.ng-touched {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
