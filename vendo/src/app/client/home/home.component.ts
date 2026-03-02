@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { NgFor, NgIf, NgClass, DecimalPipe, AsyncPipe } from '@angular/common';
 import { Observable, catchError, forkJoin, map, of } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   Shop,
   ShopCategory,
@@ -51,6 +51,7 @@ export class ClientHomeComponent implements OnInit, AfterViewInit {
   private readonly shopsService = inject(ShopsService);
   private readonly productsService = inject(ShopkeeperProductsService);
   private readonly favoritesService = inject(FavoritesService);
+  private readonly router = inject(Router);
 
   constructor() {
     this.products$ = this.productsService
@@ -78,6 +79,15 @@ export class ClientHomeComponent implements OnInit, AfterViewInit {
 
   addToCart(): void {
     this.cartCount++;
+  }
+
+  openProductSearch(product: Product): void {
+    const productName = String(product?.name || '').trim();
+    void this.router.navigate(['/client/products'], {
+      queryParams: {
+        search: productName || null,
+      },
+    });
   }
 
   scrollTo(sectionId: string): void {

@@ -207,6 +207,32 @@ h1 {
   outline: none;
 }
 
+.search-input-wrap {
+  position: relative;
+}
+
+.search-input-wrap input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.search-clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  background: #f9d3d3;
+  color: var(--text-soft);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .filter-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -311,11 +337,11 @@ h1 {
 
 .stock {
   font-size: 11px;
-  color: #4d8b69;
+  color: #00d962;
 }
 
 .stock.off {
-  color: #b47a7a;
+  color: #c90b0b;
 }
 
 .product-actions {
@@ -334,6 +360,19 @@ h1 {
   width: 100%;
   font-size: 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+}
+
+.spin-icon {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .add-cart-trigger {

@@ -8,12 +8,26 @@
   <section class="filters">
     <label class="search-field">
       <span>Recherche</span>
-      <input
-        type="text"
-        placeholder="Nom du produit, categorie ou boutique"
-        [value]="searchTerm()"
-        (input)="onSearchInput($any($event.target).value)"
-      />
+      <div class="search-input-wrap">
+        <input
+          type="text"
+          placeholder="Nom du produit, categorie ou boutique"
+          [value]="searchTerm()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="search-clear-btn"
+          *ngIf="searchTerm().trim().length > 0"
+          (click)="onSearchInput('')"
+          aria-label="Effacer la recherche"
+          title="Effacer"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
     </label>
 
     <div class="filter-row">
@@ -87,11 +101,32 @@
             class="add-cart-trigger"
             [disabled]="isAddingToCart(product._id) || product.stock <= 0 || !product.isActive"
             (click)="addProductToCart(product, $event)"
+            aria-label="Ajouter au panier"
+            title="Ajouter au panier"
           >
-            {{ isAddingToCart(product._id) ? 'Ajout...' : 'Ajouter au panier' }}
+            <ng-container *ngIf="!isAddingToCart(product._id); else cartLoadingIcon">
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.5 6M7 13l-1.2 2.2a1 1 0 0 0 .9 1.5H18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="9" cy="20" r="1.2" />
+                <circle cx="17" cy="20" r="1.2" />
+              </svg>
+            </ng-container>
+            <ng-template #cartLoadingIcon>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="spin-icon">
+                <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="30 24" />
+              </svg>
+            </ng-template>
           </button>
-          <button type="button" class="review-trigger" (click)="openReviewFromButton(product, $event)">
-            Donner un avis
+          <button
+            type="button"
+            class="review-trigger"
+            (click)="openReviewFromButton(product, $event)"
+            aria-label="Donner un avis"
+            title="Donner un avis"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.8-3.2A8.5 8.5 0 1 1 21 11.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </button>
         </div>
       </div>
