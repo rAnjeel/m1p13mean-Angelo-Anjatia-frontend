@@ -26,6 +26,30 @@
   margin-right: auto;
 }
 
+.invoice-actions {
+  max-width: 1040px;
+  margin: 0 auto 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-invoice {
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-invoice.secondary {
+  background: #f8f6fc;
+  color: var(--text);
+  border-color: var(--border);
+}
+
 .hero {
   margin-bottom: 16px;
 }
@@ -229,6 +253,156 @@
   border-color: rgba(47, 133, 90, 0.25);
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  background: rgba(27, 23, 37, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-panel {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(46, 40, 64, 0.25);
+  padding: 16px;
+}
+
+.invoice-panel {
+  width: min(760px, 100%);
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-weight: 400;
+}
+
+.modal-close {
+  border: 1px solid var(--border);
+  background: #f8f6fc;
+  border-radius: 10px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.modal-subtitle {
+  margin: 10px 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.field span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.modal-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-cancel,
+.btn-submit {
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  border: 1px solid var(--border);
+  background: #f8f6fc;
+  color: var(--text);
+}
+
+.btn-submit {
+    border: 1px solid var(--accent);
+    background: #b4a4d9;
+    color: #060606;
+}
+
+.btn-submit:disabled,
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invoice-meta {
+  margin-top: 10px;
+  display: grid;
+  gap: 3px;
+}
+
+.invoice-meta p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.invoice-lines {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.invoice-line {
+  display: grid;
+  grid-template-columns: 1.3fr 0.5fr 0.8fr 0.8fr;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.invoice-line:last-child {
+  border-bottom: 0;
+}
+
+.invoice-line.head {
+  background: #f8f6fc;
+  font-weight: 700;
+}
+
+.invoice-total {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 @media (max-width: 780px) {
   .client-carts-page {
     padding: 88px 12px 36px;
@@ -250,5 +424,9 @@
 
   .shop-head-right {
     text-align: left;
+  }
+
+  .invoice-actions {
+    flex-direction: column;
   }
 }

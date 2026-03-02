@@ -1,4 +1,4 @@
-<section class="client-carts-page">
+﻿<section class="client-carts-page">
   <section class="hero">
     <p class="eyebrow">Panier client</p>
     <h1>Mes paniers par boutique</h1>
@@ -8,6 +8,11 @@
   <p class="state-box" *ngIf="loading()">Chargement des paniers...</p>
   <p class="state-box error" *ngIf="serverError()">{{ serverError() }}</p>
   <p class="state-box success" *ngIf="successMessage()">{{ successMessage() }}</p>
+
+  <div class="invoice-actions" *ngIf="latestInvoice()">
+    <button type="button" class="btn-invoice" (click)="openInvoiceModal()">Visualiser la facture</button>
+    <button type="button" class="btn-invoice secondary" (click)="exportInvoiceAsPdf()">Exporter en PDF</button>
+  </div>
 
   <section class="carts-wrap" *ngIf="!loading() && carts().length > 0">
     <article class="shop-cart-card" *ngFor="let cart of carts()">
@@ -21,10 +26,10 @@
           <button
             type="button"
             class="btn-buy-all"
-            [disabled]="isBuyingAll(cart.shopId) || cart.items.length === 0"
-            (click)="buyAllFromShop(cart)"
+            [disabled]="paymentSubmitting() || cart.items.length === 0"
+            (click)="openPaymentForAll(cart)"
           >
-            {{ isBuyingAll(cart.shopId) ? 'Traitement...' : 'Tout acheter' }}
+            Tout acheter
           </button>
         </div>
       </header>
@@ -49,7 +54,7 @@
                 [value]="item.quantity"
                 [attr.min]="1"
                 [attr.max]="getMaxQuantity(item)"
-                [disabled]="isUpdatingQuantity(item._id) || isRemovingItem(item._id)"
+                [disabled]="isUpdatingQuantity(item._id) || isRemovingItem(item._id) || paymentSubmitting()"
                 (change)="onQuantityChange(cart, item, $any($event.target).value)"
               />
             </label>
@@ -61,7 +66,7 @@
               type="button"
               class="btn-cancel-item"
               title="Annuler cet article"
-              [disabled]="isRemovingItem(item._id) || isUpdatingQuantity(item._id)"
+              [disabled]="isRemovingItem(item._id) || isUpdatingQuantity(item._id) || paymentSubmitting()"
               (click)="removeCartItem(cart, item)"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -72,10 +77,10 @@
             <button
               type="button"
               class="btn-buy-one"
-              [disabled]="isBuyingItem(item._id) || isRemovingItem(item._id) || isUpdatingQuantity(item._id)"
-              (click)="buySingleProduct(cart, item)"
+              [disabled]="isRemovingItem(item._id) || isUpdatingQuantity(item._id) || paymentSubmitting()"
+              (click)="openPaymentForItem(cart, item)"
             >
-              {{ isBuyingItem(item._id) ? 'Traitement...' : 'Acheter ce produit' }}
+              Acheter ce produit
             </button>
           </div>
         </article>
@@ -87,3 +92,114 @@
     Aucun panier actif pour le moment.
   </div>
 </section>
+
+<div class="modal-backdrop" *ngIf="paymentModalOpen()" (click)="closePaymentModal()">
+  <section class="modal-panel" (click)="$event.stopPropagation()">
+    <header class="modal-head">
+      <h2>Paiement commande</h2>
+      <button type="button" class="modal-close" (click)="closePaymentModal()">Fermer</button>
+    </header>
+
+    <p class="modal-subtitle">
+      Boutique: <strong>{{ pendingPurchase()?.shopName }}</strong>
+    </p>
+
+    <label class="field">
+      <span>Mode de paiement</span>
+      <select
+        [value]="paymentMethod()"
+        [disabled]="paymentSubmitting()"
+        (change)="setPaymentMethod($any($event.target).value)"
+      >
+        <option value="bank_card">Carte bancaire</option>
+        <option value="visa">Visa</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Nom titulaire</span>
+      <input
+        type="text"
+        [value]="cardHolderName()"
+        [disabled]="paymentSubmitting()"
+        (input)="cardHolderName.set($any($event.target).value)"
+        placeholder="Nom complet"
+      />
+    </label>
+
+    <label class="field">
+      <span>Numero de carte</span>
+      <input
+        type="text"
+        inputmode="numeric"
+        [value]="cardNumber()"
+        [disabled]="paymentSubmitting()"
+        (input)="cardNumber.set($any($event.target).value)"
+        placeholder="16 chiffres"
+      />
+    </label>
+
+    <label class="field">
+      <span>Date de recuperation</span>
+      <input
+        type="date"
+        [value]="pickupDate()"
+        [attr.min]="getTodayIsoDate()"
+        [disabled]="paymentSubmitting()"
+        (change)="pickupDate.set($any($event.target).value)"
+      />
+    </label>
+
+    <p class="state-box error" *ngIf="paymentError()">{{ paymentError() }}</p>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-cancel" [disabled]="paymentSubmitting()" (click)="closePaymentModal()">
+        Annuler
+      </button>
+      <button type="button" class="btn-submit" [disabled]="paymentSubmitting()" (click)="submitPayment()">
+        {{ paymentSubmitting() ? 'Traitement...' : 'Valider le paiement' }}
+      </button>
+    </footer>
+  </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="invoiceModalOpen()" (click)="closeInvoiceModal()">
+  <section class="modal-panel invoice-panel" (click)="$event.stopPropagation()" *ngIf="latestInvoice() as invoice">
+    <header class="modal-head">
+      <h2>Facture {{ invoice.invoiceNumber }}</h2>
+      <button type="button" class="modal-close" (click)="closeInvoiceModal()">Fermer</button>
+    </header>
+
+    <div class="invoice-meta">
+      <p><strong>Commande:</strong> {{ invoice.orderId }}</p>
+      <p><strong>Boutique:</strong> {{ invoice.shopName }}</p>
+      <p><strong>Paiement:</strong> {{ invoice.paymentMethodLabel }} •••• {{ invoice.cardLast4 }}</p>
+      <p><strong>Titulaire:</strong> {{ invoice.cardHolderName }}</p>
+      <p><strong>Date paiement:</strong> {{ invoice.paidAt }}</p>
+      <p><strong>Date recuperation:</strong> {{ invoice.pickupDate }}</p>
+    </div>
+
+    <div class="invoice-lines">
+      <div class="invoice-line head">
+        <span>Produit</span>
+        <span>Qte</span>
+        <span>PU</span>
+        <span>Sous-total</span>
+      </div>
+      <div class="invoice-line" *ngFor="let line of invoice.lines">
+        <span>{{ line.productName }}</span>
+        <span>{{ line.quantity }}</span>
+        <span>Ar {{ line.unitPrice | number : '1.0-0' }}</span>
+        <span>Ar {{ line.subtotal | number : '1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="invoice-total">Total: Ar {{ invoice.totalAmount | number : '1.0-0' }}</div>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-cancel" (click)="closeInvoiceModal()">Fermer</button>
+      <button type="button" class="btn-submit" (click)="exportInvoiceAsPdf()">Exporter en PDF</button>
+    </footer>
+  </section>
+</div>
+
