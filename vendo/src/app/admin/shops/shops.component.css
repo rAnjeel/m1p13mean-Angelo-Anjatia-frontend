@@ -435,90 +435,6 @@
   font-size: 12px;
 }
 
-.divider {
-  max-width: 1300px;
-  margin: 38px auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #c5bfd8, transparent);
-  opacity: 0.45;
-}
-
-.admin-footer {
-  margin-top: 24px;
-  background: #2e2840;
-  color: rgba(255, 255, 255, 0.72);
-  padding: 46px 34px 26px;
-  border-radius: 16px;
-}
-
-.footer-grid {
-  max-width: 1300px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.5fr repeat(3, 1fr);
-  gap: 36px;
-  margin-bottom: 30px;
-}
-
-.footer-brand-name {
-  font-family: "Playfair Display", serif;
-  font-size: 30px;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-.footer-brand-name span {
-  font-style: italic;
-  color: #b6a8ca;
-}
-
-.footer-brand-desc {
-  font-size: 13px;
-  line-height: 1.7;
-  opacity: 0.68;
-  max-width: 280px;
-}
-
-.footer-col-title {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #b6a8ca;
-  margin-bottom: 16px;
-}
-
-.footer-links {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-.footer-links li a {
-  text-decoration: none;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.58);
-  transition: color 0.2s;
-}
-
-.footer-links li a:hover {
-  color: #fff;
-}
-
-.footer-bottom {
-  max-width: 1300px;
-  margin: 0 auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  opacity: 0.42;
-}
-
 @media (max-width: 1200px) {
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -526,10 +442,6 @@
 
   .content-grid {
     grid-template-columns: 1fr;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -579,15 +491,5 @@
 
   .stat-grid {
     grid-template-columns: 1fr;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
   }
 }

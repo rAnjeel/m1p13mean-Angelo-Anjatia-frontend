@@ -32,6 +32,21 @@
   gap: 12px;
 }
 
+.state-box {
+  border: 1px solid #e4e0ef;
+  background: #f7f5fb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+  color: #4a4b5b;
+}
+
+.state-box.error {
+  color: #8b3f3f;
+  border-color: rgba(139, 63, 63, 0.3);
+  background: #fff5f5;
+}
+
 .ghost-btn,
 .primary-btn {
   border: 1px solid transparent;
@@ -145,34 +160,75 @@
 .bar-chart {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
+  gap: 10px;
   align-items: end;
-  height: 180px;
-  padding-top: 10px;
+  height: 220px;
+  padding: 12px 0 4px;
+  border-radius: 12px;
+  background:
+    linear-gradient(to top, rgba(141, 128, 168, 0.08) 1px, transparent 1px) 0 0 / 100% 25%,
+    linear-gradient(to right, rgba(141, 128, 168, 0.04) 1px, transparent 1px) 0 0 / 16.66% 100%;
 }
 
-.bar {
+.bar-item {
   position: relative;
   height: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: default;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.bar::before {
-  content: "";
+.bar-fill {
   width: 100%;
   height: var(--h);
-  border-radius: 12px;
+  border-radius: 14px 14px 10px 10px;
   background: linear-gradient(180deg, #b6a8ca 0%, #8e83a9 100%);
-  box-shadow: 0 10px 20px rgba(142, 131, 169, 0.28);
+  box-shadow:
+    0 10px 20px rgba(142, 131, 169, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 160ms ease, filter 160ms ease;
 }
 
-.bar span {
-  position: absolute;
-  bottom: -24px;
+.bar-label {
+  margin-top: 8px;
   font-size: 11px;
+  line-height: 1;
+  text-align: center;
   color: #6d6f7d;
+}
+
+.bar-item::after {
+  content: attr(data-value);
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #5a4f73;
+  border-radius: 8px;
+  padding: 5px 7px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.bar-item:hover .bar-fill,
+.bar-item:focus-visible .bar-fill {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+.bar-item:hover::after,
+.bar-item:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .activity-list {
@@ -209,6 +265,17 @@
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .bar-chart {
+    grid-template-columns: repeat(3, 1fr);
+    height: auto;
+    row-gap: 14px;
+    padding: 10px;
+  }
+
+  .bar-item {
+    height: 140px;
   }
 }
 
