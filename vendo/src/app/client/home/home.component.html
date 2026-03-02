@@ -277,7 +277,7 @@
 
       <div class="products-grid">
         <ng-container *ngIf="products$ | async as products">
-          <div class="product-card" *ngFor="let product of products" (click)="addToCart()">
+          <div class="product-card" *ngFor="let product of products" (click)="openProductSearch(product)">
             <div class="product-thumb" style="background:linear-gradient(135deg,#ede0f5,#d8c8ec);">
               <ng-container *ngIf="getProductImageUrl(product) as productImageUrl; else noProductImage">
                 <img [src]="productImageUrl" [alt]="product.name" class="product-thumb-image" />
@@ -311,7 +311,7 @@
                     € {{ product.price | number : '1.0-0' }}
                   </span>
                 </div>
-                <button class="add-btn" (click)="$event.stopPropagation(); addToCart()">
+                <button class="add-btn" (click)="$event.stopPropagation(); openProductSearch(product)">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
