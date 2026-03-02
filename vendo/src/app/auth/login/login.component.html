@@ -41,6 +41,18 @@
           <a class="link" routerLink="/register">Créer un compte</a>
         </div>
 
+        <div class="space-row">
+          <button type="button" class="space-btn" (click)="fillClientCredentials()">
+            Espace Client
+          </button>
+          <button type="button" class="space-btn" (click)="fillShopkeeperCredentials()">
+            Espace Boutiquier
+          </button>
+          <button type="button" class="space-btn" (click)="fillAdminCredentials()">
+            Espace Admin
+          </button>
+        </div>
+
         <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
           <div class="server-error" *ngIf="serverErrors().length">
             <p *ngFor="let error of serverErrors()">{{ error }}</p>
