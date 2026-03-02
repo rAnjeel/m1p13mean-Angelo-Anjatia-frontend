@@ -1,0 +1,217 @@
+<section class="client-products-page">
+  <section class="hero">
+    <p class="eyebrow">Catalogue produits</p>
+    <h1>Tous les produits</h1>
+    <p class="subtitle">Filtrez par categorie et par boutique.</p>
+  </section>
+
+  <section class="filters">
+    <label class="search-field">
+      <span>Recherche</span>
+      <div class="search-input-wrap">
+        <input
+          type="text"
+          placeholder="Nom du produit, categorie ou boutique"
+          [value]="searchTerm()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="search-clear-btn"
+          *ngIf="searchTerm().trim().length > 0"
+          (click)="onSearchInput('')"
+          aria-label="Effacer la recherche"
+          title="Effacer"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </label>
+
+    <div class="filter-row">
+      <div class="filter-box">
+        <span>Categorie produit</span>
+        <div class="pill-wrap">
+          <button type="button" class="pill" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="pill"
+            *ngFor="let category of categories()"
+            [class.active]="selectedCategory() === category._id"
+            (click)="setCategory(category._id)"
+          >
+            {{ category.name }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-box">
+        <span>Boutique</span>
+        <div class="pill-wrap">
+          <button type="button" class="pill" [class.active]="selectedShop() === 'all'" (click)="setShop('all')">
+            Toutes
+          </button>
+          <button
+            type="button"
+            class="pill"
+            *ngFor="let shop of shops()"
+            [class.active]="selectedShop() === shop._id"
+            (click)="setShop(shop._id)"
+          >
+            {{ shop.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="state-box" *ngIf="loading()">Chargement des produits...</div>
+  <div class="state-box error" *ngIf="serverError()">{{ serverError() }}</div>
+  <div class="state-box success" *ngIf="addToCartSuccess()">{{ addToCartSuccess() }}</div>
+  <div class="state-box error" *ngIf="addToCartError()">{{ addToCartError() }}</div>
+
+  <section class="products-grid" *ngIf="!loading() && !serverError()">
+    <article class="product-card" *ngFor="let product of filteredProducts()" (click)="openReviewPopup(product)">
+      <div class="product-thumb">
+        <ng-container *ngIf="getProductImageUrl(product) as imageUrl; else noProductImage">
+          <img [src]="imageUrl" [alt]="product.name" class="product-thumb-image" />
+        </ng-container>
+        <ng-template #noProductImage>
+          <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="7" width="16" height="11" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M4 10h16" fill="none" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </ng-template>
+      </div>
+      <div class="product-info">
+        <div class="product-shop">{{ getProductShopName(product) }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-category">{{ getProductCategoryName(product) }}</div>
+        <div class="product-footer">
+          <strong class="price">Ar {{ product.price | number : '1.0-0' }}</strong>
+          <span class="stock" [class.off]="product.stock <= 0">{{ product.stock > 0 ? 'En stock' : 'Rupture' }}</span>
+        </div>
+        <div class="product-actions">
+          <button
+            type="button"
+            class="add-cart-trigger"
+            [disabled]="isAddingToCart(product._id) || product.stock <= 0 || !product.isActive"
+            (click)="addProductToCart(product, $event)"
+            aria-label="Ajouter au panier"
+            title="Ajouter au panier"
+          >
+            <ng-container *ngIf="!isAddingToCart(product._id); else cartLoadingIcon">
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.5 6M7 13l-1.2 2.2a1 1 0 0 0 .9 1.5H18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="9" cy="20" r="1.2" />
+                <circle cx="17" cy="20" r="1.2" />
+              </svg>
+            </ng-container>
+            <ng-template #cartLoadingIcon>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="spin-icon">
+                <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="30 24" />
+              </svg>
+            </ng-template>
+          </button>
+          <button
+            type="button"
+            class="review-trigger"
+            (click)="openReviewFromButton(product, $event)"
+            aria-label="Donner un avis"
+            title="Donner un avis"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.8-3.2A8.5 8.5 0 1 1 21 11.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="state-box" *ngIf="!loading() && !serverError() && filteredProducts().length === 0">
+    Aucun produit ne correspond aux filtres.
+  </div>
+</section>
+
+<div class="review-modal-backdrop" *ngIf="selectedProductForReview()" (click)="closeReviewPopup()">
+  <section class="review-modal" (click)="$event.stopPropagation()">
+    <header class="review-modal-head">
+      <div class="modal-title-block">
+        <p class="modal-eyebrow">Avis produit</p>
+        <h2>{{ selectedProductForReview()?.name }}</h2>
+        <p class="modal-subtitle">
+          {{ getSelectedReviewShopName() }} • Ar
+          {{ selectedProductForReview()?.price || 0 | number : '1.0-0' }}
+        </p>
+      </div>
+      <button type="button" class="close-btn" (click)="closeReviewPopup()">Fermer</button>
+    </header>
+
+    <div class="review-rating-input">
+      <span>Votre note</span>
+      <div class="star-picker">
+        <button
+          type="button"
+          class="star-btn"
+          *ngFor="let star of stars"
+          [class.active]="star <= reviewRating()"
+          (click)="setReviewRating(star)"
+        >
+          ★
+        </button>
+      </div>
+      <p class="rating-hint" *ngIf="reviewRating() > 0">{{ reviewRating() }}/5</p>
+    </div>
+
+    <label class="review-comment-field">
+      <span>Commentaire</span>
+      <textarea
+        rows="4"
+        placeholder="Partagez votre experience avec ce produit..."
+        [value]="reviewComment()"
+        (input)="onReviewCommentInput($any($event.target).value)"
+      ></textarea>
+    </label>
+
+    <p class="review-feedback success" *ngIf="reviewSuccess()">{{ reviewSuccess() }}</p>
+    <p class="review-feedback error" *ngIf="reviewError()">{{ reviewError() }}</p>
+
+    <div class="review-actions">
+      <button type="button" class="btn-cancel" (click)="closeReviewPopup()">Annuler</button>
+      <button
+        type="button"
+        class="btn-submit"
+        [disabled]="reviewSubmitting() || reviewRating() < 1"
+        (click)="submitReview()"
+      >
+        {{ reviewSubmitting() ? 'Envoi...' : 'Valider mon avis' }}
+      </button>
+    </div>
+
+    <section class="reviews-list-box">
+      <h3>Avis recents</h3>
+      <p class="reviews-state" *ngIf="reviewLoading()">Chargement des avis...</p>
+      <p class="reviews-state" *ngIf="!reviewLoading() && productReviews().length === 0">
+        Aucun avis pour ce produit pour le moment.
+      </p>
+
+      <article class="review-item" *ngFor="let review of productReviews()">
+        <div class="review-item-top">
+          <strong>{{ getReviewClientName(review) }}</strong>
+          <span>{{ formatReviewDate(review.createdAt) }}</span>
+        </div>
+        <div class="review-stars">
+          <span *ngFor="let star of stars" [class.filled]="star <= review.rating">★</span>
+        </div>
+        <p *ngIf="review.comment">{{ review.comment }}</p>
+      </article>
+    </section>
+  </section>
+</div>
+
+

@@ -1,0 +1,73 @@
+<section class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Shopping center - Overview</p>
+    </div>
+    <div class="dashboard-actions">
+      <button class="ghost-btn" type="button">{{ lastUpdate() ? 'Maj: ' + lastUpdate() : 'Last update' }}</button>
+      <button class="primary-btn" type="button" (click)="exportDashboardPdf()">Export PDF</button>
+    </div>
+  </header>
+
+  <p class="state-box" *ngIf="loading()">Chargement du dashboard...</p>
+  <p class="state-box error" *ngIf="error()">{{ error() }}</p>
+
+  <div class="kpi-grid">
+    <article class="kpi-card accent-1">
+      <div class="kpi-label">Total shops</div>
+      <div class="kpi-value">{{ formatNumber(totalShops()) }}</div>
+      <div class="kpi-meta">Shops</div>
+    </article>
+    <article class="kpi-card accent-2">
+      <div class="kpi-label">Active users</div>
+      <div class="kpi-value">{{ formatNumber(totalUsers()) }}</div>
+      <div class="kpi-meta">Users</div>
+    </article>
+    <article class="kpi-card accent-3">
+      <div class="kpi-label">Revenue</div>
+      <div class="kpi-value">{{ formatRevenueAr(totalRevenue()) }}</div>
+      <div class="kpi-meta">10% paid orders + total rents</div>
+    </article>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="panel panel-wide">
+      <header class="panel-header">
+        <div>
+          <h2>Monthly performance</h2>
+          <p>Users created per month</p>
+        </div>
+        <span class="badge">{{ lastUpdate() ? 'Maj: ' + lastUpdate() : 'Maj' }}</span>
+      </header>
+      <div class="bar-chart">
+        <button
+          type="button"
+          class="bar-item"
+          *ngFor="let bar of monthlyBars()"
+          [style.--h]="getBarHeight(bar.totalUsers)"
+          [attr.data-value]="formatNumber(bar.totalUsers) + ' users'"
+          [attr.aria-label]="bar.label + ': ' + formatNumber(bar.totalUsers) + ' utilisateurs'"
+        >
+          <span class="bar-fill"></span>
+          <span class="bar-label">{{ bar.label }}</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-header">
+        <div>
+          <h2>Shop activity</h2>
+          <p>Shop categories activity (Percent)</p>
+        </div>
+      </header>
+      <ul class="activity-list">
+        <li *ngFor="let row of shopActivity()">
+          <span>{{ row.categoryName }}</span>
+          <strong>{{ row.percent }}%</strong>
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>

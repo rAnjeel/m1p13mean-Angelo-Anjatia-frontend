@@ -1,0 +1,94 @@
+﻿<section class="client-shops-page">
+  <section class="hero">
+    <p class="eyebrow">Annuaire boutiques</p>
+    <h1>Toutes les boutiques</h1>
+    <p class="subtitle">Filtrez par categorie et recherchez rapidement une enseigne.</p>
+  </section>
+
+  <section class="filters">
+    <label class="search-field">
+      <span>Recherche</span>
+      <input
+        type="text"
+        placeholder="Nom, categorie ou emplacement"
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </label>
+
+    <div class="cat-strip">
+      <button
+        type="button"
+        class="cat-pill"
+        [class.active]="selectedCategory() === 'all'"
+        (click)="setCategory('all')"
+      >
+        Toutes
+      </button>
+      <button
+        type="button"
+        class="cat-pill"
+        *ngFor="let category of categories()"
+        [class.active]="selectedCategory() === category._id"
+        (click)="setCategory(category._id)"
+      >
+        {{ category.name }}
+      </button>
+    </div>
+  </section>
+
+  <div class="state-box" *ngIf="loading()">Chargement des boutiques...</div>
+  <div class="state-box error" *ngIf="serverError()">{{ serverError() }}</div>
+
+  <section class="shops-grid" *ngIf="!loading() && !serverError()">
+    <button
+      type="button"
+      class="boutique-card"
+      *ngFor="let shop of filteredShops()"
+      [class.favorite]="isFavorite(shop)"
+      [class.selected]="isSelected(shop)"
+      (click)="openShop(shop)"
+    >
+      <div class="boutique-thumb">
+        <div class="boutique-thumb-bg">
+          <ng-container *ngIf="getShopImageUrl(shop) as imageUrl; else noImage">
+            <img [src]="imageUrl" [alt]="shop.name" class="shop-thumb-image" />
+          </ng-container>
+          <ng-template #noImage>
+            <span class="shop-initials">{{ getShopInitials(shop.name) }}</span>
+          </ng-template>
+        </div>
+
+        <div class="boutique-floor-tag">
+          {{ shop.location || 'Niveau 1' }}
+        </div>
+        <div class="boutique-open-badge" [class.open]="shop.isOpen" [class.closed]="!shop.isOpen"></div>
+      </div>
+
+      <div class="boutique-info">
+        <div class="boutique-title-row">
+          <div class="boutique-name">{{ shop.name }}</div>
+          <span
+            class="favorite-btn"
+            [class.active]="isFavorite(shop)"
+            [class.disabled]="isFavoritePending(shop._id)"
+            (click)="toggleFavorite($event, shop)"
+          >
+            &#10084;
+          </span>
+        </div>
+        <div class="boutique-cat">{{ getShopCategoryName(shop) }}</div>
+        <div class="boutique-meta">
+          <span class="status-pill" [class.open]="shop.isOpen" [class.closed]="!shop.isOpen">
+            {{ shop.isOpen ? 'Ouverte' : 'Fermee' }}
+          </span>
+          <span class="hours">09h - 20h</span>
+        </div>
+      </div>
+    </button>
+  </section>
+
+  <div class="state-box" *ngIf="!loading() && !serverError() && filteredShops().length === 0">
+    Aucune boutique ne correspond aux filtres.
+  </div>
+</section>

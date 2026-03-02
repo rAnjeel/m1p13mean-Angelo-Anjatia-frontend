@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --ink: #121218;
+  --ink-muted: #4b4d57;
+  --footer-bg: #cfd2e6;
+  --surface: #ffffff;
+  --shadow: 0 24px 60px rgba(16, 17, 20, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 12% -10%, #ffffff 0%, #f6f4ef 55%, #efeee9 100%),
+    linear-gradient(135deg, #f8f7f2 0%, #f1f0eb 100%);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

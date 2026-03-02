@@ -1,0 +1,92 @@
+﻿<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-visual" aria-hidden="true">
+      <span class="blob blob-one"></span>
+      <span class="blob blob-two"></span>
+      <span class="blob blob-three"></span>
+    </div>
+
+    <div class="auth-form">
+      <div class="auth-card-header">
+        <h1>Créer votre compte Vendeo</h1>
+        <p>Inscrivez-vous en quelques étapes.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-field">
+          <label for="fullName">Nom complet</label>
+          <input id="fullName" type="text" formControlName="fullName" placeholder="Jean Rakoto" />
+          <div class="field-error" *ngIf="hasError('fullName')">
+            <span *ngIf="hasError('fullName', 'required')">Le nom complet est obligatoire.</span>
+            <span *ngIf="hasError('fullName', 'minlength')">Le nom complet doit contenir au moins 2 caractères.</span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="email">Adresse e-mail</label>
+          <input id="email" type="email" formControlName="email" placeholder="Entrez votre e-mail" />
+          <div class="field-error" *ngIf="hasError('email')">
+            <span *ngIf="hasError('email', 'required')">L'e-mail est obligatoire.</span>
+            <span *ngIf="hasError('email', 'email')">Veuillez saisir une adresse e-mail valide.</span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Téléphone (optionnel)</label>
+          <input id="phone" type="tel" formControlName="phone" placeholder="+261 34 12 345 67" />
+        </div>
+
+        <div class="grid two-columns">
+          <div class="form-field">
+            <label for="role">Type de compte</label>
+            <select id="role" formControlName="role">
+              <option *ngFor="let option of roleOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="password">Mot de passe</label>
+            <input id="password" type="password" formControlName="password" placeholder="Créez un mot de passe" />
+            <div class="field-error" *ngIf="hasError('password')">
+              <span *ngIf="hasError('password', 'required')">Le mot de passe est obligatoire.</span>
+              <span *ngIf="hasError('password', 'minlength')">Le mot de passe doit contenir au moins 8 caractères.</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="primary-button" type="submit" [disabled]="loading()">
+          <span *ngIf="!loading()">Créer un compte</span>
+          <span *ngIf="loading()">Création du compte...</span>
+        </button>
+
+        <div class="divider-row">
+          <span></span>
+          <p>ou</p>
+          <span></span>
+        </div>
+
+        <div class="social-row">
+          <button type="button" class="social-button" routerLink="/login">
+            <span class="social-label">Se connecter</span>
+          </button>
+        </div>
+
+        <div class="link-row">
+          <span>Vous avez déjà un compte ?</span>
+          <a class="link" routerLink="/login">Se connecter</a>
+        </div>
+
+        <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+          <div class="server-error" *ngIf="serverErrors().length">
+            <p *ngFor="let error of serverErrors()">{{ error }}</p>
+          </div>
+          <div class="server-success" *ngIf="successMessage()">
+            <p>{{ successMessage() }}</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

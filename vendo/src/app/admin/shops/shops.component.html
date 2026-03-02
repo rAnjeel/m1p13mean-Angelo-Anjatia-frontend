@@ -1,0 +1,237 @@
+﻿<section class="admin-shops">
+  <header class="admin-header">
+    <div>
+      <h1>Shop management</h1>
+      <p>Manage shops with backend CRUD integration</p>
+    </div>
+    <div class="admin-actions">
+      <button class="ghost-btn" type="button" (click)="loadInitialData()" [disabled]="loadingData()">
+        {{ loadingData() ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="primary-btn" type="button" (click)="resetForm()">
+        {{ isEditMode ? 'New shop' : 'Add shop' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="stat-grid">
+    <article class="stat-card accent-1">
+      <div class="stat-label">Total shops</div>
+      <div class="stat-value">{{ totalShops }}</div>
+      <div class="stat-meta">All records from backend</div>
+    </article>
+    <article class="stat-card accent-2">
+      <div class="stat-label">Open shops</div>
+      <div class="stat-value">{{ openShops }}</div>
+      <div class="stat-meta">Ready for customers</div>
+    </article>
+    <article class="stat-card accent-3">
+      <div class="stat-label">Closed shops</div>
+      <div class="stat-value">{{ closedShops }}</div>
+      <div class="stat-meta">Temporarily unavailable</div>
+    </article>
+    <article class="stat-card accent-4">
+      <div class="stat-label">Merchants</div>
+      <div class="stat-value">{{ merchantOptions().length }}</div>
+      <div class="stat-meta">Available for assignment</div>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel list-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Shop list</h2>
+          <p>{{ filteredShops.length }} result(s)</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm8.4 11.6 3.3 3.3-1.4 1.4-3.3-3.3 1.4-1.4z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by name, location, merchant or category"
+            [value]="searchTerm()"
+            (input)="updateSearch(($any($event.target)).value)"
+          />
+        </label>
+        <div class="filter-pills">
+          <button
+            class="pill"
+            type="button"
+            [class.is-active]="statusFilter() === 'all'"
+            (click)="setStatusFilter('all')"
+          >
+            All
+          </button>
+          <button
+            class="pill"
+            type="button"
+            [class.is-active]="statusFilter() === 'open'"
+            (click)="setStatusFilter('open')"
+          >
+            Open
+          </button>
+          <button
+            class="pill"
+            type="button"
+            [class.is-active]="statusFilter() === 'closed'"
+            (click)="setStatusFilter('closed')"
+          >
+            Closed
+          </button>
+        </div>
+      </div>
+
+      <div class="table" *ngIf="!loadingData(); else loadingTemplate">
+        <div class="table-row table-head">
+          <div class="cell">Shop</div>
+          <div class="cell">Category</div>
+          <div class="cell">Merchant</div>
+          <div class="cell">Status</div>
+          <div class="cell">Location</div>
+          <div class="cell">Actions</div>
+        </div>
+
+        <div class="table-row" *ngFor="let shop of filteredShops; trackBy: trackByShopId">
+          <div class="cell title">
+            <div class="avatar">{{ (shop.name || '?').slice(0, 2).toUpperCase() }}</div>
+            <div>
+              <strong>{{ shop.name }}</strong>
+              <span>{{ shop.description || 'No description' }}</span>
+            </div>
+          </div>
+          <div class="cell">{{ getCategoryName(shop) }}</div>
+          <div class="cell">{{ getMerchantName(shop) }}</div>
+          <div class="cell">
+            <span class="status" [class.status-live]="shop.isOpen" [class.status-off]="!shop.isOpen">
+              {{ shopStatusLabel(shop) }}
+            </span>
+          </div>
+          <div class="cell">{{ shop.location || '-' }}</div>
+          <div class="cell actions">
+            <button class="action-btn" type="button" (click)="editShop(shop)">Edit</button>
+            <button
+              class="action-btn danger"
+              type="button"
+              [disabled]="deletingId() === shop._id"
+              (click)="deleteShop(shop._id)"
+            >
+              {{ deletingId() === shop._id ? 'Deleting...' : 'Delete' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredShops.length === 0">
+          No shops found for the current filter.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-panel">
+      <div class="panel-header">
+        <div>
+          <h2>{{ isEditMode ? 'Edit shop' : 'Create shop' }}</h2>
+          <p>Validated form connected to backend API</p>
+        </div>
+        <span class="badge">{{ isEditMode ? 'Editing' : 'New' }}</span>
+      </div>
+
+      <div class="server-messages" *ngIf="serverErrors().length || successMessage()">
+        <div class="server-error" *ngIf="serverErrors().length">
+          <p *ngFor="let error of serverErrors()">{{ error }}</p>
+        </div>
+        <div class="server-success" *ngIf="successMessage()">
+          <p>{{ successMessage() }}</p>
+        </div>
+      </div>
+
+      <form class="shop-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <label class="field">
+          <span>Shop name *</span>
+          <input type="text" placeholder="Trade name" formControlName="name" />
+          <small class="field-error" *ngIf="hasError('name', 'required')">Shop name is required.</small>
+          <small class="field-error" *ngIf="hasError('name', 'minlength')">
+            Shop name must be at least 2 characters.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Category *</span>
+          <select formControlName="categoryId" (change)="onCategorySelectionChange(($any($event.target)).value)">
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categoryOptions()" [value]="category._id">
+              {{ category.name }}
+            </option>
+            <option value="__add_category__">+ Add category</option>
+          </select>
+          <small class="field-error" *ngIf="hasError('categoryId', 'required')">
+            Category is required.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Merchant *</span>
+          <select formControlName="merchantId">
+            <option value="">Select a merchant</option>
+            <option *ngFor="let merchant of merchantOptions()" [value]="merchant._id">
+              {{ merchant.fullName }} ({{ merchant.email }})
+            </option>
+          </select>
+          <small class="field-error" *ngIf="hasError('merchantId', 'required')">
+            Merchant is required.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Location</span>
+          <input type="text" placeholder="Floor 2, A-14" formControlName="location" />
+          <small class="field-error" *ngIf="hasError('location', 'maxlength')">
+            Location cannot exceed 120 characters.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Status *</span>
+          <select formControlName="isOpen">
+            <option [ngValue]="true">Open</option>
+            <option [ngValue]="false">Closed</option>
+          </select>
+        </label>
+
+        <label class="field field-wide">
+          <span>Description</span>
+          <textarea rows="4" placeholder="Shop description" formControlName="description"></textarea>
+          <small class="field-error" *ngIf="hasError('description', 'maxlength')">
+            Description cannot exceed 500 characters.
+          </small>
+        </label>
+
+        <label class="field field-wide">
+          <span>Shop images</span>
+          <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)" />
+          <small>Optional. Up to 5 images will be uploaded after saving the shop.</small>
+          <div class="file-list" *ngIf="selectedImageNames.length > 0">
+            <span class="file-chip" *ngFor="let name of selectedImageNames">{{ name }}</span>
+            <button type="button" class="action-btn" (click)="clearSelectedImages()">Clear images</button>
+          </div>
+        </label>
+
+        <div class="form-actions">
+          <button class="ghost-btn" type="button" (click)="resetForm()">Reset</button>
+          <button class="primary-btn" type="submit" [disabled]="saving()">
+            {{ saving() ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update shop' : 'Save shop') }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>
+
+<ng-template #loadingTemplate>
+  <div class="loading-state">Loading shops...</div>
+</ng-template>
+

@@ -1,0 +1,112 @@
+<section class="about-user-page">
+  <header class="about-header">
+    <h1>About Connected User</h1>
+    <p>User role and profile details.</p>
+  </header>
+
+  <div *ngIf="loading()" class="state-box">Loading profile...</div>
+
+  <div *ngIf="!loading() && user() as connectedUser" class="about-grid">
+    <article class="panel">
+      <div class="profile-top">
+        <div class="avatar-wrap">
+          <img *ngIf="profilePhoto(); else initialsAvatar" [src]="profilePhoto()" alt="Profile photo" class="avatar-img" />
+          <ng-template #initialsAvatar>
+            <div class="avatar-fallback">{{ userInitials }}</div>
+          </ng-template>
+        </div>
+        <div class="avatar-actions">
+          <label class="upload-btn">
+            Add Photo
+            <input type="file" accept="image/*" (change)="onProfilePhotoSelected($event)" />
+          </label>
+          <button type="button" class="remove-btn" (click)="removeProfilePhoto()" [disabled]="!profilePhoto()">
+            Remove
+          </button>
+          <small class="field-error" *ngIf="photoError()">{{ photoError() }}</small>
+        </div>
+      </div>
+
+      <h2>Profile</h2>
+      <div class="profile-list">
+        <div class="profile-row">
+          <span>Full name</span>
+          <strong>{{ connectedUser.fullName || 'Not set' }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Email</span>
+          <strong>{{ connectedUser.email || 'Not set' }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Phone</span>
+          <strong>{{ connectedUser.phone || 'Not set' }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Role</span>
+          <strong class="role-pill">{{ connectedUser.role || 'Unknown' }}</strong>
+        </div>
+      </div>
+    </article>
+
+    <article id="shop-association" class="panel" *ngIf="isShopkeeper">
+      <h2>Shop Association</h2>
+
+      <div *ngIf="hasLinkedShop" class="shop-info">
+        <div class="profile-row">
+          <span>Current shop</span>
+          <strong>{{ linkedShop()?.name }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Location</span>
+          <strong>{{ linkedShop()?.location || 'Not set' }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Status</span>
+          <strong>{{ linkedShop()?.isOpen ? 'Open' : 'Closed' }}</strong>
+        </div>
+        <div class="profile-row">
+          <span>Description</span>
+          <strong>{{ linkedShop()?.description || 'Not set' }}</strong>
+        </div>
+      </div>
+
+      <div class="associate-box" *ngIf="!hasLinkedShop">
+        <p class="helper-text">
+          Search and pick one shop to associate it with this connected shopkeeper.
+        </p>
+        <div class="shop-form compact">
+          <label class="field">
+            <span>Shop picker</span>
+            <input
+              type="text"
+              placeholder="Type shop name or location"
+              [value]="searchTerm()"
+              (input)="onSearchChange($any($event.target).value)"
+              (focus)="openPicker()"
+              (blur)="closePicker()"
+            />
+            <div class="picker-list" *ngIf="pickerOpen()">
+              <button
+                type="button"
+                class="picker-item"
+                *ngFor="let shop of filteredShops()"
+                (mousedown)="pickShop(shop)"
+              >
+                <strong>{{ shop.name }}</strong>
+                <span>{{ shop.location || 'No location' }}</span>
+              </button>
+              <div class="picker-empty" *ngIf="filteredShops().length === 0">No shops found.</div>
+            </div>
+          </label>
+
+          <button type="button" class="primary-btn" [disabled]="saving() || !selectedShopId()" (click)="submitShopAssociation()">
+            {{ saving() ? 'Associating...' : 'Associate Shop' }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="serverError()" class="state-box error">{{ serverError() }}</div>
+  <div *ngIf="serverSuccess()" class="state-box success">{{ serverSuccess() }}</div>
+</section>

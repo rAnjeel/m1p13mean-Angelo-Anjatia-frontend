@@ -1,0 +1,95 @@
+﻿<section class="profile-page">
+  <header class="profile-header">
+    <div class="profile-main">
+      <div class="profile-avatar">
+        <img
+          *ngIf="profilePhoto(); else initialsAvatar"
+          [src]="profilePhoto()"
+          alt="Photo de profil"
+          class="profile-avatar-img"
+        />
+        <ng-template #initialsAvatar>{{ userInitials }}</ng-template>
+      </div>
+
+      <div class="profile-info">
+        <h1>{{ displayName }}</h1>
+      </div>
+    </div>
+
+    <p class="status-text" *ngIf="loading()">Chargement du profil...</p>
+    <p class="status-text error" *ngIf="serverError()">{{ serverError() }}</p>
+  </header>
+
+  <section class="stats-grid">
+    <article class="stat-card" *ngFor="let stat of stats()">
+      <div class="stat-value">{{ stat.value }}</div>
+      <div class="stat-label">{{ stat.label }}</div>
+    </article>
+  </section>
+
+  <main class="content-grid">
+    <section class="panel">
+      <h2>À propos du client</h2>
+      <p class="about-text">{{ aboutClientText }}</p>
+      <div class="list compact-list">
+        <div class="row">
+          <span>Nom complet</span>
+          <strong>{{ displayName }}</strong>
+        </div>
+        <div class="row">
+          <span>E-mail</span>
+          <strong>{{ displayEmail }}</strong>
+        </div>
+        <div class="row">
+          <span>Téléphone</span>
+          <strong>{{ displayPhone }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Boutiques favorites</h2>
+
+      <p class="status-text" *ngIf="favoritesLoading()">Chargement des boutiques favorites...</p>
+      <p class="status-text error" *ngIf="!favoritesLoading() && favoritesError()">{{ favoritesError() }}</p>
+      <p class="status-text" *ngIf="!favoritesLoading() && !favoritesError() && favoriteShops().length === 0">
+        Aucune boutique favorite pour le moment.
+      </p>
+
+      <div class="list" *ngIf="!favoritesLoading() && favoriteShops().length > 0">
+        <div *ngFor="let shop of favoriteShops()" class="row favorite-row">
+          <div>
+            <strong>{{ shop.name }}</strong>
+            <div class="row-sub">{{ shop.location }}</div>
+          </div>
+          <span class="badge">Favori</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-full">
+      <h2>Notes et avis déjà publiés</h2>
+
+      <p class="status-text" *ngIf="reviewsLoading()">Chargement des avis...</p>
+      <p class="status-text error" *ngIf="!reviewsLoading() && reviewsError()">{{ reviewsError() }}</p>
+      <p class="status-text" *ngIf="!reviewsLoading() && !reviewsError() && clientReviews().length === 0">
+        Aucun avis publié pour le moment.
+      </p>
+
+      <div class="list" *ngIf="!reviewsLoading() && clientReviews().length > 0">
+        <div *ngFor="let review of clientReviews()" class="row review-row">
+          <div>
+            <strong>{{ review.productName }}</strong>
+            <div class="row-sub">{{ review.shopName }} • {{ formatLongDate(review.createdAt) }}</div>
+            <p class="review-comment" *ngIf="review.comment">{{ review.comment }}</p>
+          </div>
+
+          <div class="review-meta">
+            <span class="rating-stars" [attr.aria-label]="'Note: ' + review.rating + ' sur 5'">{{ renderStars(review.rating) }}</span>
+            <strong>{{ review.rating }}/5</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>

@@ -1,3 +1,102 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
+import { RegisterComponent } from './auth/register/register.component';
+import { LoginComponent } from './auth/login/login.component';
+import { DashboardComponent } from './admin/dashboard/dashboard.component';
+import { ShopsComponent } from './admin/shops/shops.component';
+import { UsersComponent } from './admin/users/users.component';
+import { CategoriesComponent } from './admin/categories/categories.component';
+import { RentsComponent } from './admin/rents/rents.component';
+import { ShopkeeperProductsComponent } from './shopkeeper/products/products.component';
+import { MyShopComponent } from './shopkeeper/my-shop/my-shop.component';
+import { ShopkeeperFinanceComponent } from './shopkeeper/finance/finance.component';
+import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
+import { AboutUserComponent } from './shared/about-user/about-user.component';
+import { roleGuard } from './auth/role.guard';
+import { ClientHomeComponent } from './client/home/home.component';
+import { ClientProfileComponent } from './client/profile/profile.component';
+import { ClientShopsComponent } from './client/shops/shops.component';
+import { ClientProductsComponent } from './client/products/products.component';
+import { ClientServicesComponent } from './client/services/services.component';
+import { ClientLayoutComponent } from './client/layout/client-layout.component';
+import { ClientCartsComponent } from './client/carts/carts.component';
+import { ClientOrdersComponent } from './client/orders/orders.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'register', component: RegisterComponent },
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'client',
+    component: ClientLayoutComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['client'] },
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: ClientHomeComponent },
+      { path: 'profile', component: ClientProfileComponent },
+      { path: 'shops', component: ClientShopsComponent },
+      { path: 'products', component: ClientProductsComponent },
+      { path: 'carts', component: ClientCartsComponent },
+      { path: 'orders', component: ClientOrdersComponent },
+      { path: 'services', component: ClientServicesComponent },
+    ],
+  },
+  {
+    path: 'admin/dashboard',
+    component: DashboardComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
+  { path: 'home', redirectTo: 'client/home', pathMatch: 'full' },
+  {
+    path: 'admin/shops',
+    component: ShopsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
+  {
+    path: 'admin/categories',
+    component: CategoriesComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'shopkeeper'] },
+  },
+  {
+    path: 'admin/users',
+    component: UsersComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client'] },
+  },
+  {
+    path: 'admin/rents',
+    component: RentsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin'] },
+  },
+  {
+    path: 'shopkeeper/products',
+    component: ShopkeeperProductsComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['shopkeeper'] },
+  },
+  {
+    path: 'shopkeeper/my-shop',
+    component: MyShopComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['shopkeeper'] },
+  },
+  {
+    path: 'shopkeeper/finance',
+    component: ShopkeeperFinanceComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['shopkeeper'] },
+  },
+  {
+    path: 'profile/about',
+    component: AboutUserComponent,
+    canActivate: [roleGuard],
+    data: { roles: ['admin', 'client', 'shopkeeper'] },
+  },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: '**', redirectTo: 'unauthorized' },
+];
+
