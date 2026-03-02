@@ -1,0 +1,83 @@
+﻿<section class="client-orders-page">
+  <header class="orders-head">
+    <p class="eyebrow">Historique client</p>
+    <h1>Mes commandes</h1>
+    <p class="sub">Consultez toutes les commandes déjà effectuées sur Vendeo.</p>
+  </header>
+
+  <section class="orders-stats" *ngIf="!loading()">
+    <article class="stat-card">
+      <strong>{{ totalOrders() }}</strong>
+      <span>Commandes</span>
+    </article>
+    <article class="stat-card">
+      <strong>Ar {{ formatAmount(totalSpent()) }}</strong>
+      <span>Total dépensé</span>
+    </article>
+  </section>
+
+  <section class="orders-filters" *ngIf="!loading()">
+    <label class="filter-item">
+      <span>Recherche</span>
+      <input
+        type="search"
+        [value]="searchTerm()"
+        (input)="onSearchInput(($any($event.target)).value)"
+        placeholder="ID, boutique ou produit"
+      />
+    </label>
+
+    <label class="filter-item">
+      <span>Boutique</span>
+      <select [value]="selectedShop()" (change)="onShopFilterChange(($any($event.target)).value)">
+        <option value="all">Toutes les boutiques</option>
+        <option *ngFor="let shop of shopOptions()" [value]="shop">{{ shop }}</option>
+      </select>
+    </label>
+
+    <label class="filter-item">
+      <span>Tri boutique</span>
+      <select [value]="shopSort()" (change)="onShopSortChange(($any($event.target)).value)">
+        <option value="none">Par défaut</option>
+        <option value="asc">A → Z</option>
+        <option value="desc">Z → A</option>
+      </select>
+    </label>
+  </section>
+
+  <p class="state" *ngIf="loading()">Chargement des commandes...</p>
+  <p class="state error" *ngIf="!loading() && serverError()">{{ serverError() }}</p>
+  <p class="state" *ngIf="!loading() && !serverError() && displayedOrders().length === 0">
+    Aucune commande trouvée.
+  </p>
+
+  <section class="orders-list" *ngIf="!loading() && !serverError() && displayedOrders().length > 0">
+    <article class="order-card" *ngFor="let order of displayedOrders()">
+      <header class="order-top">
+        <div>
+          <h2>Ref : {{ order._id }}</h2>
+          <p>{{ formatDate(order.createdAt) }}</p>
+          <div class="shop-tags">
+            <span class="shop-tag" *ngFor="let shopName of getOrderShopNames(order)">Boutique : {{ shopName }}</span>
+          </div>
+        </div>
+        <span class="order-status" [class]=" 'order-status ' + getStatusClass(order.status)">{{ getStatusLabel(order.status) }}</span>
+      </header>
+
+      <div class="order-meta">
+        <span>{{ getOrderItemCount(order) }} produit(s)</span>
+        <strong>Ar {{ formatAmount(order.totalAmount) }}</strong>
+      </div>
+
+      <div class="items-list" *ngIf="order.items.length">
+        <div class="item-row" *ngFor="let item of order.items">
+          <div class="item-main">
+            <span class="item-name">{{ item.productName || 'Produit' }} x{{ item.quantity }}</span>
+            <span class="item-shop">{{ item.shopName || 'Boutique' }}</span>
+          </div>
+          <span class="item-price">Ar {{ formatAmount(item.priceAtPurchase) }}</span>
+        </div>
+      </div>
+    </article>
+  </section>
+</section>

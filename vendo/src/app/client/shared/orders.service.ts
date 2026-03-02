@@ -27,14 +27,24 @@ export interface PaidOrderItem {
   orderId: string;
   productId: string;
   productName?: string;
+  shopId?: string;
+  shopName?: string;
   quantity: number;
   priceAtPurchase: number;
+}
+
+export interface ClientOrderWithItems extends PaidOrder {
+  items: PaidOrderItem[];
 }
 
 interface PayOrderResponse {
   message: string;
   order: PaidOrder;
   items: PaidOrderItem[];
+}
+
+interface ClientOrdersResponse {
+  orders: ClientOrderWithItems[];
 }
 
 @Injectable({
@@ -46,6 +56,10 @@ export class ClientOrdersService {
 
   payOrder(orderId: string, payload: PayOrderPayload): Observable<PayOrderResponse> {
     return this.http.put<PayOrderResponse>(`${this.baseUrl}/${orderId}/pay`, payload);
+  }
+
+  getMyOrders(): Observable<ClientOrdersResponse> {
+    return this.http.get<ClientOrdersResponse>(`${this.baseUrl}/my`);
   }
 }
 
