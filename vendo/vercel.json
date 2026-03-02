@@ -1,5 +1,5 @@
 ﻿{
-  "buildCommand": "npm run build",
+  "buildCommand": "ng build --configuration production",
   "outputDirectory": "dist/vendo/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
