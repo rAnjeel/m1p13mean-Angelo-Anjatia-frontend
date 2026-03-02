@@ -1,4 +1,4 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
@@ -17,6 +17,7 @@ import { ClientShopsComponent } from './client/shops/shops.component';
 import { ClientProductsComponent } from './client/products/products.component';
 import { ClientServicesComponent } from './client/services/services.component';
 import { ClientLayoutComponent } from './client/layout/client-layout.component';
+import { ClientCartsComponent } from './client/carts/carts.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: 'profile', component: ClientProfileComponent },
       { path: 'shops', component: ClientShopsComponent },
       { path: 'products', component: ClientProductsComponent },
+      { path: 'carts', component: ClientCartsComponent },
       { path: 'services', component: ClientServicesComponent },
     ],
   },
@@ -88,4 +90,3 @@ export const routes: Routes = [
   { path: 'unauthorized', component: UnauthorizedComponent },
   { path: '**', redirectTo: 'unauthorized' },
 ];
-

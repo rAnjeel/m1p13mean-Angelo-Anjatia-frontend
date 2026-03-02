@@ -1,0 +1,89 @@
+<section class="client-carts-page">
+  <section class="hero">
+    <p class="eyebrow">Panier client</p>
+    <h1>Mes paniers par boutique</h1>
+    <p class="subtitle">Achetez chaque produit unitairement ou utilisez Tout acheter pour une boutique.</p>
+  </section>
+
+  <p class="state-box" *ngIf="loading()">Chargement des paniers...</p>
+  <p class="state-box error" *ngIf="serverError()">{{ serverError() }}</p>
+  <p class="state-box success" *ngIf="successMessage()">{{ successMessage() }}</p>
+
+  <section class="carts-wrap" *ngIf="!loading() && carts().length > 0">
+    <article class="shop-cart-card" *ngFor="let cart of carts()">
+      <header class="shop-head">
+        <div>
+          <h2>{{ cart.shopName }}</h2>
+          <p>{{ cart.totalItems }} article(s)</p>
+        </div>
+        <div class="shop-head-right">
+          <strong>Ar {{ cart.totalAmount | number : '1.0-0' }}</strong>
+          <button
+            type="button"
+            class="btn-buy-all"
+            [disabled]="isBuyingAll(cart.shopId) || cart.items.length === 0"
+            (click)="buyAllFromShop(cart)"
+          >
+            {{ isBuyingAll(cart.shopId) ? 'Traitement...' : 'Tout acheter' }}
+          </button>
+        </div>
+      </header>
+
+      <div class="items-list">
+        <article class="cart-item-row" *ngFor="let item of cart.items">
+          <div class="item-image">
+            <ng-container *ngIf="getProductImageUrl(item) as imageUrl; else noImage">
+              <img [src]="imageUrl" [alt]="getProductName(item)" />
+            </ng-container>
+            <ng-template #noImage>
+              <span>Produit</span>
+            </ng-template>
+          </div>
+
+          <div class="item-info">
+            <strong>{{ getProductName(item) }}</strong>
+            <label class="qty-field">
+              <span>Quantite</span>
+              <input
+                type="number"
+                [value]="item.quantity"
+                [attr.min]="1"
+                [attr.max]="getMaxQuantity(item)"
+                [disabled]="isUpdatingQuantity(item._id) || isRemovingItem(item._id)"
+                (change)="onQuantityChange(cart, item, $any($event.target).value)"
+              />
+            </label>
+            <span>Prix unitaire: Ar {{ getProductPrice(item) | number : '1.0-0' }}</span>
+          </div>
+
+          <div class="item-actions">
+            <button
+              type="button"
+              class="btn-cancel-item"
+              title="Annuler cet article"
+              [disabled]="isRemovingItem(item._id) || isUpdatingQuantity(item._id)"
+              (click)="removeCartItem(cart, item)"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <strong>Ar {{ getProductSubtotal(item) | number : '1.0-0' }}</strong>
+            <button
+              type="button"
+              class="btn-buy-one"
+              [disabled]="isBuyingItem(item._id) || isRemovingItem(item._id) || isUpdatingQuantity(item._id)"
+              (click)="buySingleProduct(cart, item)"
+            >
+              {{ isBuyingItem(item._id) ? 'Traitement...' : 'Acheter ce produit' }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </article>
+  </section>
+
+  <div class="state-box" *ngIf="!loading() && carts().length === 0">
+    Aucun panier actif pour le moment.
+  </div>
+</section>
