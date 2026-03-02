@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ShopsByCategoryRow {
   categoryId: string;
@@ -39,7 +40,7 @@ interface UsersByMonthResponse {
 })
 export class DashboardService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/dashboard';
+  private readonly baseUrl = `${environment.apiUrl}/dashboard`;
 
   getTotalShops(): Observable<TotalShopsResponse> {
     return this.http.get<TotalShopsResponse>(`${this.baseUrl}/shops/total`);
@@ -61,3 +62,6 @@ export class DashboardService {
     return this.http.get<TotalRevenueResponse>(`${this.baseUrl}/revenue/total`);
   }
 }
+
+
+

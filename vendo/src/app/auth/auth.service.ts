@@ -1,6 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface RegisterPayload {
   role: string;
@@ -33,7 +34,7 @@ export interface ApiErrorResponse {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/auth';
+  private readonly baseUrl = `${environment.apiUrl}/auth`;
   private readonly tokenStorageKey = 'auth_token';
   private readonly userStorageKey = 'auth_user';
 
@@ -81,4 +82,7 @@ export class AuthService {
     localStorage.removeItem(this.userStorageKey);
   }
 }
+
+
+
 

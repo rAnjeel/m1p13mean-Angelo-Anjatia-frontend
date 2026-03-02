@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ReviewClientRef {
   _id?: string;
@@ -35,7 +36,7 @@ interface AddProductReviewResponse {
 })
 export class ProductReviewsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/reviews';
+  private readonly baseUrl = `${environment.apiUrl}/reviews`;
 
   getByProduct(productId: string): Observable<ProductReviewsResponse> {
     return this.http.get<ProductReviewsResponse>(`${this.baseUrl}/${productId}`);
@@ -45,3 +46,6 @@ export class ProductReviewsService {
     return this.http.post<AddProductReviewResponse>(`${this.baseUrl}/${productId}`, payload);
   }
 }
+
+
+

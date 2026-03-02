@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type CategoryType = 'shop' | 'product';
 
@@ -26,7 +27,7 @@ interface CategoriesResponse {
 })
 export class CategoriesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/categories';
+  private readonly baseUrl = `${environment.apiUrl}/categories`;
 
   getCategories(): Observable<CategoriesResponse> {
     return this.http.get<CategoriesResponse>(this.baseUrl);
@@ -44,3 +45,6 @@ export class CategoriesService {
     return this.http.delete(`${this.baseUrl}/${categoryId}`);
   }
 }
+
+
+

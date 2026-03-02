@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ProductCategory {
   _id: string;
@@ -93,9 +94,9 @@ interface DeleteReviewResponse {
 })
 export class ShopkeeperProductsService {
   private readonly http = inject(HttpClient);
-  private readonly productsBaseUrl = 'http://localhost:3000/api/products';
-  private readonly categoriesBaseUrl = 'http://localhost:3000/api/categories';
-  private readonly shopsBaseUrl = 'http://localhost:3000/api/shops';
+  private readonly productsBaseUrl = `${environment.apiUrl}/products`;
+  private readonly categoriesBaseUrl = `${environment.apiUrl}/categories`;
+  private readonly shopsBaseUrl = `${environment.apiUrl}/shops`;
 
   getProducts(): Observable<ProductsResponse> {
     return this.http.get<ProductsResponse>(this.productsBaseUrl);
@@ -140,10 +141,14 @@ export class ShopkeeperProductsService {
   }
 
   getProductReviews(productId: string): Observable<ProductReviewsResponse> {
-    return this.http.get<ProductReviewsResponse>(`http://localhost:3000/api/reviews/${productId}`);
+    return this.http.get<ProductReviewsResponse>(`${environment.apiUrl}/reviews/${productId}`);
   }
 
   deleteProductReview(reviewId: string): Observable<DeleteReviewResponse> {
-    return this.http.delete<DeleteReviewResponse>(`http://localhost:3000/api/reviews/${reviewId}`);
+    return this.http.delete<DeleteReviewResponse>(`${environment.apiUrl}/reviews/${reviewId}`);
   }
 }
+
+
+
+

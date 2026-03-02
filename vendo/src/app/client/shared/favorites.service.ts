@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface FavoriteShopRef {
   _id?: string;
@@ -23,7 +24,7 @@ interface FavoritesResponse {
 })
 export class FavoritesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/favorites';
+  private readonly baseUrl = `${environment.apiUrl}/favorites`;
 
   getFavorites(): Observable<FavoritesResponse> {
     return this.http.get<FavoritesResponse>(this.baseUrl);
@@ -47,4 +48,7 @@ export class FavoritesService {
       .filter((id) => !!id);
   }
 }
+
+
+
 

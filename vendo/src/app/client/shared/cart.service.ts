@@ -1,7 +1,8 @@
-import { Injectable, inject, signal } from '@angular/core';
+﻿import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface CartShopRef {
   _id?: string;
@@ -64,7 +65,7 @@ interface UpdateQuantityPayload {
 })
 export class CartService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/carts';
+  private readonly baseUrl = `${environment.apiUrl}/carts`;
   readonly cartAlertTick = signal(0);
 
   getMyCarts(): Observable<ClientCartsResponse> {
@@ -99,3 +100,6 @@ export class CartService {
     return this.http.delete<{ message: string }>(`${this.baseUrl}/items/${itemId}`);
   }
 }
+
+
+

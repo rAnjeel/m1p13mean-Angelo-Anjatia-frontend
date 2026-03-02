@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   _id: string;
@@ -40,7 +41,7 @@ interface UsersResponse {
 })
 export class UsersService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/users';
+  private readonly baseUrl = `${environment.apiUrl}/users`;
 
   getUsers(): Observable<UsersResponse> {
     return this.http.get<UsersResponse>(this.baseUrl);
@@ -58,3 +59,6 @@ export class UsersService {
     return this.http.delete(`${this.baseUrl}/${userId}`);
   }
 }
+
+
+

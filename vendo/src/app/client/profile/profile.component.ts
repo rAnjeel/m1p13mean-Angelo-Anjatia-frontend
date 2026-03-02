@@ -6,6 +6,7 @@ import { Shop } from '../../admin/shops/shops.service';
 import { Product, ShopkeeperProductsService } from '../../shopkeeper/products/products.service';
 import { Favorite, FavoritesService } from '../shared/favorites.service';
 import { ProductReview, ProductReviewsService } from '../shared/product-reviews.service';
+import { environment } from '../../../environments/environment';
 
 interface ClientStat {
   label: string;
@@ -50,7 +51,7 @@ export class ClientProfileComponent implements OnInit {
   private readonly productsService = inject(ShopkeeperProductsService);
   private readonly reviewsService = inject(ProductReviewsService);
 
-  private readonly authBaseUrl = 'http://localhost:3000/api/auth';
+  private readonly authBaseUrl = `${environment.apiUrl}/auth`;
   private readonly userStorageKey = 'auth_user';
   private readonly profilePhotoStorageKey = 'profile_photo_data_url';
 
@@ -340,3 +341,6 @@ export class ClientProfileComponent implements OnInit {
     return value?.trim() || null;
   }
 }
+
+
+
