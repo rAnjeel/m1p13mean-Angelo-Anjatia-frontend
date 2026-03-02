@@ -1,6 +1,7 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface PayOrderPayload {
   paymentMethod: 'bank_card' | 'visa';
@@ -52,7 +53,7 @@ interface ClientOrdersResponse {
 })
 export class ClientOrdersService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/orders';
+  private readonly baseUrl = `${environment.apiUrl}/orders`;
 
   payOrder(orderId: string, payload: PayOrderPayload): Observable<PayOrderResponse> {
     return this.http.put<PayOrderResponse>(`${this.baseUrl}/${orderId}/pay`, payload);
@@ -62,4 +63,7 @@ export class ClientOrdersService {
     return this.http.get<ClientOrdersResponse>(`${this.baseUrl}/my`);
   }
 }
+
+
+
 

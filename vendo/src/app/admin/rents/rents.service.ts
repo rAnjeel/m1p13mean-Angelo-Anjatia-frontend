@@ -1,6 +1,7 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface RentShop {
   _id: string;
@@ -36,7 +37,7 @@ export interface PaidRentsResponse {
 })
 export class RentsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/rents';
+  private readonly baseUrl = `${environment.apiUrl}/rents`;
 
   getUnpaidRents(month: number, year: number): Observable<UnpaidRentsResponse> {
     return this.http.get<UnpaidRentsResponse>(`${this.baseUrl}/unpaid?month=${month}&year=${year}`);
@@ -50,3 +51,6 @@ export class RentsService {
     return this.http.put(`${this.baseUrl}/${rentId}/pay`, {});
   }
 }
+
+
+

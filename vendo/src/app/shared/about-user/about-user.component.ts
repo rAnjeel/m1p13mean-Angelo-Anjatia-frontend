@@ -1,6 +1,7 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 interface ConnectedUser {
   _id?: string;
@@ -28,8 +29,8 @@ interface Shop {
 })
 export class AboutUserComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly authBaseUrl = 'http://localhost:3000/api/auth';
-  private readonly shopsBaseUrl = 'http://localhost:3000/api/shops';
+  private readonly authBaseUrl = `${environment.apiUrl}/auth`;
+  private readonly shopsBaseUrl = `${environment.apiUrl}/shops`;
   private readonly userStorageKey = 'auth_user';
   private readonly profilePhotoStorageKey = 'profile_photo_data_url';
 
@@ -298,3 +299,6 @@ export class AboutUserComponent implements OnInit {
     return fallback;
   }
 }
+
+
+

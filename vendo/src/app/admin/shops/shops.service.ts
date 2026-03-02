@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ShopCategory {
   _id: string;
@@ -70,9 +71,9 @@ interface ShopMutationResponse {
 })
 export class ShopsService {
   private readonly http = inject(HttpClient);
-  private readonly shopsBaseUrl = 'http://localhost:3000/api/shops';
-  private readonly usersBaseUrl = 'http://localhost:3000/api/users';
-  private readonly categoriesBaseUrl = 'http://localhost:3000/api/categories';
+  private readonly shopsBaseUrl = `${environment.apiUrl}/shops`;
+  private readonly usersBaseUrl = `${environment.apiUrl}/users`;
+  private readonly categoriesBaseUrl = `${environment.apiUrl}/categories`;
 
   getShops(): Observable<ShopsResponse> {
     return this.http.get<ShopsResponse>(this.shopsBaseUrl);
@@ -108,3 +109,6 @@ export class ShopsService {
     return this.http.get<UsersResponse>(this.usersBaseUrl);
   }
 }
+
+
+

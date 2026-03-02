@@ -1,6 +1,7 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ShopkeeperFinancialOrderItem {
   productId?: string;
@@ -41,9 +42,12 @@ export interface ShopkeeperFinancialSummary {
 })
 export class ShopkeeperFinanceService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/orders';
+  private readonly baseUrl = `${environment.apiUrl}/orders`;
 
   getFinancialSummary(): Observable<ShopkeeperFinancialSummary> {
     return this.http.get<ShopkeeperFinancialSummary>(`${this.baseUrl}/shopkeeper/financial`);
   }
 }
+
+
+
