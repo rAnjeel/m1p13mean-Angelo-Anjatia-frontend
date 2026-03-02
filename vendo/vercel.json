@@ -1,8 +1,8 @@
 ﻿{
-  "framework": "angular",
-  "buildCommand": "ng build --configuration production",
+  "framework": "Angular",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist/vendo/browser",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
