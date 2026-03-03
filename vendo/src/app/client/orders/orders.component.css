@@ -182,6 +182,26 @@
   font-size: 13px;
 }
 
+.order-meta-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.print-btn {
+  border: 1px solid rgba(142, 131, 169, 0.35);
+  background: rgba(255, 255, 255, 0.85);
+  color: #4f3f78;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.print-btn:hover {
+  border-color: #8e83a9;
+}
+
 .items-list {
   margin-top: 10px;
   display: grid;

@@ -308,7 +308,7 @@
               <div class="product-footer">
                 <div class="product-price">
                   <span class="price-current">
-                    € {{ product.price | number : '1.0-0' }}
+                    Ar {{ product.price | number : '1.0-0' }}
                   </span>
                 </div>
                 <button class="add-btn" (click)="$event.stopPropagation(); openProductSearch(product)">

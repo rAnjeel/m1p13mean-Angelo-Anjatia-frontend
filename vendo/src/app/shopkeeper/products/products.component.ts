@@ -67,7 +67,7 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   categoryFilter = signal('all');
   availabilityFilter = signal<AvailabilityFilter>('all');
   currentPage = signal(1);
-  readonly pageSize = 8;
+  readonly pageSize = 6;
 
   readonly loggedUserId = signal<string | null>(this.extractLoggedUserId());
   readonly loggedUserRole = signal<string | null>(this.extractLoggedUserRole());
@@ -424,10 +424,10 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
   }
 
   formatPrice(value: number): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('fr-MG', {
       style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 2,
+      currency: 'MGA',
+      maximumFractionDigits: 0,
     }).format(Number(value || 0));
   }
 
@@ -622,3 +622,4 @@ export class ShopkeeperProductsComponent implements OnInit, OnDestroy {
     return apiErrors;
   }
 }
+
