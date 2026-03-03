@@ -1,4 +1,4 @@
-ï»¿<section class="shopkeeper-products">
+<section class="shopkeeper-products">
   <header class="page-header">
     <div>
       <h1>Shopkeeper Product Catalog</h1>
@@ -192,7 +192,7 @@
         </label>
 
         <label class="field">
-          <span>Price *</span>
+          <span>Price (Ar) *</span>
           <input type="number" min="0" step="0.01" formControlName="price" />
           <small class="field-error" *ngIf="hasError('price', 'required')">Price is required.</small>
           <small class="field-error" *ngIf="hasError('price', 'min')">Price must be >= 0.</small>
@@ -272,8 +272,8 @@
       <div>
         <h3>{{ detailProduct.name }}</h3>
         <p>
-          {{ getCategoryName(detailProduct) }} â€¢
-          {{ productReviews().length }} review(s) â€¢
+          {{ getCategoryName(detailProduct) }} •
+          {{ productReviews().length }} review(s) •
           Avg: {{ averageRating() | number: '1.1-1' }}/5
         </p>
       </div>
@@ -311,3 +311,4 @@
     </div>
   </section>
 </div>
+

@@ -40,6 +40,8 @@ export class ClientShopsComponent implements OnInit {
   readonly reviewRating = signal(0);
   readonly reviewComment = signal('');
   readonly stars = [1, 2, 3, 4, 5];
+  readonly currentPage = signal(1);
+  readonly pageSize = 8;
 
   readonly filteredShops = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
@@ -73,6 +75,17 @@ export class ClientShopsComponent implements OnInit {
     });
   });
 
+  readonly totalPages = computed(() => {
+    const total = Math.ceil(this.filteredShops().length / this.pageSize);
+    return total > 0 ? total : 1;
+  });
+
+  readonly paginatedShops = computed(() => {
+    const safePage = Math.min(this.currentPage(), this.totalPages());
+    const start = (safePage - 1) * this.pageSize;
+    return this.filteredShops().slice(start, start + this.pageSize);
+  });
+
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
       const category = params.get('category');
@@ -82,6 +95,7 @@ export class ClientShopsComponent implements OnInit {
       this.selectedCategory.set(category && category.trim() ? category : 'all');
       this.searchTerm.set(search || '');
       this.selectedShopId.set(shopId && shopId.trim() ? shopId : null);
+      this.currentPage.set(1);
     });
 
     this.loadData();
@@ -89,12 +103,26 @@ export class ClientShopsComponent implements OnInit {
 
   onSearchInput(value: string): void {
     this.searchTerm.set(value);
+    this.currentPage.set(1);
     this.updateQueryParams();
   }
 
   setCategory(categoryId: string): void {
     this.selectedCategory.set(categoryId);
+    this.currentPage.set(1);
     this.updateQueryParams();
+  }
+
+  previousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
   }
 
   openShop(shop: Shop): void {

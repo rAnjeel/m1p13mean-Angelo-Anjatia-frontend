@@ -44,7 +44,7 @@
     <button
       type="button"
       class="boutique-card"
-      *ngFor="let shop of filteredShops()"
+      *ngFor="let shop of paginatedShops()"
       [class.favorite]="isFavorite(shop)"
       [class.selected]="isSelected(shop)"
       (click)="openShop(shop)"
@@ -90,6 +90,21 @@
       </div>
     </button>
   </section>
+
+  <div class="pagination" *ngIf="!loading() && !serverError() && filteredShops().length > 0">
+    <button type="button" class="ghost-btn" (click)="previousPage()" [disabled]="currentPage() === 1">
+      Previous
+    </button>
+    <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+    <button
+      type="button"
+      class="ghost-btn"
+      (click)="nextPage()"
+      [disabled]="currentPage() === totalPages()"
+    >
+      Next
+    </button>
+  </div>
 
   <div class="state-box" *ngIf="!loading() && !serverError() && filteredShops().length === 0">
     Aucune boutique ne correspond aux filtres.

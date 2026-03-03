@@ -66,7 +66,17 @@
 
       <div class="order-meta">
         <span>{{ getOrderItemCount(order) }} produit(s)</span>
-        <strong>Ar {{ formatAmount(order.totalAmount) }}</strong>
+        <div class="order-meta-actions">
+          <strong>Ar {{ formatAmount(order.totalAmount) }}</strong>
+          <button
+            type="button"
+            class="print-btn"
+            *ngIf="isPaidOrder(order)"
+            (click)="printPaidOrder(order)"
+          >
+            Imprimer reçu
+          </button>
+        </div>
       </div>
 
       <div class="items-list" *ngIf="order.items.length">

@@ -75,7 +75,7 @@
   <div class="state-box error" *ngIf="addToCartError()">{{ addToCartError() }}</div>
 
   <section class="products-grid" *ngIf="!loading() && !serverError()">
-    <article class="product-card" *ngFor="let product of filteredProducts()" (click)="openReviewPopup(product)">
+    <article class="product-card" *ngFor="let product of paginatedProducts()" (click)="openReviewPopup(product)">
       <div class="product-thumb">
         <ng-container *ngIf="getProductImageUrl(product) as imageUrl; else noProductImage">
           <img [src]="imageUrl" [alt]="product.name" class="product-thumb-image" />
@@ -132,6 +132,21 @@
       </div>
     </article>
   </section>
+
+  <div class="pagination" *ngIf="!loading() && !serverError() && filteredProducts().length > 0">
+    <button type="button" class="ghost-btn" (click)="previousPage()" [disabled]="currentPage() === 1">
+      Previous
+    </button>
+    <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+    <button
+      type="button"
+      class="ghost-btn"
+      (click)="nextPage()"
+      [disabled]="currentPage() === totalPages()"
+    >
+      Next
+    </button>
+  </div>
 
   <div class="state-box" *ngIf="!loading() && !serverError() && filteredProducts().length === 0">
     Aucun produit ne correspond aux filtres.
